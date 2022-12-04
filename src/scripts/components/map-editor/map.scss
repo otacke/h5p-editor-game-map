@@ -1,0 +1,23 @@
+.h5p-game-map-editor-map {
+  background-color: #fff;
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  z-index: 0;
+
+  &.display-none {
+    display: none;
+  }
+
+  .h5p-game-map-editor-map-background-image {
+    display: block;
+    height: auto;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .h5p-game-map-editor-map-stage-wrapper {
+    height: 100%;
+    width: 100%;
+  }
+}

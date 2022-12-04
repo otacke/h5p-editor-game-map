@@ -1,0 +1,69 @@
+.h5p-game-map-editor-dnb.h5peditor-dragnbar {
+  background: #fff;
+  box-shadow: 10px 10px 30px rgb(166 166 166 / 20%);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  padding: 0.5rem;
+  z-index: 2;
+
+  &.display-none {
+    display: none;
+  }
+
+  .h5p-dragnbar-ul {
+    float: left;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    .h5p-dragnbar-li {
+      background: transparent;
+      border: none;
+      float: left;
+      margin: 0;
+      padding: 0;
+
+      .h5p-dragnbar-a {
+        background-color: rgba(26,115,217,.05);
+        border: 2px solid #fff;
+        border-radius: 3px;
+        box-sizing: border-box;
+        color: #277bdb;
+        display: block;
+        margin: 0.125rem;
+        padding: 0;
+        position: relative;
+        text-align: center;
+        width: 2.75rem;
+        height: 2.75rem;
+
+        &:hover {
+          background-color: rgba(26,115,217,.1);
+          // text-decoration: none;
+        }
+
+        &:active {
+          background-color: rgba(26,115,217,.1);
+        }
+
+        &.h5p-dragnbar-stage-button:before {
+          content: "\f1db";
+          font-family: "H5PFontAwesome4";
+          font-size: 1.15rem;
+          font-weight: bold;
+          height: 1.15rem;
+          left: 50%;
+          margin-left: -0.575rem;
+          margin-top: -0.575rem;
+          position: absolute;
+          top: 50%;
+          width: 1.15rem;
+        }
+      }
+
+      .h5p-dragnbar-tooltip {
+        display: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+.h5p-gamemap-editor {
+  .field.wizard {
+
+    .h5peditor-panes {
+      &>.group > .content {
+        border: none;
+      }
+    }
+
+    .h5peditor-tab-backgroundimagesettings {
+      &:before {
+        content: "\f03e";
+        font-family: "H5PFontAwesome4";
+      }
+
+      &:not(.nav-button-label):before {
+        font-size: 1.75em;
+        margin-top: 0.3em;
+      }
+
+      &.nav-button-label:before {
+        font-size: 1em;
+        margin-right: 0.25em;
+      }
+    }
+
+    .h5peditor-tab-gamemap {
+      &:before {
+        content: "\f11b";
+        font-family: "H5PFontAwesome4";
+      }
+
+      &:not(.nav-button-label):before {
+        font-size: 1.75em;
+        margin-top: 0.3em;
+      }
+
+      &.nav-button-label:before {
+        font-size: 1em;
+        margin-right: 0.25em;
+      }
+    }
+  }
+}
+
+.h5peditor-game-map {
+  width: 100%;
+
+  &> .group > .title {
+    display: none;
+  }
+}

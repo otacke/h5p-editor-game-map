@@ -1,0 +1,62 @@
+.h5p-game-map-fluid-dialog {
+  background: #fff;
+  border: 1px solid #ccc;
+  -webkit-box-shadow: 0 0 4px #a7a7a7;
+  -moz-box-shadow: 0 0 4px #a7a7a7;
+  box-shadow: 0 0 4px #a7a7a7;
+
+  &.display-none {
+    display: none;
+  }
+
+  .h5p-game-map-fluid-dialog-inner {
+    padding: 0.5em;
+
+    > div > .field.library {
+      border-bottom: 2px solid #eee;
+      border-top: 2px solid #eee;
+      padding: 1rem 0;
+    }
+  }
+
+  .h5p-game-map-fluid-dialog-buttons {
+    overflow: hidden;
+    border-top: 1px solid #ccc;
+    background: #f5f5f5;
+
+    .h5p-game-map-fluid-dialog-button {
+      font-size: 0.75rem;
+      float: right;
+      padding: 0.625rem 2rem;
+      margin: 0.5rem;
+      border-radius: 0.25em;
+      border: 1px solid #20588F;
+      color: #fff;
+      background: #3673B5;
+      background: -webkit-linear-gradient(top,#5A94D3 0,#3673B5 100%);
+      background: -moz-linear-gradient(top,#5A94D3 0,#3673B5 100%);
+      background: -ms-linear-gradient(top,#5A94D3 0,#3673B5 100%);
+      background: -o-linear-gradient(top,#5A94D3 0,#3673B5 100%);
+
+      &:hover {
+        background: #3275bc;
+        background: -webkit-linear-gradient(top,#3275bc 0,#285585 100%);
+        background: -moz-linear-gradient(top,#3275bc 0,#285585 100%);
+        background: -ms-linear-gradient(top,#3275bc 0,#285585 100%);
+        background: -o-linear-gradient(top,#3275bc 0,#285585 100%);
+        cursor: pointer;
+      }
+
+      &.h5p-editor-remove {
+        background: none;
+        border: none;
+        color: #a00;
+        padding-right: 0;
+
+        &:hover {
+          color: #e40000;
+        }
+      }
+    }
+  }
+}

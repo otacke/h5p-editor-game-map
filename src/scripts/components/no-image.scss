@@ -1,0 +1,31 @@
+.h5p-no-image {
+  box-sizing: border-box;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+
+  &.display-none {
+    display: none;
+  }
+
+  .h5p-no-image-icon {
+    background-image: url(@assets/images/no-image-source.svg);
+    background-repeat: no-repeat;
+    height: 7.5rem;
+    margin: 0 auto;
+    width: 7.5rem;
+  }
+
+  .h5p-no-image-title {
+    font-size: 1.5rem;
+  }
+
+  .h5p-no-image-button {
+    margin-top: 1rem;
+
+    &:before {
+      content: "\f060";
+      font-family: "H5PFontAwesome4";
+    }
+  }
+}
