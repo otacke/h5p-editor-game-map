@@ -45,12 +45,15 @@ export default class GameMap {
     });
     this.dom.appendChild(this.noImage.getDOM());
 
-    const stageFields = H5P.cloneObject(this.field.fields[1].field.fields, true); // TODO: Find dynamically
+    const stagesGroup = this.field.fields[1].field; // TODO: Find dynamically
+    const stageFields = H5P.cloneObject(stagesGroup.fields, true);
+    Globals.set('stagesGroupField', new H5PEditor.widgets[stagesGroup.type](
+      this, stagesGroup, this.params.stages, () => {} // No setValue needed
+    ));
 
     // Map canvas
     this.mapEditor = new MapEditor(
       {
-        foo: this.field.fields[1].field,
         stages: this.params.stages,
         stageFields: stageFields
       },

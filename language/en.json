@@ -5,6 +5,10 @@
     "l10n.noBackgroundImageMessage": "You must select a background image before adding stages to your map.",
     "l10n.toolbarButton-stage": "Stage",
     "l10n.done": "Done",
-    "l10n.remove": "Remove"
+    "l10n.remove": "Remove",
+    "l10n.selectAll": "Select all",
+    "l10n.deselectAll": "Unselect all",
+    "l10n.noNeighbors": "There are no stages to connect to yet.",
+    "l10n.contentRequired": "You need to select a content type for this stage."
   }
 }

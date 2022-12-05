@@ -11,6 +11,8 @@ export default class MapEditor {
   /**
    * @class
    * @param {object} [params={}] Parameters.
+   * @param {object} [params.stages] Stage's parameters.
+   * @param {object} [params.stageFields] Stage's fields.
    * @param {object} [callbacks={}] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
@@ -139,7 +141,8 @@ export default class MapEditor {
         y: `${50 - this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX / 2 })}`,
         width: defaultWidth,
         height: defaultHeight
-      }
+      },
+      neighbors: []
     }, params);
 
     const mapElement = new MapElement(
@@ -196,16 +199,51 @@ export default class MapEditor {
     this.toolbar.hide();
     this.map.hide();
 
+    // Make all stages available to be neighbors
+    this.params.stageFields[3].options = this.params.stages
+      .map((elementParams, index) => {
+        return { value: `${index}`, label: elementParams.id };
+      });
+
+    // Tell list widget this stage's id to be excluded
+    // TODO: Clean up array selection
+    mapElement.form.children[3].setActive({
+      id: `${mapElement.getID()}`,
+      onNeighborsChanged: (id, neighbors) => {
+        this.updateNeighbors(id, neighbors);
+      }
+    });
+
     this.dialog.showForm({
       form: mapElement.getData().form,
       doneCallback: () => {
-        const isValid = !mapElement.getData().children.some((child) => {
-          return !child.validate();
+        /*
+         * `some` would be quicker than `every`, but all fields should display
+         * their validation message
+         */
+        const isValid = mapElement.getData().children.every((child) => {
+          // Accept incomplete subcontent, but not no subcontent
+          if (child instanceof H5PEditor.Library && !child.validate()) {
+            if (child.$select.get(0).value === '-') {
+              const errors = mapElement.getData().form
+                .querySelector('.field.library .h5p-errors');
+
+              if (errors) {
+                errors.innerHTML = `<p>${Dictionary.get('l10n.contentRequired')}</p>`;
+              }
+            }
+            else {
+              return true;
+            }
+          }
+
+          return child.validate();
         });
 
         if (isValid) {
           this.toolbar.show();
           this.map.show();
+          this.callbacks.onChanged(this.params.stages);
         }
 
         return isValid;
@@ -221,6 +259,34 @@ export default class MapEditor {
     setTimeout(() => {
       this.toolbar.blurAll();
     }, 0);
+  }
+
+  /**
+   * Update neighbors so we keep a symmetrical relationship.
+   *
+   * @param {string} id Id of stage that was changed.
+   * @param {string[]} neighbors List of neighbors that stage should have.
+   */
+  updateNeighbors(id, neighbors) {
+    this.params.stages.forEach((stage, index) => {
+      if (neighbors.includes(`${index}`)) {
+        if (!stage.neighbors.includes(id)) {
+          stage.neighbors.push(id);
+          // Sorting not really necessary, but why not ...
+          stage.neighbors.sort((a, b) => {
+            return parseInt(a) - parseInt(b);
+          });
+        }
+      }
+      else {
+        if (stage.neighbors.includes(id)) {
+          const position = stage.neighbors.indexOf(id);
+          stage.neighbors.splice(position, 1);
+        }
+      }
+    });
+
+    this.callbacks.onChanged(this.params.stages);
   }
 
   /**
