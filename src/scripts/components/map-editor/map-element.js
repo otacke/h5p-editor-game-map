@@ -27,7 +27,7 @@ export default class MapElement {
     if (typeof this.params.elementClass === 'string') {
       this.dom.classList.add(this.params.elementClass);
     }
-    H5P.jQuery(this.dom).data('id', this.params.id); // TODO: How to do this in vanilla?
+    H5P.jQuery(this.dom).data('id', this.params.index); // TODO: How to do this in vanilla?
     H5P.jQuery(this.dom).dblclick(() => { // TODO: Replace with custom function
       this.callbacks.onEdited(this);
     });
@@ -56,13 +56,13 @@ export default class MapElement {
     return this.dom;
   }
 
-  setID(id) {
-    this.form.$element.data('id', id); // TODO: vanilla
-    this.params.id = id;
+  setIndex(index) {
+    this.form.$element.data('id', index); // TODO: vanilla
+    this.params.index = index;
   }
 
-  getID() {
-    return this.params.id;
+  getIndex() {
+    return this.params.index;
   }
 
   getData() {
@@ -113,7 +113,7 @@ export default class MapElement {
       this.dom.style.height = `${elementParams.telemetry.height}%`;
     }
 
-    this.callbacks.onChanged(this.params.id, this.params.elementParams);
+    this.callbacks.onChanged(this.params.index, this.params.elementParams);
   }
 
   remove() {

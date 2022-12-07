@@ -44,8 +44,8 @@ export default class MapEditor {
         dialogContainer: this.dom
       },
       {
-        onStoppedMoving: (id, x, y) => {
-          this.updateMapElement(id, x, y);
+        onStoppedMoving: (index, x, y) => {
+          this.updateMapElement(index, x, y);
         }
       }
     );
@@ -152,7 +152,7 @@ export default class MapEditor {
 
     const mapElement = new MapElement(
       {
-        id: this.mapElements.length,
+        index: this.mapElements.length,
         elementParams: elementParams,
         elementFields: this.params.stageFields,
         toolbar: this.toolbar,
@@ -213,7 +213,7 @@ export default class MapEditor {
     // Tell list widget this stage's id to be excluded
     // TODO: Clean up array selection
     mapElement.form.children[3].setActive({
-      id: `${mapElement.getID()}`,
+      id: `${mapElement.getIndex()}`,
       onNeighborsChanged: (id, neighbors) => {
         this.updateNeighbors(id, neighbors);
       }
@@ -300,16 +300,16 @@ export default class MapEditor {
    * @param {MapElement} mapElement Map element to be removed.
    */
   remove(mapElement) {
-    const id = mapElement.getID();
+    const index = mapElement.getIndex();
 
     // Remove element
     mapElement.remove();
-    this.mapElements.splice(id, 1);
-    this.params.stages.splice(id, 1);
+    this.mapElements.splice(index, 1);
+    this.params.stages.splice(index, 1);
 
     // Re-index elements
-    this.mapElements.forEach((element, index) => {
-      element.setID(index);
+    this.mapElements.forEach((element, elementIndex) => {
+      element.setIndex(elementIndex);
     });
 
     this.callbacks.onChanged(this.params.stages);
