@@ -13,7 +13,8 @@ export default class Toolbar {
       buttons: []
     }, params);
     this.callbacks = Util.extend({
-      onStoppedMoving: () => {}
+      onStoppedMoving: () => {},
+      onReleased: () => {}
     }, callbacks);
 
     this.dom = document.createElement('div');
@@ -34,6 +35,24 @@ export default class Toolbar {
       this.callbacks.onStoppedMoving(
         // Is there a better way to retrieve the element that was moved?
         this.toolbar.dnd.$element.data('id'), x, y
+      );
+    };
+
+    // TODO: Clean up
+    this.toolbar.dnd.releaseCallback = () => {
+      if (this.toolbar.newElement) {
+        setTimeout(() => {
+          // Is there a better way to retrieve the element that was created?
+          this.callbacks.onReleased(this.toolbar.dnd.$element.data('id'));
+        }, 1);
+      }
+    };
+
+    this.toolbar.dnd.moveCallback = (x, y, $element) => {
+      this.callbacks.onMoved(
+        $element.data('id'),
+        Math.round(parseFloat($element.css('left'))),
+        Math.round(parseFloat($element.css('top')))
       );
     };
 

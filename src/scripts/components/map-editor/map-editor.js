@@ -1,3 +1,4 @@
+import Edges from '@models/edges';
 import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import Dialog from './dialog';
@@ -37,6 +38,8 @@ export default class MapEditor {
       }
     });
 
+    this.edges = new Edges({ map: this.map });
+
     this.toolbar = new Toolbar(
       {
         buttons: [this.createButton('stage')],
@@ -46,7 +49,18 @@ export default class MapEditor {
       {
         onStoppedMoving: (index, x, y) => {
           this.updateMapElement(index, x, y);
+          this.updateEdges({ limit: index });
+        },
+        onReleased: (index) => {
           this.edit(this.mapElements[index]);
+        },
+        onMoved: (index, x, y) => {
+          this.updateMapElement(
+            index,
+            this.convertToPercent({ x: x }),
+            this.convertToPercent({ y: y })
+          );
+          this.updateEdges({ limit: index });
         }
       }
     );
@@ -78,6 +92,10 @@ export default class MapEditor {
    */
   show() {
     this.dom.classList.remove('display-none');
+
+    window.requestAnimationFrame(() => {
+      this.updateEdges();
+    });
   }
 
   /**
@@ -127,6 +145,8 @@ export default class MapEditor {
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
   createElement(params) {
+    // TODO: Find solution to keep stage size and edge size in sync!
+
     // Sanitize with default values
     const defaultWidth = (this.params.stages.length) ?
       this.params.stages[0].telemetry.width :
@@ -250,6 +270,7 @@ export default class MapEditor {
         if (isValid) {
           this.toolbar.show();
           this.map.show();
+          this.updateEdges();
           this.callbacks.onChanged(this.params.stages);
         }
 
@@ -258,7 +279,6 @@ export default class MapEditor {
       removeCallback: () => {
         this.toolbar.show();
         this.map.show();
-
         this.remove(mapElement);
       }
     });
@@ -296,6 +316,71 @@ export default class MapEditor {
     this.callbacks.onChanged(this.params.stages);
   }
 
+  updateEdges() {
+    // Intentionally not creating one long chain here.
+
+    let requiredEdges = H5P.cloneObject(this.params.stages);
+
+    // TODO: Limit number of edges when limit is set
+
+    // Determine from-to combination without vice verse pair to check
+    requiredEdges = requiredEdges.reduce((edges, current, index) => {
+      current.neighbors.forEach((neighbor) => {
+        if (
+          !edges.includes(`${index}-${neighbor}`) &&
+          !edges.includes(`${neighbor}-${index}`)
+        ) {
+          edges.push(`${index}-${neighbor}`);
+        }
+      });
+      return edges;
+    }, []);
+
+    // Create update list for Edges
+    requiredEdges = requiredEdges.map((combo) => {
+      const stages = combo.split('-');
+
+      return {
+        from: parseInt(stages[0]),
+        to: parseInt(stages[1]),
+        edgeTelemetry: this.computeEdgeTelemetry({
+          from: this.params.stages[parseInt(stages[0])].telemetry,
+          to: this.params.stages[parseInt(stages[1])].telemetry
+        })
+      };
+    });
+
+    this.edges.update({ edges: requiredEdges });
+  }
+
+  computeEdgeTelemetry(params = {}) {
+    const mapSize = this.map.getSize();
+    if (mapSize.height === 0 || mapSize.width === 0) {
+      return null;
+    }
+
+    const fromXPx = parseFloat(params.from.x) / 100 * mapSize.width;
+    const fromYPx = parseFloat(params.from.y) / 100 * mapSize.height;
+    const toXPx = parseFloat(params.to.x) / 100 * mapSize.width;
+    const toYPx = parseFloat(params.to.y) / 100 * mapSize.height;
+
+    const deltaXPx = fromXPx - toXPx;
+    const deltaYPx = fromYPx - toYPx;
+
+    const angleOffset = (Math.sign(deltaXPx) >= 0) ? Math.PI : 0;
+    const yOffset = Math.cos(Math.atan(deltaYPx / deltaXPx)) * 2.5; // TODO: Compute as 50% of edge height
+
+    return {
+      x: parseFloat(params.from.x) + parseFloat(params.from.width) / 2,
+      y: parseFloat(params.from.y) + parseFloat(params.from.height) / 2 - yOffset,
+      length: Math.sqrt(
+        Math.abs(deltaXPx) * Math.abs(deltaXPx) +
+        Math.abs(deltaYPx) * Math.abs(deltaYPx)
+      ),
+      angle: Math.atan(deltaYPx / deltaXPx) + angleOffset
+    };
+  }
+
   /**
    * Remove map element.
    *
@@ -331,6 +416,8 @@ export default class MapEditor {
     });
 
     this.callbacks.onChanged(this.params.stages);
+
+    this.updateEdges();
   }
 
   /**
@@ -382,6 +469,7 @@ export default class MapEditor {
    */
   resize() {
     this.toolbar.blurAll();
+    this.updateEdges();
   }
 
   /**

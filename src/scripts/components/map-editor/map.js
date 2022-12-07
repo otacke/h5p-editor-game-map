@@ -27,6 +27,10 @@ export default class Map {
     }
     this.dom.appendChild(this.image);
 
+    this.edgeWrapper = document.createElement('div');
+    this.edgeWrapper.classList.add('h5p-game-map-editor-map-edge-wrapper');
+    this.dom.appendChild(this.edgeWrapper);
+
     this.stageWrapper = document.createElement('div');
     this.stageWrapper.classList.add('h5p-game-map-editor-map-stage-wrapper');
     this.dom.appendChild(this.stageWrapper);
@@ -95,5 +99,15 @@ export default class Map {
    */
   prependElement(dom) {
     this.stageWrapper.prepend(dom);
+  }
+
+  /**
+   * Append edge to DOM.
+   *
+   * @param {HTMLElement} dom DOM element.
+   */
+
+  addEdge(dom) {
+    this.edgeWrapper.appendChild(dom);
   }
 }

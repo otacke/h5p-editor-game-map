@@ -4,6 +4,10 @@
   min-height: 42px;
   position: absolute;
 
+  &.h5p-moving {
+    opacity: 1;
+  }
+
   .h5p-game-map-element-content {
     box-sizing: border-box;
     height: 100%;
