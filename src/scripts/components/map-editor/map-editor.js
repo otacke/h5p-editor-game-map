@@ -135,7 +135,12 @@ export default class MapEditor {
       this.params.stages[0].telemetry.height :
       `${this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX })}`;
 
+    const numberUnnamedStages = this.params.stages.filter((stage) => {
+      return stage.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
+    }).length + 1;
+
     const elementParams = Util.extend({
+      id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
       telemetry: {
         x: `${50 - this.convertToPercent({ x: MapElement.DEFAULT_SIZE_PX / 2 })}`,
         y: `${50 - this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX / 2 })}`,

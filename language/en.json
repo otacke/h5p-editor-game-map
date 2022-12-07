@@ -9,6 +9,7 @@
     "l10n.selectAll": "Select all",
     "l10n.deselectAll": "Unselect all",
     "l10n.noNeighbors": "There are no stages to connect to yet.",
-    "l10n.contentRequired": "You need to select a content type for this stage."
+    "l10n.contentRequired": "You need to select a content type for this stage.",
+    "l10n.unnamedStage": "Unnamed stage"
   }
 }
