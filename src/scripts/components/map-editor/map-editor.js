@@ -46,6 +46,7 @@ export default class MapEditor {
       {
         onStoppedMoving: (index, x, y) => {
           this.updateMapElement(index, x, y);
+          this.edit(this.mapElements[index]);
         }
       }
     );
