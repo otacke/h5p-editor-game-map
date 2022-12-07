@@ -100,6 +100,7 @@ export default class GameMapDynamicCheckboxes {
    */
   setActive(params = {}) {
     this.currentId = params.id;
+    this.params = params.neighbors;
     this.callbacks.onNeighborsChanged = params.onNeighborsChanged;
 
     const list = this.$item.get(0);

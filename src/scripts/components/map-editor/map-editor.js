@@ -214,6 +214,7 @@ export default class MapEditor {
     // TODO: Clean up array selection
     mapElement.form.children[3].setActive({
       id: `${mapElement.getIndex()}`,
+      neighbors: this.params.stages[mapElement.getIndex()].neighbors,
       onNeighborsChanged: (id, neighbors) => {
         this.updateNeighbors(id, neighbors);
       }
@@ -300,12 +301,28 @@ export default class MapEditor {
    * @param {MapElement} mapElement Map element to be removed.
    */
   remove(mapElement) {
-    const index = mapElement.getIndex();
+    const removeIndex = mapElement.getIndex();
+
+    // Remove from neigbors and re-index rest
+    this.params.stages.forEach((stage) => {
+      if (!stage.neighbors.includes(`${removeIndex}`)) {
+        return;
+      }
+
+      stage.neighbors.splice(stage.neighbors.indexOf(`${removeIndex}`), 1);
+
+      stage.neighbors = stage.neighbors.map((neighbor) => {
+        const neighborNumber = parseInt(neighbor);
+        return (neighborNumber < removeIndex) ?
+          neighbor :
+          `${parseInt(neighbor) - 1}`;
+      });
+    });
 
     // Remove element
     mapElement.remove();
-    this.mapElements.splice(index, 1);
-    this.params.stages.splice(index, 1);
+    this.mapElements.splice(removeIndex, 1);
+    this.params.stages.splice(removeIndex, 1);
 
     // Re-index elements
     this.mapElements.forEach((element, elementIndex) => {
