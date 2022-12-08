@@ -426,9 +426,10 @@ export default class MapEditor {
    * @param {MapElement} mapElement Map element to be brought to front.
    */
   bringToFront(mapElement) {
-    const oldZ = this.params.stages.indexOf(mapElement.getParams());
-    this.params.stages.push(this.params.stages.splice(oldZ, 1)[0]);
-
+    /*
+     * If position in this.params.stages becomes relevant, move element there
+     * and re-index everything
+     */
     this.map.appendElement(mapElement.getDOM());
   }
 
@@ -438,9 +439,10 @@ export default class MapEditor {
    * @param {MapElement} mapElement Map element to be sent to back.
    */
   sendToBack(mapElement) {
-    const oldZ = this.params.stages.indexOf(mapElement.getParams());
-    this.params.stages.unshift(this.params.stages.splice(oldZ, 1)[0]);
-
+    /*
+     * If position in this.params.stages becomes relevant, move element there
+     * and re-index everything
+     */
     this.map.prependElement(mapElement.getDOM());
   }
 
