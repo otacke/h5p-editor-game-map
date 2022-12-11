@@ -27,9 +27,13 @@ export default class MapElement {
     if (typeof this.params.elementClass === 'string') {
       this.dom.classList.add(this.params.elementClass);
     }
-    H5P.jQuery(this.dom).data('id', this.params.index); // TODO: How to do this in vanilla?
-    H5P.jQuery(this.dom).dblclick(() => { // TODO: Replace with custom function
-      this.callbacks.onEdited(this);
+
+    H5P.jQuery(this.dom).data('id', this.params.index); // DnB tradeoff
+
+    this.dom.addEventListener('click', (event) => {
+      Util.doubleClick(event, () => {
+        this.callbacks.onEdited(this);
+      });
     });
 
     this.content = document.createElement('div');
@@ -59,7 +63,7 @@ export default class MapElement {
   }
 
   setIndex(index) {
-    this.form.$element.data('id', index); // TODO: vanilla
+    this.form.$element.data('id', index); // DragNBar compromise
     this.params.index = index;
   }
 
@@ -92,8 +96,6 @@ export default class MapElement {
     if (typeof elementParams.telemetry?.height === 'number') {
       elementParams.telemetry.height = `${elementParams.telemetry.height}`;
     }
-
-    // TODO: Make sure that values stay in range of what map allows
 
     if (typeof elementParams.telemetry?.x === 'string') {
       this.params.elementParams.telemetry.x = elementParams.telemetry.x;
@@ -171,10 +173,14 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      // TODO: Select dynamically
-      Globals.get('stagesGroupField').children[3].changes.push(() => {
-        errors.innerHTML = ''; // Erase once a library is selected
-      });
+      const libraryWidget = Globals.get('stagesGroupField')?.children
+        .find((child) => child.field.name === 'contentType');
+
+      if (libraryWidget) {
+        libraryWidget.changes.push(() => {
+          errors.innerHTML = ''; // Erase once a library is selected
+        });
+      }
     }
 
     return {

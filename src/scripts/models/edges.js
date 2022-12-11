@@ -63,9 +63,13 @@ export default class Edges {
    * @param {object} [params={}] Parameters.
    * @param {string|number} params.from Start stage for edge.
    * @param {string|number} params.to Target stage for edge.
-   * @param {object} params.edgeTelemetry Telemetry data for edge.
+   * @param {object|null} params.edgeTelemetry Telemetry data for edge.
    */
   updateEdge(params = {}) {
+    if (params.edgeTelemetry === null) {
+      return; // Nothing to update here
+    }
+
     const from = (typeof params.from === 'number') ?
       params.from :
       parseInt(params.from);

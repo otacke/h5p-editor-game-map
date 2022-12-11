@@ -30,19 +30,17 @@ export default class Toolbar {
     // Must set containerEm
     this.toolbar.dnr.setContainerEm(parseFloat(H5P.jQuery(this.params.mapContainer).css('font-size')));
 
-    // TODO: Clean up
     this.toolbar.stopMovingCallback = (x, y) => {
       this.callbacks.onStoppedMoving(
-        // Is there a better way to retrieve the element that was moved?
+        // Seems there's no better way to get hold of element added
         this.toolbar.dnd.$element.data('id'), x, y
       );
     };
 
-    // TODO: Clean up
     this.toolbar.dnd.releaseCallback = () => {
       if (this.toolbar.newElement) {
         setTimeout(() => {
-          // Is there a better way to retrieve the element that was created?
+          // Seems there's no better way to get hold of element added
           this.callbacks.onReleased(this.toolbar.dnd.$element.data('id'));
         }, 1);
       }

@@ -14,7 +14,7 @@
     .h5peditor-tab-backgroundimagesettings {
       &:before {
         content: "\f03e";
-        font-family: "H5PFontAwesome4";
+        font-family: "H5PFontAwesome4", sans-serif;
       }
 
       &:not(.nav-button-label):before {
@@ -31,7 +31,7 @@
     .h5peditor-tab-gamemap {
       &:before {
         content: "\f11b";
-        font-family: "H5PFontAwesome4";
+        font-family: "H5PFontAwesome4", sans-serif;
       }
 
       &:not(.nav-button-label):before {

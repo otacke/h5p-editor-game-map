@@ -91,6 +91,7 @@ export default class GameMapDynamicCheckboxes {
 
     return list;
   }
+
   /**
    * Set widget active and (re)generate options.
    *

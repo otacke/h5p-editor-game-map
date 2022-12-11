@@ -45,6 +45,7 @@ export default class GameMap {
     });
     this.dom.appendChild(this.noImage.getDOM());
 
+    // Create instance for stages group field
     const stagesGroup = this.field.fields
       .find((field) => field.name === 'stages').field;
     const stageFields = H5P.cloneObject(stagesGroup.fields, true);
@@ -118,8 +119,6 @@ export default class GameMap {
 
         return;
       }
-
-      this.reset();
     });
   }
 
@@ -174,7 +173,7 @@ export default class GameMap {
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
-    return true; // TODO
+    return true;
   }
 
   /**
@@ -182,13 +181,6 @@ export default class GameMap {
    */
   remove() {
     this.$container.remove();
-  }
-
-  /**
-   * Reset.
-   */
-  reset() {
-    this.mapEditor.reset();
   }
 
   /**

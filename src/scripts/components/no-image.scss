@@ -9,7 +9,7 @@
   }
 
   .h5p-no-image-icon {
-    background-image: url(@assets/images/no-image-source.svg);
+    background-image: url("@assets/images/no-image-source.svg");
     background-repeat: no-repeat;
     height: 7.5rem;
     margin: 0 auto;
@@ -25,7 +25,7 @@
 
     &:before {
       content: "\f060";
-      font-family: "H5PFontAwesome4";
+      font-family: "H5PFontAwesome4", sans-serif;
     }
   }
 }

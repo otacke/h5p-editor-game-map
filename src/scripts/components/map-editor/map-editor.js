@@ -94,6 +94,7 @@ export default class MapEditor {
     this.dom.classList.remove('display-none');
 
     window.requestAnimationFrame(() => {
+      this.sanitizeParams();
       this.updateEdges();
     });
   }
@@ -103,13 +104,6 @@ export default class MapEditor {
    */
   hide() {
     this.dom.classList.add('display-none');
-  }
-
-  /**
-   * Reset.
-   */
-  reset() {
-    // TODO
   }
 
   /**
@@ -325,14 +319,41 @@ export default class MapEditor {
   }
 
   /**
-   * Update all edges.
+   * Sanitize parameters. Will keep x/y coordinates within boundaries.
    */
-  updateEdges() {
+  sanitizeParams() {
+    const mapSize = this.map.getSize();
+    if (mapSize.height === 0 || mapSize.width === 0) {
+      return;
+    }
+
+    this.params.stages.forEach((elementParams, index) => {
+      let xPx = parseFloat(elementParams.telemetry.x) / 100 * mapSize.width;
+      let yPx = parseFloat(elementParams.telemetry.y) / 100 * mapSize.height;
+
+      xPx = Math.min(xPx, mapSize.width - elementParams.telemetry.width);
+      xPx = Math.max(0, xPx);
+      yPx = Math.min(yPx, mapSize.height - elementParams.telemetry.height);
+      yPx = Math.max(0, yPx);
+
+      this.mapElements[index].updateParams({telemetry: {
+        x: this.convertToPercent({x: xPx}),
+        y: this.convertToPercent({y: yPx})
+      }
+      });
+    });
+  }
+
+  /**
+   * Update all edges.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {number} [params.limit] Number of stage that needs updating only.
+   */
+  updateEdges(params = {}) {
     // Intentionally not creating one long chain here.
 
     let requiredEdges = H5P.cloneObject(this.params.stages);
-
-    // TODO: Limit number of edges when limit is set
 
     // Determine from-to combination without vice verse pair to check
     requiredEdges = requiredEdges.reduce((edges, current, index) => {
@@ -351,13 +372,23 @@ export default class MapEditor {
     requiredEdges = requiredEdges.map((combo) => {
       const stages = combo.split('-');
 
+      // Don't compute telemetry values for edges that have not changed
+      let edgeTelemetry = null;
+      if (
+        typeof params.limit !== 'number' ||
+        parseInt(stages[0]) === params.limit ||
+        parseInt(stages[1]) === params.limit
+      ) {
+        edgeTelemetry = this.computeEdgeTelemetry({
+          from: this.params.stages[parseInt(stages[0])].telemetry,
+          to: this.params.stages[parseInt(stages[1])].telemetry
+        });
+      }
+
       return {
         from: parseInt(stages[0]),
         to: parseInt(stages[1]),
-        edgeTelemetry: this.computeEdgeTelemetry({
-          from: this.params.stages[parseInt(stages[0])].telemetry,
-          to: this.params.stages[parseInt(stages[1])].telemetry
-        })
+        edgeTelemetry: edgeTelemetry
       };
     });
 
