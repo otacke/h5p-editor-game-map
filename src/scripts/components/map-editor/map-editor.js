@@ -281,9 +281,6 @@ export default class MapEditor {
           this.updateEdges();
           this.callbacks.onChanged(this.params.stages);
         }
-        else {
-          console.log(this);
-        }
 
         return isValid;
       },
