@@ -41,7 +41,9 @@ export default class MapElement {
 
     this.updateParams(this.params.elementParams);
 
-    this.form = this.generateForm(this.params.elementFields, params.elementParams);
+    this.form = this.generateForm(
+      this.params.elementFields, this.params.elementParams
+    );
     this.form.$element = H5P.jQuery(this.dom);
 
     this.createDNBElement();
@@ -105,12 +107,12 @@ export default class MapElement {
 
     if (typeof elementParams.telemetry?.width === 'string') {
       this.params.elementParams.telemetry.width = elementParams.telemetry.width;
-      this.dom.style.width = `${elementParams.telemetry.width}%`;
+      this.dom.style.width = `${elementParams.telemetry.width}px`;
     }
 
     if (typeof elementParams.telemetry?.height === 'string') {
       this.params.elementParams.telemetry.height = elementParams.telemetry.height;
-      this.dom.style.height = `${elementParams.telemetry.height}%`;
+      this.dom.style.height = `${elementParams.telemetry.height}px`;
     }
 
     this.callbacks.onChanged(this.params.index, this.params.elementParams);

@@ -145,16 +145,14 @@ export default class MapEditor {
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
   createElement(params) {
-    // TODO: Find solution to keep stage size and edge size in sync!
+    // When other elements need to be added later on, create separate models
 
     // Sanitize with default values
     const defaultWidth = (this.params.stages.length) ?
-      this.params.stages[0].telemetry.width :
-      `${this.convertToPercent({ x: MapElement.DEFAULT_SIZE_PX })}`;
+      this.params.stages[0].telemetry.width : MapElement.DEFAULT_SIZE_PX;
 
     const defaultHeight = (this.params.stages.length) ?
-      this.params.stages[0].telemetry.height :
-      `${this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX })}`;
+      this.params.stages[0].telemetry.height : MapElement.DEFAULT_SIZE_PX;
 
     const numberUnnamedStages = this.params.stages.filter((stage) => {
       return stage.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
@@ -165,8 +163,8 @@ export default class MapEditor {
       telemetry: {
         x: `${50 - this.convertToPercent({ x: MapElement.DEFAULT_SIZE_PX / 2 })}`,
         y: `${50 - this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX / 2 })}`,
-        width: defaultWidth,
-        height: defaultHeight
+        width: `${defaultWidth}`,
+        height: `${defaultHeight}`
       },
       neighbors: []
     }, params);
@@ -368,17 +366,51 @@ export default class MapEditor {
     const deltaYPx = fromYPx - toYPx;
 
     const angleOffset = (Math.sign(deltaXPx) >= 0) ? Math.PI : 0;
-    const yOffset = Math.cos(Math.atan(deltaYPx / deltaXPx)) * 2.5; // TODO: Compute as 50% of edge height
+    const angle = Math.atan(deltaYPx / deltaXPx) + angleOffset;
 
-    return {
-      x: parseFloat(params.from.x) + parseFloat(params.from.width) / 2,
-      y: parseFloat(params.from.y) + parseFloat(params.from.height) / 2 - yOffset,
-      length: Math.sqrt(
-        Math.abs(deltaXPx) * Math.abs(deltaXPx) +
-        Math.abs(deltaYPx) * Math.abs(deltaYPx)
-      ),
-      angle: Math.atan(deltaYPx / deltaXPx) + angleOffset
+    const offsetToBorderPx = {
+      x: parseFloat(params.from.width) / 2 * Math.cos(angle),
+      y: parseFloat(params.from.height) / 2 * Math.sin(angle)
     };
+
+    const offsetEdgeStrokePx = this.getEdgesHeight() / 2;
+
+    const x = parseFloat(params.from.x) + this.convertToPercent({ x:
+      parseFloat(params.from.width) / 2 + // for centering in hotspot
+      offsetToBorderPx.x // for starting at hotspot border
+    });
+
+    const y = parseFloat(params.from.y) + this.convertToPercent({ y:
+      parseFloat(params.from.height) / 2 + // for centering in hotspot
+      offsetToBorderPx.y - // for starting at hotspot border
+      offsetEdgeStrokePx // for compensating edge stroke width
+    });
+
+    // Good old Pythagoras
+    const length = Math.sqrt(
+      Math.abs(deltaXPx) * Math.abs(deltaXPx) +
+      Math.abs(deltaYPx) * Math.abs(deltaYPx)
+    ) - params.from.width; // assuming circle for hotspot
+
+    return { x, y, length, angle };
+  }
+
+  /**
+   * Get height of edges. Supports px only for now.
+   *
+   * @returns {number} Height in px.
+   */
+  getEdgesHeight() {
+    const height = Util.parseCSSLengthProperty(this.edges.getHeight());
+    if (!height) {
+      return 1;
+    }
+
+    if (height.unit === 'px') {
+      return height.value;
+    }
+
+    return 1; // Fallback
   }
 
   /**

@@ -6,6 +6,22 @@ export default class Edges {
     this.params = params;
     this.edges = {};
   }
+
+  /**
+   * Get height of edges as CSS value.
+   *
+   * @returns {string} Defined height.
+   */
+  getHeight() {
+    const someEdge = Object.values(Object.values(this.edges)[0] || {})[0];
+
+    if (!someEdge) {
+      return null; // No edge set
+    }
+
+    return someEdge.getHeight();
+  }
+
   /**
    * Add edge.
    *
@@ -27,6 +43,8 @@ export default class Edges {
    * Remove edge.
    *
    * @param {object} params Parameters.
+   * @param {string|number} params.from Start stage for edge to be removed.
+   * @param {string|number} params.to Target stage for edge to be removed.
    */
   removeEdge(params = {}) {
     if (this.edges[params.from] && this.edges[params.from][params.to]) {
@@ -39,9 +57,22 @@ export default class Edges {
     }
   }
 
+  /**
+   * Update all existing edges.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {string|number} params.from Start stage for edge.
+   * @param {string|number} params.to Target stage for edge.
+   * @param {object} params.edgeTelemetry Telemetry data for edge.
+   */
   updateEdge(params = {}) {
-    const from = parseInt(params.from);
-    const to = parseInt(params.to);
+    const from = (typeof params.from === 'number') ?
+      params.from :
+      parseInt(params.from);
+
+    const to = (typeof params.to === 'number') ?
+      params.to :
+      parseInt(params.to);
 
     // Add edge if not already present
     this.addEdge({ from: from, to: to });
@@ -49,6 +80,12 @@ export default class Edges {
     this.edges[from][to].update(params.edgeTelemetry);
   }
 
+  /**
+   * Update all existing edges.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {object[]} params.edges Edge parameters.
+   */
   update(params = {}) {
     // Add/update existing edges
     params.edges.forEach((edge) => {
