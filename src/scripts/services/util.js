@@ -49,4 +49,23 @@ export default class Util {
       unit: match[2] || 'px'
     };
   }
+
+  /**
+   * Get root field.
+   *
+   * @param {object} field H5P editor field.
+   * @returns {null|object} H5P editor field.
+   */
+  static getRootField(field) {
+    if (typeof field !== 'object') {
+      return null;
+    }
+
+    let root = field;
+    while (root.parent) {
+      root = root.parent;
+    }
+
+    return root;
+  }
 }

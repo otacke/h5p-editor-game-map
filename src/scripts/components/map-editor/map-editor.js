@@ -224,20 +224,24 @@ export default class MapEditor {
     this.map.hide();
 
     // Make all stages available to be neighbors
-    this.params.stageFields[3].options = this.params.stages
-      .map((elementParams, index) => {
-        return { value: `${index}`, label: elementParams.id };
-      });
+    this.params.stageFields
+      .find((field) => field.name === 'neighbors')
+      .options = this.params.stages
+        .map((elementParams, index) => {
+          return { value: `${index}`, label: elementParams.id };
+        });
 
-    // Tell list widget this stage's id to be excluded
-    // TODO: Clean up array selection
-    mapElement.form.children[3].setActive({
-      id: `${mapElement.getIndex()}`,
-      neighbors: this.params.stages[mapElement.getIndex()].neighbors,
-      onNeighborsChanged: (id, neighbors) => {
-        this.updateNeighbors(id, neighbors);
-      }
-    });
+    const neighbors = H5PEditor.findField('neighbors', mapElement.form);
+    if (neighbors) {
+      // Tell list widget this stage's id to be excluded
+      neighbors.setActive({
+        id: `${mapElement.getIndex()}`,
+        neighbors: this.params.stages[mapElement.getIndex()].neighbors,
+        onNeighborsChanged: (id, neighbors) => {
+          this.updateNeighbors(id, neighbors);
+        }
+      });
+    }
 
     this.dialog.showForm({
       form: mapElement.getData().form,
@@ -262,6 +266,12 @@ export default class MapEditor {
             }
           }
 
+          if (child instanceof H5PEditor.Number && !child.validate()) {
+            if (child.value === undefined && child.field.optional) {
+              return true;
+            }
+          }
+
           return child.validate();
         });
 
@@ -270,6 +280,9 @@ export default class MapEditor {
           this.map.show();
           this.updateEdges();
           this.callbacks.onChanged(this.params.stages);
+        }
+        else {
+          console.log(this);
         }
 
         return isValid;

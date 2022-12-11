@@ -45,7 +45,8 @@ export default class GameMap {
     });
     this.dom.appendChild(this.noImage.getDOM());
 
-    const stagesGroup = this.field.fields[1].field; // TODO: Find dynamically
+    const stagesGroup = this.field.fields
+      .find((field) => field.name === 'stages').field;
     const stageFields = H5P.cloneObject(stagesGroup.fields, true);
     Globals.set('stagesGroupField', new H5PEditor.widgets[stagesGroup.type](
       this, stagesGroup, this.params.stages, () => {} // No setValue needed
@@ -92,6 +93,8 @@ export default class GameMap {
    */
   handleParentReady() {
     this.passReadies = false;
+
+    this.initializeColors();
 
     this.backgroundImageField = H5PEditor.findField(
       'backgroundImageSettings/backgroundImage', this.parent
@@ -216,5 +219,84 @@ export default class GameMap {
     }
 
     Dictionary.fill(translations);
+  }
+
+  /**
+   * Initialize colors.
+   */
+  initializeColors() {
+    const style = document.createElement('style');
+
+    if (style.styleSheet) {
+      style.styleSheet.cssText = '.h5peditor-game-map{}';
+    }
+    else {
+      style.appendChild(document.createTextNode('.h5peditor-game-map{}'));
+    }
+    document.head.appendChild(style);
+
+    this.addVisualsChangeListeners(Util.getRootField(this));
+  }
+
+  /**
+   * Update custom CSS property.
+   *
+   * @param {string} key Key.
+   * @param {string} value Value.
+   */
+  updateCSSProperty(key, value) {
+    this.dom.style.setProperty(`--editor-fields${key}`, value);
+    this.mapEditor.updateEdges();
+  }
+
+  /**
+   * Add change listeners for Color selectors.
+   * Updates custom CSS property values.
+   *
+   * @param {object} field H5P editor field.
+   * @param {string} path Path and name for variable
+   */
+  addVisualsChangeListeners(field, path = '') {
+    if (!field) {
+      return;
+    }
+
+    if (field instanceof H5PEditor.ColorSelector) {
+      field.changes.push(() => {
+        this.updateCSSProperty(path.replace(/\//g, '-'), field.params);
+      });
+
+      this.updateCSSProperty(path.replace(/\//g, '-'), field.params);
+    }
+    else if (
+      field instanceof H5PEditor.Select) {
+      if (
+        field.field.name === 'pathStyle' ||
+        field.field.name === 'pathWidth'
+      ) {
+        field.changes.push(() => {
+          this.updateCSSProperty(path.replace(/\//g, '-'), field.value);
+        });
+
+        this.updateCSSProperty(path.replace(/\//g, '-'), field.value);
+      }
+    }
+    else if (field.children) {
+      (field.children || []).forEach((child) => {
+        this.addVisualsChangeListeners(
+          child, `${path}/${child.field.name}`
+        );
+      });
+    }
+    else if (field instanceof H5PEditor.List) {
+      field.forEachChild((listItem) => {
+        this.addVisualsChangeListeners(
+          listItem, `${path}/${listItem.field.name}`
+        );
+      });
+    }
+    else {
+      // Field is not interesting
+    }
   }
 }

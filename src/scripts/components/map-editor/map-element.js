@@ -172,7 +172,7 @@ export default class MapElement {
       library.appendChild(errors);
 
       // TODO: Select dynamically
-      Globals.get('stagesGroupField').children[2].changes.push(() => {
+      Globals.get('stagesGroupField').children[3].changes.push(() => {
         errors.innerHTML = ''; // Erase once a library is selected
       });
     }
