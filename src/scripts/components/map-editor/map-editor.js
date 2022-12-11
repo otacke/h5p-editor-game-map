@@ -182,7 +182,7 @@ export default class MapEditor {
           this.edit(mapElement);
         },
         onRemoved: (mapElement) => {
-          this.remove(mapElement);
+          this.removeIfConfirmed(mapElement);
         },
         onBroughtToFront: (mapElement) => {
           this.bringToFront(mapElement);
@@ -287,7 +287,7 @@ export default class MapEditor {
       removeCallback: () => {
         this.toolbar.show();
         this.map.show();
-        this.remove(mapElement);
+        this.removeIfConfirmed(mapElement);
       }
     });
 
@@ -324,6 +324,9 @@ export default class MapEditor {
     this.callbacks.onChanged(this.params.stages);
   }
 
+  /**
+   * Update all edges.
+   */
   updateEdges() {
     // Intentionally not creating one long chain here.
 
@@ -424,6 +427,26 @@ export default class MapEditor {
   }
 
   /**
+   * Remove map element after confirmation.
+   *
+   * @param {MapElement} mapElement Map element to be removed.
+   */
+  removeIfConfirmed(mapElement) {
+    this.deleteDialog = new H5P.ConfirmationDialog({
+      headerText: Dictionary.get('l10n.confirmationDialogRemoveHeader'),
+      dialogText: Dictionary.get('l10n.confirmationDialogRemoveDialog'),
+      cancelText: Dictionary.get('l10n.confirmationDialogRemoveCancel'),
+      confirmText: Dictionary.get('l10n.confirmationDialogRemoveConfirm')
+    });
+    this.deleteDialog.on('confirmed', () => {
+      this.remove(mapElement);
+    });
+
+    this.deleteDialog.appendTo(this.dom.closest('.field-name-gamemapSteps'));
+    this.deleteDialog.show();
+  }
+
+  /**
    * Remove map element.
    *
    * @param {MapElement} mapElement Map element to be removed.
@@ -433,12 +456,12 @@ export default class MapEditor {
 
     // Remove from neigbors and re-index rest
     this.params.stages.forEach((stage) => {
-      if (!stage.neighbors.includes(`${removeIndex}`)) {
-        return;
+      if (stage.neighbors.includes(`${removeIndex}`)) {
+        // Remove map element to be removed from neighbors
+        stage.neighbors.splice(stage.neighbors.indexOf(`${removeIndex}`), 1);
       }
 
-      stage.neighbors.splice(stage.neighbors.indexOf(`${removeIndex}`), 1);
-
+      // Re-index neighbors
       stage.neighbors = stage.neighbors.map((neighbor) => {
         const neighborNumber = parseInt(neighbor);
         return (neighborNumber < removeIndex) ?

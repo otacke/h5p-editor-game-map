@@ -1,6 +1,10 @@
 .h5p-gamemap-editor {
   .field.wizard {
 
+    &.field-name-gamemapSteps {
+      position: relative;
+    }
+
     .h5peditor-panes {
       &>.group > .content {
         border: none;
@@ -40,6 +44,10 @@
         margin-right: 0.25em;
       }
     }
+  }
+
+  .h5p-confirmation-dialog-background {
+    position: absolute;
   }
 }
 
