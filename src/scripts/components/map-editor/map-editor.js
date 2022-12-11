@@ -364,6 +364,22 @@ export default class MapEditor {
     this.edges.update({ edges: requiredEdges });
   }
 
+  /**
+   * Compute edge telemetry.
+   *
+   * @param {object} [params = {}] Parameters.
+   * @param {object} [params.from] Parameters for start stage.
+   * @param {number} [params.from.x] X position of start stage in %.
+   * @param {number} [params.from.y] Y position of start stage in %.
+   * @param {number} [params.from.width] Width of start stage in px.
+   * @param {number} [params.from.height] Height of start stage in px.
+   * @param {object} [params.to] Parameters for target stage.
+   * @param {number} [params.to.x] X position of target stage in %.
+   * @param {number} [params.to.y] Y position of target stage in %.
+   * @param {number} [params.to.width] Width of target stage in px.
+   * @param {number} [params.to.height] Height of target stage in px.
+   * @returns {object} Telemetry date for an edge
+   */
   computeEdgeTelemetry(params = {}) {
     const mapSize = this.map.getSize();
     if (mapSize.height === 0 || mapSize.width === 0) {
@@ -545,30 +561,6 @@ export default class MapEditor {
    * @param {HTMLImageElement} image Background image.
    */
   handleBackgroundImageLoaded(image) {
-    if (
-      this.backgroundImageSize && (
-        this.backgroundImageSize.height !== image.naturalHeight ||
-        this.backgroundImageSize.width !== image.naturalWidth
-      )
-    ) {
-
-      /*
-       * Old stages should not be deleted when the background image is changed.
-       * Scale stages according to images' aspect ratio difference to retain
-       * the current visible stage size
-       */
-      const scaleFactor = image.naturalWidth / image.naturalHeight *
-        this.backgroundImageSize.height / this.backgroundImageSize.width;
-
-      this.mapElements.forEach((element) => {
-        const elementParams = element.getParams();
-
-        element.updateParams({telemetry: {
-          height: `${parseFloat(elementParams.telemetry.height) * scaleFactor}`
-        }});
-      });
-    }
-
     this.backgroundImageSize = {
       height: image.naturalHeight,
       width: image.naturalWidth
