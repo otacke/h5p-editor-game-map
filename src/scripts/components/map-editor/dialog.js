@@ -73,6 +73,12 @@ export default class Dialog {
     this.dom.classList.add('display-none');
   }
 
+  /**
+   * Show dialog form.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {HTMLElement} params.form Form.
+   */
   showForm(params = {}) {
     this.callbacks.onDone = params.doneCallback ?? (() => {});
     this.callbacks.onRemoved = params.removeCallback ?? (() => {});
@@ -81,18 +87,30 @@ export default class Dialog {
     this.show();
   }
 
+  /**
+   * Hide dialog form.
+   */
   hideForm() {
     this.dialogInner.innerHTML = '';
     this.hide();
   }
 
+  /**
+   * Handle "done" option in dialog.
+   *
+   * @returns {boolean} False.
+   */
   handleDone() {
     if (this.callbacks.onDone()) {
       this.hideForm();
     }
+
     return false;
   }
 
+  /**
+   * Handle "remove" option in dialog.
+   */
   handleRemove() {
     this.callbacks.onRemoved();
     this.hideForm();

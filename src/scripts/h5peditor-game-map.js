@@ -238,7 +238,7 @@ export default class GameMap {
    */
   updateCSSProperty(key, value) {
     this.dom.style.setProperty(`--editor-fields${key}`, value);
-    this.mapEditor.updateEdges();
+    this.mapEditor.updatePaths();
   }
 
   /**

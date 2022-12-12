@@ -1,17 +1,12 @@
 import './path.scss';
 
 export default class Path {
-
   /**
    * Construct a path.
    *
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} params.start Start position.
-   * @param {object} params.end End position.
    */
-  constructor(params = {}) {
-    this.params = params;
+  constructor() {
     this.dom = document.createElement('div');
     this.dom.classList.add('h5p-editor-game-map-path');
   }

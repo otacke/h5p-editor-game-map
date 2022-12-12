@@ -6,6 +6,7 @@ export default class Map {
   /**
    * @class
    * @param {object} [params={}] Parameters.
+   * @param {string} [params.backgroundImage] Source string for image.
    * @param {object} [callbacks={}] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
@@ -27,9 +28,9 @@ export default class Map {
     }
     this.dom.appendChild(this.image);
 
-    this.edgeWrapper = document.createElement('div');
-    this.edgeWrapper.classList.add('h5p-editor-game-map-editor-map-edge-wrapper');
-    this.dom.appendChild(this.edgeWrapper);
+    this.pathWrapper = document.createElement('div');
+    this.pathWrapper.classList.add('h5p-editor-game-map-editor-map-path-wrapper');
+    this.dom.appendChild(this.pathWrapper);
 
     this.stageWrapper = document.createElement('div');
     this.stageWrapper.classList.add('h5p-editor-game-map-editor-map-stage-wrapper');
@@ -102,12 +103,12 @@ export default class Map {
   }
 
   /**
-   * Append edge to DOM.
+   * Append path to DOM.
    *
    * @param {HTMLElement} dom DOM element.
    */
 
-  addEdge(dom) {
-    this.edgeWrapper.appendChild(dom);
+  addPath(dom) {
+    this.pathWrapper.appendChild(dom);
   }
 }

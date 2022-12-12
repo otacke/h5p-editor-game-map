@@ -1,4 +1,4 @@
-import Edges from '@models/edges';
+import Paths from '@models/paths';
 import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import Dialog from './dialog';
@@ -39,7 +39,7 @@ export default class MapEditor {
       }
     });
 
-    this.edges = new Edges({ map: this.map });
+    this.paths = new Paths({ map: this.map });
 
     this.toolbar = new Toolbar(
       {
@@ -50,7 +50,7 @@ export default class MapEditor {
       {
         onStoppedMoving: (index, x, y) => {
           this.updateMapElement(index, x, y);
-          this.updateEdges({ limit: index });
+          this.updatePaths({ limit: index });
         },
         onReleased: (index) => {
           this.edit(this.mapElements[index]);
@@ -61,7 +61,7 @@ export default class MapEditor {
             this.convertToPercent({ x: x }),
             this.convertToPercent({ y: y })
           );
-          this.updateEdges({ limit: index });
+          this.updatePaths({ limit: index });
         }
       }
     );
@@ -96,7 +96,7 @@ export default class MapEditor {
 
     window.requestAnimationFrame(() => {
       this.sanitizeParams();
-      this.updateEdges();
+      this.updatePaths();
     });
   }
 
@@ -140,7 +140,10 @@ export default class MapEditor {
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
   createElement(params) {
-    // When other elements need to be added later on, create separate models
+    /*
+     * This is okay for now, but if other elements than staged need to be
+     * added to map elements, this needs changing - including semantics :-/.
+     */
 
     const numberUnnamedStages = this.params.stages.filter((stage) => {
       return stage.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
@@ -273,7 +276,7 @@ export default class MapEditor {
         if (isValid) {
           this.toolbar.show();
           this.map.show();
-          this.updateEdges();
+          this.updatePaths();
           this.callbacks.onChanged(this.params.stages);
         }
 
@@ -346,41 +349,41 @@ export default class MapEditor {
   }
 
   /**
-   * Update all edges.
+   * Update all paths.
    *
    * @param {object} [params={}] Parameters.
    * @param {number} [params.limit] Number of stage that needs updating only.
    */
-  updateEdges(params = {}) {
+  updatePaths(params = {}) {
     // Intentionally not creating one long chain here.
 
-    let requiredEdges = H5P.cloneObject(this.params.stages);
+    let requiredPaths = H5P.cloneObject(this.params.stages);
 
     // Determine from-to combination without vice verse pair to check
-    requiredEdges = requiredEdges.reduce((edges, current, index) => {
+    requiredPaths = requiredPaths.reduce((paths, current, index) => {
       current.neighbors.forEach((neighbor) => {
         if (
-          !edges.includes(`${index}-${neighbor}`) &&
-          !edges.includes(`${neighbor}-${index}`)
+          !paths.includes(`${index}-${neighbor}`) &&
+          !paths.includes(`${neighbor}-${index}`)
         ) {
-          edges.push(`${index}-${neighbor}`);
+          paths.push(`${index}-${neighbor}`);
         }
       });
-      return edges;
+      return paths;
     }, []);
 
-    // Create update list for Edges
-    requiredEdges = requiredEdges.map((combo) => {
+    // Create update list for Paths
+    requiredPaths = requiredPaths.map((combo) => {
       const stages = combo.split('-');
 
-      // Don't compute telemetry values for edges that have not changed
-      let edgeTelemetry = null;
+      // Don't compute telemetry values for paths that have not changed
+      let pathTelemetry = null;
       if (
         typeof params.limit !== 'number' ||
         parseInt(stages[0]) === params.limit ||
         parseInt(stages[1]) === params.limit
       ) {
-        edgeTelemetry = this.computeEdgeTelemetry({
+        pathTelemetry = this.computePathTelemetry({
           from: this.params.stages[parseInt(stages[0])].telemetry,
           to: this.params.stages[parseInt(stages[1])].telemetry
         });
@@ -389,15 +392,15 @@ export default class MapEditor {
       return {
         from: parseInt(stages[0]),
         to: parseInt(stages[1]),
-        edgeTelemetry: edgeTelemetry
+        pathTelemetry: pathTelemetry
       };
     });
 
-    this.edges.update({ edges: requiredEdges });
+    this.paths.update({ paths: requiredPaths });
   }
 
   /**
-   * Compute edge telemetry.
+   * Compute path telemetry.
    *
    * @param {object} [params = {}] Parameters.
    * @param {object} [params.from] Parameters for start stage.
@@ -410,9 +413,9 @@ export default class MapEditor {
    * @param {number} [params.to.y] Y position of target stage in %.
    * @param {number} [params.to.width] Width of target stage in px.
    * @param {number} [params.to.height] Height of target stage in px.
-   * @returns {object} Telemetry date for an edge
+   * @returns {object} Telemetry date for an path
    */
-  computeEdgeTelemetry(params = {}) {
+  computePathTelemetry(params = {}) {
     const mapSize = this.map.getSize();
     if (mapSize.height === 0 || mapSize.width === 0) {
       return null;
@@ -434,7 +437,7 @@ export default class MapEditor {
       y: parseFloat(params.from.height) / 2 * Math.sin(angle)
     };
 
-    const offsetEdgeStrokePx = this.getEdgesHeight() / 2;
+    const offsetPathStrokePx = this.getPathsHeight() / 2;
 
     const x = parseFloat(params.from.x) + this.convertToPercent({ x:
       parseFloat(params.from.width) / 2 + // for centering in hotspot
@@ -444,7 +447,7 @@ export default class MapEditor {
     const y = parseFloat(params.from.y) + this.convertToPercent({ y:
       parseFloat(params.from.height) / 2 + // for centering in hotspot
       offsetToBorderPx.y - // for starting at hotspot border
-      offsetEdgeStrokePx // for compensating edge stroke width
+      offsetPathStrokePx // for compensating path stroke width
     });
 
     // Good old Pythagoras
@@ -457,12 +460,12 @@ export default class MapEditor {
   }
 
   /**
-   * Get height of edges. Supports px only for now.
+   * Get height of paths. Supports px only for now.
    *
    * @returns {number} Height in px.
    */
-  getEdgesHeight() {
-    const height = Util.parseCSSLengthProperty(this.edges.getHeight());
+  getPathsHeight() {
+    const height = Util.parseCSSLengthProperty(this.paths.getHeight());
     if (!height) {
       return 1;
     }
@@ -530,7 +533,7 @@ export default class MapEditor {
 
     this.callbacks.onChanged(this.params.stages);
 
-    this.updateEdges();
+    this.updatePaths();
   }
 
   /**
@@ -584,7 +587,7 @@ export default class MapEditor {
    */
   resize() {
     this.toolbar.blurAll();
-    this.updateEdges();
+    this.updatePaths();
   }
 
   /**

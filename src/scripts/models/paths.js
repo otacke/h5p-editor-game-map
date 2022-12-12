@@ -1,7 +1,13 @@
 import Path from '@components/map-editor/path';
 
 export default class Paths {
-
+  /**
+   * Paths model.
+   *
+   * @class
+   * @param {object} [params={}] Parameters.
+   * @param {Map} params.map Map to draw on.
+   */
   constructor(params = {}) {
     this.params = params;
     this.paths = {};

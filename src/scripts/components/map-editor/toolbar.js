@@ -6,6 +6,9 @@ export default class Toolbar {
   /**
    * @class
    * @param {object} [params={}] Parameters.
+   * @param {object} [params.buttons] Button objects for DnB.
+   * @param {HTMLElement} [params.mapContainer] Map container.
+   * @param {HTMLElement} [params.dialogContainer] Dialog container.
    * @param {object} [callbacks={}] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
@@ -28,7 +31,9 @@ export default class Toolbar {
     );
 
     // Must set containerEm
-    this.toolbar.dnr.setContainerEm(parseFloat(H5P.jQuery(this.params.mapContainer).css('font-size')));
+    this.toolbar.dnr.setContainerEm(
+      parseFloat(H5P.jQuery(this.params.mapContainer).css('font-size'))
+    );
 
     this.toolbar.stopMovingCallback = (x, y) => {
       this.callbacks.onStoppedMoving(
