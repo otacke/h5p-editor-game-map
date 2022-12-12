@@ -194,7 +194,7 @@ export default class MapEditor {
     this.mapElements.push(mapElement);
     this.map.appendElement(mapElement.getDOM());
 
-    return mapElement.getJQuery();
+    return mapElement.getData().$element;
   }
 
   /**

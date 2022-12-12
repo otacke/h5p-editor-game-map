@@ -62,64 +62,88 @@ export default class MapElement {
     return this.dom;
   }
 
+  /**
+   * Set index.
+   *
+   * @param {number} index Index of map element.
+   */
   setIndex(index) {
     this.form.$element.data('id', index); // DragNBar compromise
     this.params.index = index;
   }
 
+  /**
+   * Get index.
+   *
+   * @returns {number} index Index of map element.
+   */
   getIndex() {
     return this.params.index;
   }
 
+  /**
+   * Get form data.
+   *
+   * @returns {object} Form data.
+   */
   getData() {
     return this.form;
   }
 
-  getJQuery() {
-    return this.form.$element;
-  }
-
+  /**
+   * Get element parameters.
+   *
+   * @returns {object} Element parameters.
+   */
   getParams() {
     return this.params.elementParams;
   }
 
-  updateParams(elementParams = {}) {
-    if (typeof elementParams.telemetry?.x === 'number') {
-      elementParams.telemetry.x = `${elementParams.telemetry.x}`;
+  /**
+   * Update parameters.
+   *
+   * @param {object} [params={}] Parameters.
+   */
+  updateParams(params = {}) {
+    if (typeof params.telemetry?.x === 'number') {
+      params.telemetry.x = `${params.telemetry.x}`;
     }
-    if (typeof elementParams.telemetry?.y === 'number') {
-      elementParams.telemetry.y = `${elementParams.telemetry.y}`;
+    if (typeof params.telemetry?.y === 'number') {
+      params.telemetry.y = `${params.telemetry.y}`;
     }
-    if (typeof elementParams.telemetry?.width === 'number') {
-      elementParams.telemetry.width = `${elementParams.telemetry.width}`;
+    if (typeof params.telemetry?.width === 'number') {
+      params.telemetry.width = `${params.telemetry.width}`;
     }
-    if (typeof elementParams.telemetry?.height === 'number') {
-      elementParams.telemetry.height = `${elementParams.telemetry.height}`;
-    }
-
-    if (typeof elementParams.telemetry?.x === 'string') {
-      this.params.elementParams.telemetry.x = elementParams.telemetry.x;
-      this.dom.style.left = `${elementParams.telemetry.x}%`;
-    }
-
-    if (typeof elementParams.telemetry?.y === 'string') {
-      this.params.elementParams.telemetry.y = elementParams.telemetry.y;
-      this.dom.style.top = `${elementParams.telemetry.y}%`;
+    if (typeof params.telemetry?.height === 'number') {
+      params.telemetry.height = `${params.telemetry.height}`;
     }
 
-    if (typeof elementParams.telemetry?.width === 'string') {
-      this.params.elementParams.telemetry.width = elementParams.telemetry.width;
-      this.dom.style.width = `${elementParams.telemetry.width}px`;
+    if (typeof params.telemetry?.x === 'string') {
+      this.params.elementParams.telemetry.x = params.telemetry.x;
+      this.dom.style.left = `${params.telemetry.x}%`;
     }
 
-    if (typeof elementParams.telemetry?.height === 'string') {
-      this.params.elementParams.telemetry.height = elementParams.telemetry.height;
-      this.dom.style.height = `${elementParams.telemetry.height}px`;
+    if (typeof params.telemetry?.y === 'string') {
+      this.params.elementParams.telemetry.y = params.telemetry.y;
+      this.dom.style.top = `${params.telemetry.y}%`;
+    }
+
+    if (typeof params.telemetry?.width === 'string') {
+      this.params.elementParams.telemetry.width = params.telemetry.width;
+      this.dom.style.width = `${params.telemetry.width}px`;
+    }
+
+    if (typeof params.telemetry?.height === 'string') {
+      this.params.elementParams.telemetry.height = params.telemetry.height;
+      this.dom.style.height = `${params.telemetry.height}px`;
     }
 
     this.callbacks.onChanged(this.params.index, this.params.elementParams);
   }
 
+  /**
+   * Remove map element from DOM.
+   */
   remove() {
     this.dom.remove();
   }
@@ -129,7 +153,7 @@ export default class MapElement {
    */
   createDNBElement() {
     const dnbElement = this.params.toolbar.add(
-      this.getJQuery(),
+      this.getData().$element,
       '',
       { disableResize: true, lock: true }
     );
