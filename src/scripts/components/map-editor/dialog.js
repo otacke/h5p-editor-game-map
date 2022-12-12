@@ -18,16 +18,16 @@ export default class Dialog {
     }, callbacks);
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-fluid-dialog');
+    this.dom.classList.add('h5p-editor-game-map-fluid-dialog');
 
     this.dialogInner = document.createElement('div');
-    this.dialogInner.classList.add('h5p-game-map-fluid-dialog-inner');
+    this.dialogInner.classList.add('h5p-editor-game-map-fluid-dialog-inner');
 
     const buttons = document.createElement('div');
-    buttons.classList.add('h5p-game-map-fluid-dialog-buttons');
+    buttons.classList.add('h5p-editor-game-map-fluid-dialog-buttons');
 
     const buttonDone = document.createElement('button');
-    buttonDone.classList.add('h5p-game-map-fluid-dialog-button');
+    buttonDone.classList.add('h5p-editor-game-map-fluid-dialog-button');
     buttonDone.classList.add('h5p-editor-done');
     buttonDone.innerText = Dictionary.get('l10n.done');
     buttonDone.addEventListener('click', () => {
@@ -36,7 +36,7 @@ export default class Dialog {
     buttons.appendChild(buttonDone);
 
     const buttonRemove = document.createElement('button');
-    buttonRemove.classList.add('h5p-game-map-fluid-dialog-button');
+    buttonRemove.classList.add('h5p-editor-game-map-fluid-dialog-button');
     buttonRemove.classList.add('h5p-editor-remove');
     buttonRemove.innerText = Dictionary.get('l10n.remove');
     buttonRemove.addEventListener('click', () => {

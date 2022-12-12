@@ -1,4 +1,4 @@
-.h5p-game-map-editor-map {
+.h5p-editor-game-map-editor-map {
   background-color: #fff;
   box-sizing: border-box;
   display: block;
@@ -9,19 +9,19 @@
     display: none;
   }
 
-  .h5p-game-map-editor-map-background-image {
+  .h5p-editor-game-map-editor-map-background-image {
     display: block;
     height: auto;
     width: 100%;
     pointer-events: none;
   }
 
-  .h5p-game-map-editor-map-map-wrapper {
+  .h5p-editor-game-map-editor-map-map-wrapper {
     height: 100%;
     width: 100%;
   }
 
-  .h5p-game-map-editor-map-stage-wrapper {
+  .h5p-editor-game-map-editor-map-stage-wrapper {
     height: 100%;
     width: 100%;
   }

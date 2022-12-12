@@ -15,10 +15,10 @@ export default class Map {
     }, callbacks);
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-editor-map');
+    this.dom.classList.add('h5p-editor-game-map-editor-map');
 
     this.image = document.createElement('img');
-    this.image.classList.add('h5p-game-map-editor-map-background-image');
+    this.image.classList.add('h5p-editor-game-map-editor-map-background-image');
     this.image.addEventListener('load', () => {
       this.callbacks.onImageLoaded(this.image);
     });
@@ -28,11 +28,11 @@ export default class Map {
     this.dom.appendChild(this.image);
 
     this.edgeWrapper = document.createElement('div');
-    this.edgeWrapper.classList.add('h5p-game-map-editor-map-edge-wrapper');
+    this.edgeWrapper.classList.add('h5p-editor-game-map-editor-map-edge-wrapper');
     this.dom.appendChild(this.edgeWrapper);
 
     this.stageWrapper = document.createElement('div');
-    this.stageWrapper.classList.add('h5p-game-map-editor-map-stage-wrapper');
+    this.stageWrapper.classList.add('h5p-editor-game-map-editor-map-stage-wrapper');
     this.dom.appendChild(this.stageWrapper);
   }
 

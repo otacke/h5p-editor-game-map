@@ -13,7 +13,7 @@ export default class Edge {
   constructor(params = {}) {
     this.params = params;
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-edge');
+    this.dom.classList.add('h5p-editor-game-map-edge');
   }
 
   /**

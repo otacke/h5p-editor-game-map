@@ -18,7 +18,7 @@ export default class Toolbar {
     }, callbacks);
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-editor-dnb');
+    this.dom.classList.add('h5p-editor-game-map-editor-dnb');
 
     this.toolbar = new H5P.DragNBar(
       this.params.buttons,

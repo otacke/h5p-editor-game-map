@@ -1,0 +1,17 @@
+.h5p-editor-game-map-element {
+  cursor: move;
+  min-width: 42px;
+  min-height: 42px;
+  position: absolute;
+
+  &.h5p-moving {
+    opacity: 1;
+  }
+
+  .h5p-editor-game-map-element-content {
+    box-sizing: border-box;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+}

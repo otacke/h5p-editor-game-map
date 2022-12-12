@@ -3,9 +3,10 @@ import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import Dialog from './dialog';
 import Map from './map';
-import MapElement from './map-element';
+import MapElement from './map-elements/map-element';
 import Toolbar from './toolbar';
 import './map-editor.scss';
+import Stage from './map-elements/stage';
 
 export default class MapEditor {
 
@@ -30,7 +31,7 @@ export default class MapEditor {
     this.mapElements = [];
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-editor');
+    this.dom.classList.add('h5p-editor-game-map-editor');
 
     this.map = new Map({}, {
       onImageLoaded: (image) => {
@@ -141,24 +142,24 @@ export default class MapEditor {
   createElement(params) {
     // When other elements need to be added later on, create separate models
 
-    // Sanitize with default values
-    const defaultWidth = (this.params.stages.length) ?
-      this.params.stages[0].telemetry.width : MapElement.DEFAULT_SIZE_PX;
-
-    const defaultHeight = (this.params.stages.length) ?
-      this.params.stages[0].telemetry.height : MapElement.DEFAULT_SIZE_PX;
-
     const numberUnnamedStages = this.params.stages.filter((stage) => {
       return stage.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
     }).length + 1;
 
+    const stage = new Stage({
+      id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`
+    });
+
+    const newContent = stage;
+
     const elementParams = Util.extend({
       id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
+      content: newContent,
       telemetry: {
-        x: `${50 - this.convertToPercent({ x: MapElement.DEFAULT_SIZE_PX / 2 })}`,
-        y: `${50 - this.convertToPercent({ y: MapElement.DEFAULT_SIZE_PX / 2 })}`,
-        width: `${defaultWidth}`,
-        height: `${defaultHeight}`
+        x: `${50 - this.convertToPercent({ x: newContent.getDefaultSize().width / 2 })}`,
+        y: `${50 - this.convertToPercent({ y: newContent.getDefaultSize().height / 2 })}`,
+        width: `${newContent.getDefaultSize().width}`,
+        height: `${newContent.getDefaultSize().height}`
       },
       neighbors: []
     }, params);
@@ -166,10 +167,10 @@ export default class MapEditor {
     const mapElement = new MapElement(
       {
         index: this.mapElements.length,
+        content: newContent,
         elementParams: elementParams,
         elementFields: this.params.stageFields,
-        toolbar: this.toolbar,
-        contentClass: 'h5p-game-map-element-content-stage'
+        toolbar: this.toolbar
       },
       {
         onEdited: (mapElement) => {

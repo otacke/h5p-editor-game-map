@@ -23,10 +23,7 @@ export default class MapElement {
     }, callbacks);
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-game-map-element');
-    if (typeof this.params.elementClass === 'string') {
-      this.dom.classList.add(this.params.elementClass);
-    }
+    this.dom.classList.add('h5p-editor-game-map-element');
 
     H5P.jQuery(this.dom).data('id', this.params.index); // DnB tradeoff
 
@@ -36,12 +33,9 @@ export default class MapElement {
       });
     });
 
-    this.content = document.createElement('div');
-    this.content.classList.add('h5p-game-map-element-content');
-    if (typeof this.params.contentClass === 'string') {
-      this.content.classList.add(this.params.contentClass);
-    }
-    this.dom.appendChild(this.content);
+    const content = this.params.content.getDOM();
+    content.classList.add('h5p-editor-game-map-element-content');
+    this.dom.appendChild(content);
 
     this.updateParams(this.params.elementParams);
 

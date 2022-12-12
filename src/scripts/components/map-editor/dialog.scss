@@ -1,4 +1,4 @@
-.h5p-game-map-fluid-dialog {
+.h5p-editor-game-map-fluid-dialog {
   background: #fff;
   border: 1px solid #ccc;
   -webkit-box-shadow: 0 0 4px #a7a7a7;
@@ -9,7 +9,7 @@
     display: none;
   }
 
-  .h5p-game-map-fluid-dialog-inner {
+  .h5p-editor-game-map-fluid-dialog-inner {
     padding: 1rem;
 
     > div > .field.library {
@@ -19,12 +19,12 @@
     }
   }
 
-  .h5p-game-map-fluid-dialog-buttons {
+  .h5p-editor-game-map-fluid-dialog-buttons {
     overflow: hidden;
     border-top: 1px solid #ccc;
     background: #f5f5f5;
 
-    .h5p-game-map-fluid-dialog-button {
+    .h5p-editor-game-map-fluid-dialog-button {
       font-size: 0.75rem;
       float: right;
       padding: 0.625rem 2rem;
