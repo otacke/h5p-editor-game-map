@@ -13,16 +13,16 @@ export default class MapEditor {
   /**
    * @class
    * @param {object} [params={}] Parameters.
-   * @param {object} [params.stages] Stage's parameters.
-   * @param {object} [params.stageFields] Stage's fields.
+   * @param {object} [params.elements] Stage's parameters.
+   * @param {object} [params.elementsFields] Stage's fields.
    * @param {object} [callbacks={}] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
-      stages: []
+      elements: []
     }, params);
 
-    this.params.stages = this.params.stages ?? [];
+    this.params.elements = this.params.elements ?? [];
 
     this.callbacks = Util.extend({
       onChanged: () => {}
@@ -72,7 +72,7 @@ export default class MapEditor {
     this.dom.appendChild(this.map.getDOM());
     this.dom.appendChild(this.dialog.getDOM());
 
-    this.params.stages.forEach((elementParams) => {
+    this.params.elements.forEach((elementParams) => {
       this.createElement(elementParams);
     });
 
@@ -141,12 +141,12 @@ export default class MapEditor {
    */
   createElement(params) {
     /*
-     * This is okay for now, but if other elements than staged need to be
+     * This is okay for now, but if other elements than stages need to be
      * added to map elements, this needs changing - including semantics :-/.
      */
 
-    const numberUnnamedStages = this.params.stages.filter((stage) => {
-      return stage.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
+    const numberUnnamedStages = this.params.elements.filter((element) => {
+      return element.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
     }).length + 1;
 
     const stage = new Stage({
@@ -172,7 +172,7 @@ export default class MapEditor {
         index: this.mapElements.length,
         content: newContent,
         elementParams: elementParams,
-        elementFields: this.params.stageFields,
+        elementFields: this.params.elementsFields,
         toolbar: this.toolbar
       },
       {
@@ -189,8 +189,8 @@ export default class MapEditor {
           this.sendToBack(mapElement);
         },
         onChanged: (index, elementParams) => {
-          this.params.stages[index] = elementParams;
-          this.callbacks.onChanged(this.params.stages);
+          this.params.elements[index] = elementParams;
+          this.callbacks.onChanged(this.params.elements);
         }
       }
     );
@@ -222,9 +222,9 @@ export default class MapEditor {
     this.map.hide();
 
     // Make all stages available to be neighbors
-    this.params.stageFields
+    this.params.elementsFields
       .find((field) => field.name === 'neighbors')
-      .options = this.params.stages
+      .options = this.params.elements
         .map((elementParams, index) => {
           return { value: `${index}`, label: elementParams.id };
         });
@@ -234,7 +234,7 @@ export default class MapEditor {
       // Tell list widget this stage's id to be excluded
       neighbors.setActive({
         id: `${mapElement.getIndex()}`,
-        neighbors: this.params.stages[mapElement.getIndex()].neighbors,
+        neighbors: this.params.elements[mapElement.getIndex()].neighbors,
         onNeighborsChanged: (id, neighbors) => {
           this.updateNeighbors(id, neighbors);
         }
@@ -277,7 +277,7 @@ export default class MapEditor {
           this.toolbar.show();
           this.map.show();
           this.updatePaths();
-          this.callbacks.onChanged(this.params.stages);
+          this.callbacks.onChanged(this.params.elements);
         }
 
         return isValid;
@@ -297,29 +297,29 @@ export default class MapEditor {
   /**
    * Update neighbors so we keep a symmetrical relationship.
    *
-   * @param {string} id Id of stage that was changed.
-   * @param {string[]} neighbors List of neighbors that stage should have.
+   * @param {string} id Id of element that was changed.
+   * @param {string[]} neighbors List of neighbors that element should have.
    */
   updateNeighbors(id, neighbors) {
-    this.params.stages.forEach((stage, index) => {
+    this.params.elements.forEach((element, index) => {
       if (neighbors.includes(`${index}`)) {
-        if (!stage.neighbors.includes(id)) {
-          stage.neighbors.push(id);
+        if (!element.neighbors.includes(id)) {
+          element.neighbors.push(id);
           // Sorting not really necessary, but why not ...
-          stage.neighbors.sort((a, b) => {
+          element.neighbors.sort((a, b) => {
             return parseInt(a) - parseInt(b);
           });
         }
       }
       else {
-        if (stage.neighbors.includes(id)) {
-          const position = stage.neighbors.indexOf(id);
-          stage.neighbors.splice(position, 1);
+        if (element.neighbors.includes(id)) {
+          const position = element.neighbors.indexOf(id);
+          element.neighbors.splice(position, 1);
         }
       }
     });
 
-    this.callbacks.onChanged(this.params.stages);
+    this.callbacks.onChanged(this.params.elements);
   }
 
   /**
@@ -331,7 +331,7 @@ export default class MapEditor {
       return;
     }
 
-    this.params.stages.forEach((elementParams, index) => {
+    this.params.elements.forEach((elementParams, index) => {
       let xPx = parseFloat(elementParams.telemetry.x) / 100 * mapSize.width;
       let yPx = parseFloat(elementParams.telemetry.y) / 100 * mapSize.height;
 
@@ -357,7 +357,7 @@ export default class MapEditor {
   updatePaths(params = {}) {
     // Intentionally not creating one long chain here.
 
-    let requiredPaths = H5P.cloneObject(this.params.stages);
+    let requiredPaths = H5P.cloneObject(this.params.elements);
 
     // Determine from-to combination without vice verse pair to check
     requiredPaths = requiredPaths.reduce((paths, current, index) => {
@@ -384,8 +384,8 @@ export default class MapEditor {
         parseInt(stages[1]) === params.limit
       ) {
         pathTelemetry = this.computePathTelemetry({
-          from: this.params.stages[parseInt(stages[0])].telemetry,
-          to: this.params.stages[parseInt(stages[1])].telemetry
+          from: this.params.elements[parseInt(stages[0])].telemetry,
+          to: this.params.elements[parseInt(stages[1])].telemetry
         });
       }
 
@@ -506,14 +506,14 @@ export default class MapEditor {
     const removeIndex = mapElement.getIndex();
 
     // Remove from neigbors and re-index rest
-    this.params.stages.forEach((stage) => {
-      if (stage.neighbors.includes(`${removeIndex}`)) {
+    this.params.elements.forEach((element) => {
+      if (element.neighbors.includes(`${removeIndex}`)) {
         // Remove map element to be removed from neighbors
-        stage.neighbors.splice(stage.neighbors.indexOf(`${removeIndex}`), 1);
+        element.neighbors.splice(element.neighbors.indexOf(`${removeIndex}`), 1);
       }
 
       // Re-index neighbors
-      stage.neighbors = stage.neighbors.map((neighbor) => {
+      element.neighbors = element.neighbors.map((neighbor) => {
         const neighborNumber = parseInt(neighbor);
         return (neighborNumber < removeIndex) ?
           neighbor :
@@ -524,14 +524,14 @@ export default class MapEditor {
     // Remove element
     mapElement.remove();
     this.mapElements.splice(removeIndex, 1);
-    this.params.stages.splice(removeIndex, 1);
+    this.params.elements.splice(removeIndex, 1);
 
     // Re-index elements
     this.mapElements.forEach((element, elementIndex) => {
       element.setIndex(elementIndex);
     });
 
-    this.callbacks.onChanged(this.params.stages);
+    this.callbacks.onChanged(this.params.elements);
 
     this.updatePaths();
   }
@@ -543,7 +543,7 @@ export default class MapEditor {
    */
   bringToFront(mapElement) {
     /*
-     * If position in this.params.stages becomes relevant, move element there
+     * If position in this.params.elements becomes relevant, move element there
      * and re-index everything
      */
     this.map.appendElement(mapElement.getDOM());
@@ -556,7 +556,7 @@ export default class MapEditor {
    */
   sendToBack(mapElement) {
     /*
-     * If position in this.params.stages becomes relevant, move element there
+     * If position in this.params.elements becomes relevant, move element there
      * and re-index everything
      */
     this.map.prependElement(mapElement.getDOM());

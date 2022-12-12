@@ -19,7 +19,7 @@ export default class GameMap {
     this.parent = parent;
     this.field = field;
     this.params = Util.extend({
-      stages: []
+      elements: []
     }, params);
     this.setValue = setValue;
 
@@ -45,23 +45,23 @@ export default class GameMap {
     });
     this.dom.appendChild(this.noImage.getDOM());
 
-    // Create instance for stages group field
-    const stagesGroup = this.field.fields
-      .find((field) => field.name === 'stages').field;
-    const stageFields = H5P.cloneObject(stagesGroup.fields, true);
-    Globals.set('stagesGroupField', new H5PEditor.widgets[stagesGroup.type](
-      this, stagesGroup, this.params.stages, () => {} // No setValue needed
+    // Create instance for elements group field
+    const elementsGroup = this.field.fields
+      .find((field) => field.name === 'elements').field;
+    const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
+    Globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
+      this, elementsGroup, this.params.elements, () => {} // No setValue needed
     ));
 
     // Map canvas
     this.mapEditor = new MapEditor(
       {
-        stages: this.params.stages,
-        stageFields: stageFields
+        elements: this.params.elements,
+        elementsFields: elementsFields
       },
       {
-        onChanged: (stages) => {
-          this.setMapValues(stages);
+        onChanged: (elements) => {
+          this.setMapValues(elements);
         }
       }
     );
@@ -139,10 +139,10 @@ export default class GameMap {
   /**
    * Set map values.
    *
-   * @param {object[]} stages Element parameters of stages.
+   * @param {object[]} elements Element parameters of elements.
    */
-  setMapValues(stages) {
-    this.params.stages = stages;
+  setMapValues(elements) {
+    this.params.elements = elements;
     this.setValue(this.field, this.params);
   }
 

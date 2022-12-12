@@ -181,7 +181,7 @@ export default class MapElement {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
-      semantics, params, H5P.jQuery(form), Globals.get('stagesGroupField')
+      semantics, params, H5P.jQuery(form), Globals.get('elementsGroupField')
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -191,7 +191,7 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      const libraryWidget = Globals.get('stagesGroupField')?.children
+      const libraryWidget = Globals.get('elementsGroupField')?.children
         .find((child) => child.field.name === 'contentType');
 
       if (libraryWidget) {
@@ -203,7 +203,7 @@ export default class MapElement {
 
     return {
       form: form,
-      children: Globals.get('stagesGroupField').children
+      children: Globals.get('elementsGroupField').children
     };
   }
 }
