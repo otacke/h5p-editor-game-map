@@ -26,8 +26,14 @@ export default class Stage {
    * @returns {object} Default size (width + height) in px.
    */
   getDefaultSize() {
-    return Stage.DEFAULT_SIZE_PX;
+    return Stage.DEFAULT_SIZE_PERCENT;
   }
 }
 
-Stage.DEFAULT_SIZE_PX = { width: 42, height: 42 };
+/**
+ * @constant {object} DEFAULT_SIZE_PERCENT Size or stage element.
+ * Beware that height will need to be be adjusted to canvas ratio. Default value
+ * of 4.375% is compromise. Feels large on 1920 wide screens, but still leaving
+ * 42px for good a11y on 960 wide screens.
+ */
+Stage.DEFAULT_SIZE_PERCENT = { width: 4.375, height: 4.375 };

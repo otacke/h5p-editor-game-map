@@ -155,14 +155,17 @@ export default class MapEditor {
 
     const newContent = stage;
 
+    const mapSize = this.map.getSize();
+    const mapRatio = mapSize.width / mapSize.height;
+
     const elementParams = Util.extend({
       id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
       content: newContent,
       telemetry: {
-        x: `${50 - this.convertToPercent({ x: newContent.getDefaultSize().width / 2 })}`,
-        y: `${50 - this.convertToPercent({ y: newContent.getDefaultSize().height / 2 })}`,
+        x: `${50 - newContent.getDefaultSize().width / 2 }`,
+        y: `${50 - newContent.getDefaultSize().height * mapRatio / 2 }`,
         width: `${newContent.getDefaultSize().width}`,
-        height: `${newContent.getDefaultSize().height}`
+        height: `${newContent.getDefaultSize().height * mapRatio}`
       },
       neighbors: []
     }, params);
@@ -326,23 +329,36 @@ export default class MapEditor {
    * Sanitize parameters. Will keep x/y coordinates within boundaries.
    */
   sanitizeParams() {
+    // TODO: Fix for percent
     const mapSize = this.map.getSize();
     if (mapSize.height === 0 || mapSize.width === 0) {
       return;
     }
 
     this.params.elements.forEach((elementParams, index) => {
-      let xPx = parseFloat(elementParams.telemetry.x) / 100 * mapSize.width;
-      let yPx = parseFloat(elementParams.telemetry.y) / 100 * mapSize.height;
+      const telemetry = elementParams.telemetry;
 
-      xPx = Math.min(xPx, mapSize.width - elementParams.telemetry.width);
-      xPx = Math.max(0, xPx);
-      yPx = Math.min(yPx, mapSize.height - elementParams.telemetry.height);
-      yPx = Math.max(0, yPx);
+      // Convert percentage values to px.
+      const toPxFactor = { x: mapSize.width / 100, y: mapSize.height / 100 };
+      let xPx = parseFloat(telemetry.x) * toPxFactor.x;
+      let yPx = parseFloat(telemetry.y) * toPxFactor.y;
+
+      // Adjust stage hotspot height for new aspect ratio
+      telemetry.height =
+        parseFloat(telemetry.width) * mapSize.width /
+        mapSize.height;
+
+      const widthPx = parseFloat(telemetry.width) * toPxFactor.x;
+      const heightPx = parseFloat(telemetry.height) * toPxFactor.y;
+
+      // Confine values
+      xPx = Math.max(0, Math.min(xPx, mapSize.width - widthPx));
+      yPx = Math.max(0, Math.min(yPx, mapSize.height - heightPx));
 
       this.mapElements[index].updateParams({telemetry: {
-        x: this.convertToPercent({x: xPx}),
-        y: this.convertToPercent({y: yPx})
+        x: xPx * 100 / mapSize.width,
+        y: yPx * 100 / mapSize.height,
+        height: telemetry.height
       }
       });
     });
@@ -425,36 +441,39 @@ export default class MapEditor {
     const fromYPx = parseFloat(params.from.y) / 100 * mapSize.height;
     const toXPx = parseFloat(params.to.x) / 100 * mapSize.width;
     const toYPx = parseFloat(params.to.y) / 100 * mapSize.height;
+    const widthPx = parseFloat(params.from.width) / 100 * mapSize.width;
+    const heightPx = parseFloat(params.from.height) / 100 * mapSize.height;
 
     const deltaXPx = fromXPx - toXPx;
     const deltaYPx = fromYPx - toYPx;
 
+    // Angle in radians
     const angleOffset = (Math.sign(deltaXPx) >= 0) ? Math.PI : 0;
     const angle = Math.atan(deltaYPx / deltaXPx) + angleOffset;
 
-    const offsetToBorderPx = {
-      x: parseFloat(params.from.width) / 2 * Math.cos(angle),
-      y: parseFloat(params.from.height) / 2 * Math.sin(angle)
+    // Distance from center to border
+    const offsetToBorder = {
+      x: widthPx / 2 * Math.cos(angle) * 100 / mapSize.width,
+      y: heightPx / 2 * Math.sin(angle) * 100 / mapSize.height
     };
 
-    const offsetPathStrokePx = this.getPathsHeight() / 2;
+    const offsetPathStroke = this.getPathsHeight() / 2 * 100 / mapSize.height;
 
-    const x = parseFloat(params.from.x) + this.convertToPercent({ x:
-      parseFloat(params.from.width) / 2 + // for centering in hotspot
-      offsetToBorderPx.x // for starting at hotspot border
-    });
+    // Position + offset for centering + offset for border (+ stroke offset)
+    const x = parseFloat(params.from.x) +
+      parseFloat(params.from.width) / 2 +
+      offsetToBorder.x;
 
-    const y = parseFloat(params.from.y) + this.convertToPercent({ y:
-      parseFloat(params.from.height) / 2 + // for centering in hotspot
-      offsetToBorderPx.y - // for starting at hotspot border
-      offsetPathStrokePx // for compensating path stroke width
-    });
+    const y = parseFloat(params.from.y) +
+      parseFloat(params.from.height) / 2 +
+      offsetToBorder.y -
+      offsetPathStroke;
 
-    // Good old Pythagoras
+    // Good old Pythagoras, length in px
     const length = Math.sqrt(
       Math.abs(deltaXPx) * Math.abs(deltaXPx) +
       Math.abs(deltaYPx) * Math.abs(deltaYPx)
-    ) - params.from.width; // assuming circle for hotspot
+    ) - widthPx; // assuming circle for stage hotspot
 
     return { x, y, length, angle };
   }

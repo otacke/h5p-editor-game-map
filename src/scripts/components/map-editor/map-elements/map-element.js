@@ -94,42 +94,28 @@ export default class MapElement {
   }
 
   /**
-   * Update parameters.
+   * Update parameters. Assuming all properties to use percentage.
    *
    * @param {object} [params={}] Parameters.
    */
   updateParams(params = {}) {
-    if (typeof params.telemetry?.x === 'number') {
-      params.telemetry.x = `${params.telemetry.x}`;
-    }
-    if (typeof params.telemetry?.y === 'number') {
-      params.telemetry.y = `${params.telemetry.y}`;
-    }
-    if (typeof params.telemetry?.width === 'number') {
-      params.telemetry.width = `${params.telemetry.width}`;
-    }
-    if (typeof params.telemetry?.height === 'number') {
-      params.telemetry.height = `${params.telemetry.height}`;
-    }
+    for (let property in params.telemetry) {
+      if (typeof params.telemetry[property] === 'number') {
+        params.telemetry[property] = `${params.telemetry[property]}`;
+      }
 
-    if (typeof params.telemetry?.x === 'string') {
-      this.params.elementParams.telemetry.x = params.telemetry.x;
-      this.dom.style.left = `${params.telemetry.x}%`;
-    }
+      // Update internal value
+      this.params.elementParams.telemetry[property] = params.telemetry[property];
 
-    if (typeof params.telemetry?.y === 'string') {
-      this.params.elementParams.telemetry.y = params.telemetry.y;
-      this.dom.style.top = `${params.telemetry.y}%`;
-    }
-
-    if (typeof params.telemetry?.width === 'string') {
-      this.params.elementParams.telemetry.width = params.telemetry.width;
-      this.dom.style.width = `${params.telemetry.width}px`;
-    }
-
-    if (typeof params.telemetry?.height === 'string') {
-      this.params.elementParams.telemetry.height = params.telemetry.height;
-      this.dom.style.height = `${params.telemetry.height}px`;
+      // Update DOM
+      let styleProperty = property;
+      if (property === 'x') {
+        styleProperty = 'left';
+      }
+      else if (property === 'y') {
+        styleProperty = 'top';
+      }
+      this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
     }
 
     this.callbacks.onChanged(this.params.index, this.params.elementParams);
