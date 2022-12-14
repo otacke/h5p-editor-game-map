@@ -49,10 +49,32 @@ export default class Path {
       return;
     }
 
-    this.thickness = this.thickness || window.getComputedStyle(this.dom);
-    this.dom.style.left = `${params.x}%`;
-    this.dom.style.top = `${params.y}%`;
-    this.dom.style.width = `${params.length}px`;
-    this.dom.style.transform = `rotate(${params.angle}rad)`;
+    for (let property in params) {
+      let styleProperty = property;
+      let styleValue = '';
+
+      if (property === 'x') {
+        styleProperty = 'left';
+        styleValue = `${params[property]}%`;
+      }
+      else if (property === 'y') {
+        styleProperty = 'top';
+        styleValue = `${params[property]}%`;
+      }
+      else if (property === 'length') {
+        styleProperty = 'width';
+        styleValue = `${params[property]}px`;
+      }
+      else if (property === 'angle') {
+        styleProperty = 'transform';
+        styleValue = `rotate(${params[property]}rad`;
+      }
+      else if (property === 'width') {
+        styleProperty = 'borderTopWidth';
+        styleValue = `${params[property]}px`;
+      }
+
+      this.dom.style[styleProperty] = styleValue;
+    }
   }
 }

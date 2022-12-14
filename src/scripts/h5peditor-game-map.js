@@ -26,6 +26,9 @@ export default class GameMap {
     this.fillDictionary();
 
     Globals.set('mainInstance', this);
+    Globals.set('getStylePropertyValue', (key) => {
+      return this.dom.style.getPropertyValue(key);
+    });
 
     // Callbacks to call when parameters change
     this.changes = [];

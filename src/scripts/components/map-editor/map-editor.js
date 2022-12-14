@@ -2,6 +2,7 @@ import Paths from '@models/paths';
 import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import Dialog from './dialog';
+import Globals from '@services/globals';
 import Map from './map';
 import MapElement from './map-elements/map-element';
 import Toolbar from './toolbar';
@@ -457,7 +458,16 @@ export default class MapEditor {
       y: heightPx / 2 * Math.sin(angle) * 100 / mapSize.height
     };
 
-    const offsetPathStroke = this.getPathsHeight() / 2 * 100 / mapSize.height;
+    // Border width
+    const targetPathWidth = parseFloat(
+      Globals
+        .get('getStylePropertyValue')('--editor-fields-visual-paths-pathWidth')
+    );
+    const width = Math.min(
+      Math.max(1, widthPx * targetPathWidth), widthPx * 0.3
+    );
+
+    const offsetPathStroke = width / 2 * 100 / mapSize.height;
 
     // Position + offset for centering + offset for border (+ stroke offset)
     const x = parseFloat(params.from.x) +
@@ -475,7 +485,7 @@ export default class MapEditor {
       Math.abs(deltaYPx) * Math.abs(deltaYPx)
     ) - widthPx; // assuming circle for stage hotspot
 
-    return { x, y, length, angle };
+    return { x, y, length, angle, width };
   }
 
   /**
