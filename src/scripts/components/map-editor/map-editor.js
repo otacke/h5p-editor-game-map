@@ -147,12 +147,10 @@ export default class MapEditor {
      */
 
     const numberUnnamedStages = this.params.elements.filter((element) => {
-      return element.id.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
+      return element.label.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
     }).length + 1;
 
-    const stage = new Stage({
-      id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`
-    });
+    const stage = new Stage({});
 
     const newContent = stage;
 
@@ -160,7 +158,9 @@ export default class MapEditor {
     const mapRatio = mapSize.width / mapSize.height;
 
     const elementParams = Util.extend({
-      id: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
+      id: H5P.createUUID(),
+      type: 'stage',
+      label: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
       content: newContent,
       telemetry: {
         x: `${50 - newContent.getDefaultSize().width / 2 }`,
@@ -230,7 +230,7 @@ export default class MapEditor {
       .find((field) => field.name === 'neighbors')
       .options = this.params.elements
         .map((elementParams, index) => {
-          return { value: `${index}`, label: elementParams.id };
+          return { value: `${index}`, label: elementParams.label };
         });
 
     const neighbors = H5PEditor.findField('neighbors', mapElement.form);
