@@ -97,7 +97,13 @@ export default class Toolbar {
    * @returns {H5P.DragNBarElement} Reference to added dnbelement.
    */
   add($element, clipboardData, options) {
-    return this.toolbar.add($element, clipboardData, options);
+    const element = this.toolbar.add($element, clipboardData, options);
+
+    // Remove z-axis buttons. Unfortunately, no function for this.
+    element.contextMenu.$buttons.get(0).querySelector('.bringtofront').remove();
+    element.contextMenu.$buttons.get(0).querySelector('.sendtoback').remove();
+
+    return element;
   }
 
   /**
