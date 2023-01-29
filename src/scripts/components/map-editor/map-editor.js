@@ -461,7 +461,7 @@ export default class MapEditor {
     // Border width
     const targetPathWidth = parseFloat(
       Globals
-        .get('getStylePropertyValue')('--editor-fields-visual-paths-pathWidth')
+        .get('getStylePropertyValue')('--editor-fields-visual-paths-style-pathWidth')
     );
     const width = Math.min(
       Math.max(1, widthPx * targetPathWidth), widthPx * 0.3
