@@ -86,6 +86,7 @@ export default class GameMap {
    */
   ready(ready) {
     if (!this.passReadies) {
+      ready();
       return;
     }
 
