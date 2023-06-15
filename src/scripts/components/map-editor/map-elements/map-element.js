@@ -6,8 +6,8 @@ export default class MapElement {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
@@ -49,7 +49,6 @@ export default class MapElement {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -58,7 +57,6 @@ export default class MapElement {
 
   /**
    * Set index.
-   *
    * @param {number} index Index of map element.
    */
   setIndex(index) {
@@ -68,7 +66,6 @@ export default class MapElement {
 
   /**
    * Get index.
-   *
    * @returns {number} index Index of map element.
    */
   getIndex() {
@@ -77,7 +74,6 @@ export default class MapElement {
 
   /**
    * Get form data.
-   *
    * @returns {object} Form data.
    */
   getData() {
@@ -86,7 +82,6 @@ export default class MapElement {
 
   /**
    * Get element parameters.
-   *
    * @returns {object} Element parameters.
    */
   getParams() {
@@ -95,8 +90,7 @@ export default class MapElement {
 
   /**
    * Update parameters. Assuming all properties to use percentage.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    */
   updateParams(params = {}) {
     for (let property in params.telemetry) {
@@ -158,7 +152,6 @@ export default class MapElement {
 
   /**
    * Generate form.
-   *
    * @param {object} semantics Semantics for form.
    * @param {object} params Parameters for form.
    * @returns {object} Form object.

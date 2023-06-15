@@ -13,10 +13,10 @@ export default class MapEditor {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object} [params.elements] Stage's parameters.
    * @param {object} [params.elementsFields] Stage's fields.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [callbacks] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
@@ -82,7 +82,6 @@ export default class MapEditor {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -110,7 +109,6 @@ export default class MapEditor {
 
   /**
    * Set map background image.
-   *
    * @param {string} url URL of image.
    */
   setMapImage(url) {
@@ -119,7 +117,6 @@ export default class MapEditor {
 
   /**
    * Create button for toolbar.
-   *
    * @param {string} id Id.
    * @returns {object} Button object for DragNBar.
    */
@@ -136,7 +133,6 @@ export default class MapEditor {
 
   /**
    * Create map element.
-   *
    * @param {object} [params] Element parameters as used in semantics.json.
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
@@ -207,7 +203,6 @@ export default class MapEditor {
 
   /**
    * Update map element.
-   *
    * @param {number} index Map element index.
    * @param {number} x X position as percentage value.
    * @param {number} y Y position as percentage value.
@@ -218,7 +213,6 @@ export default class MapEditor {
 
   /**
    * Edit map element.
-   *
    * @param {MapElement} mapElement Map element to be edited.
    */
   edit(mapElement) {
@@ -300,7 +294,6 @@ export default class MapEditor {
 
   /**
    * Update neighbors so we keep a symmetrical relationship.
-   *
    * @param {string} id Id of element that was changed.
    * @param {string[]} neighbors List of neighbors that element should have.
    */
@@ -367,8 +360,7 @@ export default class MapEditor {
 
   /**
    * Update all paths.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {number} [params.limit] Number of stage that needs updating only.
    */
   updatePaths(params = {}) {
@@ -418,8 +410,7 @@ export default class MapEditor {
 
   /**
    * Compute path telemetry.
-   *
-   * @param {object} [params = {}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object} [params.from] Parameters for start stage.
    * @param {number} [params.from.x] X position of start stage in %.
    * @param {number} [params.from.y] Y position of start stage in %.
@@ -490,7 +481,6 @@ export default class MapEditor {
 
   /**
    * Get height of paths. Supports px only for now.
-   *
    * @returns {number} Height in px.
    */
   getPathsHeight() {
@@ -508,7 +498,6 @@ export default class MapEditor {
 
   /**
    * Remove map element after confirmation.
-   *
    * @param {MapElement} mapElement Map element to be removed.
    */
   removeIfConfirmed(mapElement) {
@@ -528,7 +517,6 @@ export default class MapEditor {
 
   /**
    * Remove map element.
-   *
    * @param {MapElement} mapElement Map element to be removed.
    */
   remove(mapElement) {
@@ -567,7 +555,6 @@ export default class MapEditor {
 
   /**
    * Bring map element to front.
-   *
    * @param {MapElement} mapElement Map element to be brought to front.
    */
   bringToFront(mapElement) {
@@ -580,7 +567,6 @@ export default class MapEditor {
 
   /**
    * Send map element to back
-   *
    * @param {MapElement} mapElement Map element to be sent to back.
    */
   sendToBack(mapElement) {
@@ -593,8 +579,7 @@ export default class MapEditor {
 
   /**
    * Convert px to respective % for map.
-   *
-   * @param {object} [value={}] Value to convert.
+   * @param {object} [value] Value to convert.
    * @param {number} [value.x] X value to convert.
    * @param {number} [value.y] Y value to convert.
    * @returns {number} Percentage for map.
@@ -621,7 +606,6 @@ export default class MapEditor {
 
   /**
    * Handle background image loaded.
-   *
    * @param {HTMLImageElement} image Background image.
    */
   handleBackgroundImageLoaded(image) {

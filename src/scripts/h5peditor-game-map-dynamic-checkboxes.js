@@ -11,7 +11,6 @@ import '@styles/h5peditor-game-map-dynamic-checkboxes.scss';
 export default class GameMapDynamicCheckboxes {
   /**
    * Initialize widget.
-   *
    * @class
    * @param {object} parent Parent element in semantics.
    * @param {object} field Semantics field properties.
@@ -42,7 +41,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Append widget to form.
-   *
    * @param {H5P.jQuery} $wrapper Wrapper to append to.
    */
   appendTo($wrapper) {
@@ -51,8 +49,7 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Build list HTML.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string} [params.ignore] Id to ignore when displaying list.
    * @returns {HTMLElement} HTML List element.
    */
@@ -94,8 +91,7 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Set widget active and (re)generate options.
-   *
-   * @param {object} [params= {}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string} params.id Current id value.
    * @param {function} params.onNeighborsChanged Callback when neighbors changed.
    */
@@ -142,7 +138,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Update params with changes to checkbox.
-   *
    * @param {HTMLInputElement} input Input field.
    */
   change(input) {
@@ -162,7 +157,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Validate the current field.
-   *
    * @returns {boolean} True.
    */
   validate() {

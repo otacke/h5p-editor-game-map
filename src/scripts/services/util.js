@@ -2,7 +2,6 @@
 export default class Util {
   /**
    * Extend an array just like JQuery's extend.
-   *
    * @returns {object} Merged objects.
    */
   static extend() {
@@ -27,8 +26,7 @@ export default class Util {
   /**
    * Retrieves value and unit of a CSS length string.
    * Will interpret a number without a unit as px.
-   *
-   * @param {string} [cssLength=''] Length string.
+   * @param {string} [cssLength] Length string.
    * @returns {null|object} Null if string cannot be parsed or value + unit.
    */
   static parseCSSLengthProperty(cssLength = '') {
@@ -52,7 +50,6 @@ export default class Util {
 
   /**
    * Get root field.
-   *
    * @param {object} field H5P editor field.
    * @returns {null|object} H5P editor field.
    */
@@ -71,7 +68,6 @@ export default class Util {
 
   /**
    * Double click handler.
-   *
    * @param {Event} event Regular click event.
    * @param {function} callback Function to execute on doubleClick.
    */

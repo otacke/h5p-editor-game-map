@@ -5,9 +5,9 @@ export default class Map {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string} [params.backgroundImage] Source string for image.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [callbacks] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({}, params);
@@ -39,7 +39,6 @@ export default class Map {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -62,7 +61,6 @@ export default class Map {
 
   /**
    * Get map size.
-   *
    * @returns {object} Height and width of map.
    */
   getSize() {
@@ -72,7 +70,6 @@ export default class Map {
 
   /**
    * Set map background image.
-   *
    * @param {string} url URL of image.
    */
   setImage(url) {
@@ -86,7 +83,6 @@ export default class Map {
 
   /**
    * Append to DOM.
-   *
    * @param {HTMLElement} dom DOM element.
    */
   appendElement(dom) {
@@ -95,7 +91,6 @@ export default class Map {
 
   /**
    * Prepend to DOM.
-   *
    * @param {HTMLElement} dom DOM element.
    */
   prependElement(dom) {
@@ -104,7 +99,6 @@ export default class Map {
 
   /**
    * Append path to DOM.
-   *
    * @param {HTMLElement} dom DOM element.
    */
 

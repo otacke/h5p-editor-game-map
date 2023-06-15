@@ -3,9 +3,8 @@ import Path from '@components/map-editor/path';
 export default class Paths {
   /**
    * Paths model.
-   *
    * @class
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {Map} params.map Map to draw on.
    */
   constructor(params = {}) {
@@ -15,7 +14,6 @@ export default class Paths {
 
   /**
    * Get height of paths as CSS value.
-   *
    * @returns {string} Defined height.
    */
   getHeight() {
@@ -30,7 +28,6 @@ export default class Paths {
 
   /**
    * Add path.
-   *
    * @param {object} params Parameters.
    */
   addPath(params = {}) {
@@ -47,7 +44,6 @@ export default class Paths {
 
   /**
    * Remove path.
-   *
    * @param {object} params Parameters.
    * @param {string|number} params.from Start stage for path to be removed.
    * @param {string|number} params.to Target stage for path to be removed.
@@ -65,8 +61,7 @@ export default class Paths {
 
   /**
    * Update all existing paths.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string|number} params.from Start stage for path.
    * @param {string|number} params.to Target stage for path.
    * @param {object|null} params.pathTelemetry Telemetry data for path.
@@ -92,8 +87,7 @@ export default class Paths {
 
   /**
    * Update all existing paths.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object[]} params.paths Path parameters.
    */
   update(params = {}) {

@@ -81,7 +81,6 @@ export default class GameMap {
 
   /**
    * Ready handler.
-   *
    * @param {function} ready Ready callback.
    */
   ready(ready) {
@@ -142,7 +141,6 @@ export default class GameMap {
 
   /**
    * Set map values.
-   *
    * @param {object[]} elements Element parameters of elements.
    */
   setMapValues(elements) {
@@ -152,7 +150,6 @@ export default class GameMap {
 
   /**
    * Build DOM.
-   *
    * @returns {HTMLElement} DOM for this class.
    */
   buildDOM() {
@@ -164,7 +161,6 @@ export default class GameMap {
 
   /**
    * Append field to wrapper. Invoked by H5P core.
-   *
    * @param {H5P.jQuery} $wrapper Wrapper.
    */
   appendTo($wrapper) {
@@ -173,7 +169,6 @@ export default class GameMap {
 
   /**
    * Validate current values. Invoked by H5P core.
-   *
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
@@ -236,7 +231,6 @@ export default class GameMap {
 
   /**
    * Update custom CSS property.
-   *
    * @param {string} key Key.
    * @param {string} value Value.
    */
@@ -248,7 +242,6 @@ export default class GameMap {
   /**
    * Add change listeners for Color selectors.
    * Updates custom CSS property values.
-   *
    * @param {object} field H5P editor field.
    * @param {string} path Path and name for variable
    */

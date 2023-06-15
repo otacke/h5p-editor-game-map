@@ -13,7 +13,6 @@ export default class Stage {
 
   /**
    * Return Stage DOM.
-   *
    * @returns {HTMLElement} Stage DOM.
    */
   getDOM() {
@@ -22,7 +21,6 @@ export default class Stage {
 
   /**
    * Get default size in px.
-   *
    * @returns {object} Default size (width + height) in px.
    */
   getDefaultSize() {

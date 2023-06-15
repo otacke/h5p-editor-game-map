@@ -6,8 +6,8 @@ export default class Dialog {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
@@ -52,7 +52,6 @@ export default class Dialog {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -75,8 +74,7 @@ export default class Dialog {
 
   /**
    * Show dialog form.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {HTMLElement} params.form Form.
    */
   showForm(params = {}) {
@@ -97,7 +95,6 @@ export default class Dialog {
 
   /**
    * Handle "done" option in dialog.
-   *
    * @returns {boolean} False.
    */
   handleDone() {

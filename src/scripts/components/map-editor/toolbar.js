@@ -5,11 +5,11 @@ export default class Toolbar {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object} [params.buttons] Button objects for DnB.
    * @param {HTMLElement} [params.mapContainer] Map container.
    * @param {HTMLElement} [params.dialogContainer] Dialog container.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [callbacks] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
@@ -64,7 +64,6 @@ export default class Toolbar {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -87,7 +86,6 @@ export default class Toolbar {
 
   /**
    * Relay `add` to DnB toolbar.
-   *
    * @param {H5P.jQuery} $element Element.
    * @param {string} [clipboardData] Clipboard data.
    * @param {object} [options] Options.

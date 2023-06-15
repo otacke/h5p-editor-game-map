@@ -6,8 +6,8 @@ export default class NoImage {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
@@ -50,7 +50,6 @@ export default class NoImage {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
