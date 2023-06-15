@@ -23,10 +23,12 @@ export default class GameMap {
     }, params);
     this.setValue = setValue;
 
+    this.dictionary = new Dictionary();
     this.fillDictionary();
 
-    Globals.set('mainInstance', this);
-    Globals.set('getStylePropertyValue', (key) => {
+    this.globals = new Globals();
+    this.globals.set('mainInstance', this);
+    this.globals.set('getStylePropertyValue', (key) => {
       return this.dom.style.getPropertyValue(key);
     });
 
@@ -41,24 +43,31 @@ export default class GameMap {
     this.$container = H5P.jQuery(this.dom);
 
     // No image source info
-    this.noImage = new NoImage({}, {
-      onClick: () => {
-        this.parent.$tabs[0].click();
+    this.noImage = new NoImage(
+      {
+        dictionary: this.dictionary
+      },
+      {
+        onClick: () => {
+          this.parent.$tabs[0].click();
+        }
       }
-    });
+    );
     this.dom.appendChild(this.noImage.getDOM());
 
     // Create instance for elements group field
     const elementsGroup = this.field.fields
       .find((field) => field.name === 'elements').field;
     const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    Globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
+    this.globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
       this, elementsGroup, this.params.elements, () => {} // No setValue needed
     ));
 
     // Map canvas
     this.mapEditor = new MapEditor(
       {
+        dictionary: this.dictionary,
+        globals: this.globals,
         elements: this.params.elements,
         elementsFields: elementsFields
       },
@@ -209,7 +218,7 @@ export default class GameMap {
       current[lastSplit] = plainTranslations[key];
     }
 
-    Dictionary.fill(translations);
+    this.dictionary.fill(translations);
   }
 
   /**

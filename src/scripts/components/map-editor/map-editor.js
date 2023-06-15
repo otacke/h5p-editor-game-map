@@ -1,8 +1,6 @@
 import Paths from '@models/paths';
-import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import Dialog from './dialog';
-import Globals from '@services/globals';
 import Map from './map';
 import MapElement from './map-elements/map-element';
 import Toolbar from './toolbar';
@@ -67,7 +65,7 @@ export default class MapEditor {
       }
     );
 
-    this.dialog = new Dialog();
+    this.dialog = new Dialog({ dictionary: this.params.dictionary });
 
     this.dom.appendChild(this.toolbar.getDOM());
     this.dom.appendChild(this.map.getDOM());
@@ -124,7 +122,7 @@ export default class MapEditor {
     // Button configuration is set by DragNBar :-/
     return {
       id: id,
-      title: Dictionary.get(`l10n.toolbarButton-${id}`),
+      title: this.params.dictionary.get(`l10n.toolbarButton-${id}`),
       createElement: () => {
         return this.createElement();
       }
@@ -143,7 +141,7 @@ export default class MapEditor {
      */
 
     const numberUnnamedStages = this.params.elements.filter((element) => {
-      return element.label.indexOf(`${Dictionary.get('l10n.unnamedStage')} `) === 0;
+      return element.label.indexOf(`${this.params.dictionary.get('l10n.unnamedStage')} `) === 0;
     }).length + 1;
 
     const stage = new Stage({});
@@ -156,7 +154,7 @@ export default class MapEditor {
     const elementParams = Util.extend({
       id: H5P.createUUID(),
       type: 'stage',
-      label: `${Dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
+      label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
       content: newContent,
       telemetry: {
         x: `${50 - newContent.getDefaultSize().width / 2 }`,
@@ -169,6 +167,7 @@ export default class MapEditor {
 
     const mapElement = new MapElement(
       {
+        globals: this.params.globals,
         index: this.mapElements.length,
         content: newContent,
         elementParams: elementParams,
@@ -229,6 +228,8 @@ export default class MapEditor {
 
     const neighbors = H5PEditor.findField('neighbors', mapElement.form);
     if (neighbors) {
+      neighbors.setDictionary(this.params.dictionary);
+
       // Tell list widget this stage's id to be excluded
       neighbors.setActive({
         id: `${mapElement.getIndex()}`,
@@ -254,7 +255,7 @@ export default class MapEditor {
                 .querySelector('.field.library .h5p-errors');
 
               if (errors) {
-                errors.innerHTML = `<p>${Dictionary.get('l10n.contentRequired')}</p>`;
+                errors.innerHTML = `<p>${this.params.dictionary.get('l10n.contentRequired')}</p>`;
               }
             }
             else {
@@ -451,8 +452,9 @@ export default class MapEditor {
 
     // Border width
     const targetPathWidth = parseFloat(
-      Globals
-        .get('getStylePropertyValue')('--editor-fields-visual-paths-style-pathWidth')
+      this.params.globals.get('getStylePropertyValue')(
+        '--editor-fields-visual-paths-style-pathWidth'
+      )
     );
     const width = Math.min(
       Math.max(1, widthPx * targetPathWidth), widthPx * 0.3
@@ -502,10 +504,10 @@ export default class MapEditor {
    */
   removeIfConfirmed(mapElement) {
     this.deleteDialog = new H5P.ConfirmationDialog({
-      headerText: Dictionary.get('l10n.confirmationDialogRemoveHeader'),
-      dialogText: Dictionary.get('l10n.confirmationDialogRemoveDialog'),
-      cancelText: Dictionary.get('l10n.confirmationDialogRemoveCancel'),
-      confirmText: Dictionary.get('l10n.confirmationDialogRemoveConfirm')
+      headerText: this.params.dictionary.get('l10n.confirmationDialogRemoveHeader'),
+      dialogText: this.params.dictionary.get('l10n.confirmationDialogRemoveDialog'),
+      cancelText: this.params.dictionary.get('l10n.confirmationDialogRemoveCancel'),
+      confirmText: this.params.dictionary.get('l10n.confirmationDialogRemoveConfirm')
     });
     this.deleteDialog.on('confirmed', () => {
       this.remove(mapElement);

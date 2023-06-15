@@ -1,4 +1,3 @@
-import Dictionary from '@services/dictionary';
 import '@styles/h5peditor-game-map-dynamic-checkboxes.scss';
 
 /**
@@ -45,6 +44,14 @@ export default class GameMapDynamicCheckboxes {
    */
   appendTo($wrapper) {
     $wrapper.append(this.$item);
+  }
+
+  /**
+   * Set dictionary.
+   * @param {object} dictionary Dictionary.
+   */
+  setDictionary(dictionary) {
+    this.dictionary = dictionary;
   }
 
   /**
@@ -112,7 +119,7 @@ export default class GameMapDynamicCheckboxes {
       const message = document.createElement('div');
       message.classList.add('h5p-gamemap-editor-no-neighbors');
       message.classList.add('h5peditor-field-description');
-      message.innerText = Dictionary.get('l10n.noNeighbors');
+      message.innerText = this.dictionary?.get('l10n.noNeighbors') || '';
       list.appendChild(message);
       return;
     }

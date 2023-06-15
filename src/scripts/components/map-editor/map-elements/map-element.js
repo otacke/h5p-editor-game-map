@@ -1,4 +1,3 @@
-import Globals from '@services/globals';
 import Util from '@services/util';
 import './map-element.scss';
 
@@ -160,7 +159,10 @@ export default class MapElement {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
-      semantics, params, H5P.jQuery(form), Globals.get('elementsGroupField')
+      semantics,
+      params,
+      H5P.jQuery(form),
+      this.params.globals.get('elementsGroupField')
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -170,7 +172,7 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      const libraryWidget = Globals.get('elementsGroupField')?.children
+      const libraryWidget = this.params.globals.get('elementsGroupField')?.children
         .find((child) => child.field.name === 'contentType');
 
       if (libraryWidget) {
@@ -182,7 +184,7 @@ export default class MapElement {
 
     return {
       form: form,
-      children: Globals.get('elementsGroupField').children
+      children: this.params.globals.get('elementsGroupField').children
     };
   }
 }
