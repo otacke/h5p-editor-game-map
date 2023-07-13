@@ -49,6 +49,12 @@
   .h5p-confirmation-dialog-background {
     position: absolute;
   }
+
+  .field-name-visual .field-name-paths .field-name-style {
+    .field-name-colorPathCleared.display-none {
+      display: none;
+    }
+  }
 }
 
 .h5peditor-game-map {

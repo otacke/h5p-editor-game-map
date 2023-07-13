@@ -108,30 +108,8 @@ export default class GameMap {
     this.passReadies = false;
 
     this.initializeColors();
-
-    this.backgroundImageField = H5PEditor.findField(
-      'backgroundImageSettings/backgroundImage', this.parent
-    );
-
-    if (!this.backgroundImageField) {
-      throw H5PEditor.t(
-        'core', 'unknownFieldPath', { ':path': this.backgroundImageField }
-      );
-    }
-
-    this.mapEditor.setMapImage(
-      H5P.getPath(this.backgroundImageField?.params?.path ?? '', H5PEditor.contentId)
-    );
-
-    this.backgroundImageField.changes.push((change) => {
-      if (change) {
-        this.mapEditor.setMapImage(
-          H5P.getPath(change.path, H5PEditor.contentId)
-        );
-
-        return;
-      }
-    });
+    this.initializeBackgroundImage();
+    this.initializeHidePathColorOnFreeRoaming();
   }
 
   /**
@@ -236,6 +214,62 @@ export default class GameMap {
     document.head.appendChild(style);
 
     this.addVisualsChangeListeners(Util.getRootField(this));
+  }
+
+  /**
+   * Initialize background image.
+   */
+  initializeBackgroundImage() {
+    this.backgroundImageField = H5PEditor.findField(
+      'backgroundImageSettings/backgroundImage', this.parent
+    );
+
+    if (!this.backgroundImageField) {
+      throw H5PEditor.t(
+        'core', 'unknownFieldPath', { ':path': this.backgroundImageField }
+      );
+    }
+
+    this.mapEditor.setMapImage(
+      H5P.getPath(this.backgroundImageField?.params?.path ?? '', H5PEditor.contentId)
+    );
+
+    this.backgroundImageField.changes.push((change) => {
+      if (change) {
+        this.mapEditor.setMapImage(
+          H5P.getPath(change.path, H5PEditor.contentId)
+        );
+
+        return;
+      }
+    });
+  }
+
+  /**
+   * Initialize roaming mode listener.
+   */
+  initializeHidePathColorOnFreeRoaming() {
+    const roamingSelectField = H5PEditor.findField(
+      'behaviour/map/roaming', this.parent.parent
+    );
+
+    const colorPathClearedField = H5PEditor.findField(
+      'visual/paths/style/colorPathCleared', this.parent.parent
+    );
+
+    if (!roamingSelectField || !colorPathClearedField) {
+      return; // Could not find fields
+    }
+
+    const toggleColorPathField = (roamingMode) => {
+      colorPathClearedField.$item?.get(0).classList
+        .toggle('display-none', roamingMode === 'free');
+    };
+
+    roamingSelectField.changes.push(() => {
+      toggleColorPathField(roamingSelectField.$select.get(0).value);
+    });
+    toggleColorPathField(roamingSelectField.$select.get(0).value);
   }
 
   /**
