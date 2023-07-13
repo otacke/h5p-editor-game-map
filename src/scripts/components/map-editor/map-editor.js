@@ -276,6 +276,8 @@ export default class MapEditor {
           this.toolbar.show();
           this.map.show();
           this.updatePaths();
+          mapElement.updateParams();
+
           this.callbacks.onChanged(this.params.elements);
         }
 

@@ -90,6 +90,16 @@ export default class Util {
       event.target.count = 0;
     }, Util.DOUBLE_CLICK_TIME);
   }
+
+  /**
+   * Determine whether a device supports touch events
+   * @returns {boolean} True, if device supports touch events, else false.
+   */
+  static supportsTouch() {
+    return (
+      ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+    );
+  }
 }
 
 /** @constant {number} DOUBLE_CLICK_TIME Double click time in ms. */
