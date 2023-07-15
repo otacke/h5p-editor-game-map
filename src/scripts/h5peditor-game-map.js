@@ -110,6 +110,7 @@ export default class GameMap {
     this.initializeColors();
     this.initializeBackgroundImage();
     this.initializeHidePathColorOnFreeRoaming();
+    this.initializeHidePathOptions();
   }
 
   /**
@@ -270,6 +271,34 @@ export default class GameMap {
       toggleColorPathField(roamingSelectField.$select.get(0).value);
     });
     toggleColorPathField(roamingSelectField.$select.get(0).value);
+  }
+
+  /**
+   * Initialize path visibility listener.
+   * Can't use showWhen as it breaks the editor.
+   */
+  initializeHidePathOptions() {
+    const pathVisibilityField = H5PEditor.findField(
+      'visual/paths/displayPaths', this.parent.parent
+    );
+
+    const pathOptionsField = H5PEditor.findField(
+      'visual/paths/style', this.parent.parent
+    );
+
+    if (!pathVisibilityField || !pathOptionsField) {
+      return; // Could not find fields
+    }
+
+    const togglePathOptionsField = (pathsAreVisible) => {
+      pathOptionsField.$group?.get(0).classList
+        .toggle('display-none', pathsAreVisible);
+    };
+
+    pathVisibilityField.changes.push(() => {
+      togglePathOptionsField(!pathVisibilityField.$input.get(0).checked);
+    });
+    togglePathOptionsField(!pathVisibilityField.$input.get(0).checked);
   }
 
   /**
