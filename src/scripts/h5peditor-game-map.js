@@ -1,9 +1,9 @@
-import '@styles/h5peditor-game-map.scss';
 import Dictionary from '@services/dictionary';
 import Globals from '@services/globals';
 import Util from '@services/util';
-import NoImage from '@components/no-image';
+import NoImage from '@components/no-image/no-image';
 import MapEditor from '@components/map-editor/map-editor';
+import './h5peditor-game-map.scss';
 
 /** Class for Boilerplate H5P widget */
 export default class GameMap {

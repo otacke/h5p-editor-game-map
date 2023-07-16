@@ -1,4 +1,4 @@
-import Path from '@components/map-editor/path';
+import Path from '@components/map-editor/map-elements/path';
 
 export default class Paths {
   /**

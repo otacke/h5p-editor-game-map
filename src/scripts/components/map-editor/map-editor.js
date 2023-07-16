@@ -1,11 +1,11 @@
 import Paths from '@models/paths';
 import Util from '@services/util';
-import Dialog from './dialog';
-import Map from './map';
-import MapElement from './map-elements/map-element';
-import Toolbar from './toolbar';
+import Dialog from '@components/dialog/dialog';
+import Map from '@components/map-editor/map/map';
+import MapElement from '@components/map-editor/map-elements/map-element';
+import Toolbar from '@components/toolbar/toolbar';
+import Stage from '@components/map-editor/map-elements/stage';
 import './map-editor.scss';
-import Stage from './map-elements/stage';
 
 export default class MapEditor {
 

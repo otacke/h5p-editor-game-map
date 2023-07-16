@@ -1,4 +1,4 @@
-import '@styles/h5peditor-game-map-dynamic-checkboxes.scss';
+import './h5peditor-game-map-dynamic-checkboxes.scss';
 
 /**
  * Class for H5P widget for dynamic value checkboxes

@@ -13,8 +13,8 @@ module.exports = {
       '@assets': path.resolve(__dirname, 'src/assets'),
       '@components': path.resolve(__dirname, 'src/scripts/components'),
       '@models': path.resolve(__dirname, 'src/scripts/models'),
-      '@services': path.resolve(__dirname, 'src/scripts/services'),
-      '@styles': path.resolve(__dirname, 'src/styles')
+      '@scripts': path.resolve(__dirname, 'src/scripts'),
+      '@services': path.resolve(__dirname, 'src/scripts/services')
     }
   },
   optimization: {
