@@ -15,6 +15,7 @@ export default class Toolbar {
     this.params = Util.extend({
       buttons: []
     }, params);
+
     this.callbacks = Util.extend({
       onStoppedMoving: () => {},
       onReleased: () => {}

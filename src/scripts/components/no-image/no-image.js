@@ -25,8 +25,7 @@ export default class NoImage {
 
     const title = document.createElement('div');
     title.classList.add('h5p-no-image-title');
-    title.innerText = title.innerText =
-      this.params.dictionary.get('l10n.noBackgroundImage');
+    title.innerText = this.params.dictionary.get('l10n.noBackgroundImage');
     this.dom.appendChild(title);
 
     const message = document.createElement('div');
