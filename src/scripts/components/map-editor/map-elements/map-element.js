@@ -1,13 +1,13 @@
-import Globals from '@services/globals';
 import Util from '@services/util';
+import Label from './label';
 import './map-element.scss';
 
 export default class MapElement {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
@@ -39,6 +39,24 @@ export default class MapElement {
 
     this.updateParams(this.params.elementParams);
 
+    if (this.params.elementParams.type === 'stage') {
+      this.label = new Label({ text: this.params.elementParams.label });
+      this.dom.appendChild(this.label.getDOM());
+
+      this.dom.addEventListener('mouseenter', (event) => {
+        this.handleMouseOver(event);
+      });
+      this.dom.addEventListener('focus', (event) => {
+        this.handleMouseOver(event);
+      });
+      this.dom.addEventListener('mouseleave', () => {
+        this.handleMouseOut();
+      });
+      this.dom.addEventListener('blur', (event) => {
+        this.handleMouseOut(event);
+      });
+    }
+
     this.form = this.generateForm(
       this.params.elementFields, this.params.elementParams
     );
@@ -49,7 +67,6 @@ export default class MapElement {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -58,7 +75,6 @@ export default class MapElement {
 
   /**
    * Set index.
-   *
    * @param {number} index Index of map element.
    */
   setIndex(index) {
@@ -68,7 +84,6 @@ export default class MapElement {
 
   /**
    * Get index.
-   *
    * @returns {number} index Index of map element.
    */
   getIndex() {
@@ -77,7 +92,6 @@ export default class MapElement {
 
   /**
    * Get form data.
-   *
    * @returns {object} Form data.
    */
   getData() {
@@ -86,7 +100,6 @@ export default class MapElement {
 
   /**
    * Get element parameters.
-   *
    * @returns {object} Element parameters.
    */
   getParams() {
@@ -95,8 +108,7 @@ export default class MapElement {
 
   /**
    * Update parameters. Assuming all properties to use percentage.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    */
   updateParams(params = {}) {
     for (let property in params.telemetry) {
@@ -117,6 +129,8 @@ export default class MapElement {
       }
       this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
     }
+
+    this.label?.setText(this.params.elementParams.label);
 
     this.callbacks.onChanged(this.params.index, this.params.elementParams);
   }
@@ -158,7 +172,6 @@ export default class MapElement {
 
   /**
    * Generate form.
-   *
    * @param {object} semantics Semantics for form.
    * @param {object} params Parameters for form.
    * @returns {object} Form object.
@@ -167,7 +180,10 @@ export default class MapElement {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
-      semantics, params, H5P.jQuery(form), Globals.get('elementsGroupField')
+      semantics,
+      params,
+      H5P.jQuery(form),
+      this.params.globals.get('elementsGroupField')
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -177,7 +193,7 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      const libraryWidget = Globals.get('elementsGroupField')?.children
+      const libraryWidget = this.params.globals.get('elementsGroupField')?.children
         .find((child) => child.field.name === 'contentType');
 
       if (libraryWidget) {
@@ -189,8 +205,35 @@ export default class MapElement {
 
     return {
       form: form,
-      children: Globals.get('elementsGroupField').children
+      children: this.params.globals.get('elementsGroupField').children
     };
+  }
+
+  /**
+   * Handle mouseover.
+   * @param {Event} event Event that triggered.
+   */
+  handleMouseOver(event) {
+    if (Util.supportsTouch()) {
+      return;
+    }
+
+    const fontSize = this.params.content.getDOM()
+      .getBoundingClientRect().height / 2; // Half height of stage element
+
+    this.label?.setFontSize(`${fontSize}px`);
+    this.label?.show({ skipDelay: event instanceof FocusEvent });
+  }
+
+  /**
+   * Handle mouseout.
+   */
+  handleMouseOut() {
+    if (Util.supportsTouch()) {
+      return;
+    }
+
+    this.label.hide();
   }
 }
 

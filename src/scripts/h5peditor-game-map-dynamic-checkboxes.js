@@ -1,5 +1,4 @@
-import Dictionary from '@services/dictionary';
-import '@styles/h5peditor-game-map-dynamic-checkboxes.scss';
+import './h5peditor-game-map-dynamic-checkboxes.scss';
 
 /**
  * Class for H5P widget for dynamic value checkboxes
@@ -11,7 +10,6 @@ import '@styles/h5peditor-game-map-dynamic-checkboxes.scss';
 export default class GameMapDynamicCheckboxes {
   /**
    * Initialize widget.
-   *
    * @class
    * @param {object} parent Parent element in semantics.
    * @param {object} field Semantics field properties.
@@ -42,7 +40,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Append widget to form.
-   *
    * @param {H5P.jQuery} $wrapper Wrapper to append to.
    */
   appendTo($wrapper) {
@@ -50,9 +47,16 @@ export default class GameMapDynamicCheckboxes {
   }
 
   /**
+   * Set dictionary.
+   * @param {object} dictionary Dictionary.
+   */
+  setDictionary(dictionary) {
+    this.dictionary = dictionary;
+  }
+
+  /**
    * Build list HTML.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string} [params.ignore] Id to ignore when displaying list.
    * @returns {HTMLElement} HTML List element.
    */
@@ -94,8 +98,7 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Set widget active and (re)generate options.
-   *
-   * @param {object} [params= {}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {string} params.id Current id value.
    * @param {function} params.onNeighborsChanged Callback when neighbors changed.
    */
@@ -116,7 +119,7 @@ export default class GameMapDynamicCheckboxes {
       const message = document.createElement('div');
       message.classList.add('h5p-gamemap-editor-no-neighbors');
       message.classList.add('h5peditor-field-description');
-      message.innerText = Dictionary.get('l10n.noNeighbors');
+      message.innerText = this.dictionary?.get('l10n.noNeighbors') || '';
       list.appendChild(message);
       return;
     }
@@ -142,7 +145,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Update params with changes to checkbox.
-   *
    * @param {HTMLInputElement} input Input field.
    */
   change(input) {
@@ -162,7 +164,6 @@ export default class GameMapDynamicCheckboxes {
 
   /**
    * Validate the current field.
-   *
    * @returns {boolean} True.
    */
   validate() {

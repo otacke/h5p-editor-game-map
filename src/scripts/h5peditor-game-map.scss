@@ -1,3 +1,14 @@
+@font-face {
+  font-family: 'H5PGameMap';
+  src:
+    url('@assets/fonts/H5PGameMap.eot') format('embedded-opentype'),
+    url('@assets/fonts/H5PGameMap.ttf') format('truetype'),
+    url('@assets/fonts/H5PGameMap.woff') format('woff'),
+    url('@assets/fonts/H5PGameMap.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .h5p-gamemap-editor {
   .field.wizard {
 
@@ -48,6 +59,16 @@
 
   .h5p-confirmation-dialog-background {
     position: absolute;
+  }
+
+  .field-name-visual .field-name-paths .field-name-style {
+    .field-name-colorPathCleared.display-none {
+      display: none;
+    }
+
+    &.display-none {
+      display: none;
+    }
   }
 }
 

@@ -2,7 +2,6 @@
 export default class Util {
   /**
    * Extend an array just like JQuery's extend.
-   *
    * @returns {object} Merged objects.
    */
   static extend() {
@@ -27,8 +26,7 @@ export default class Util {
   /**
    * Retrieves value and unit of a CSS length string.
    * Will interpret a number without a unit as px.
-   *
-   * @param {string} [cssLength=''] Length string.
+   * @param {string} [cssLength] Length string.
    * @returns {null|object} Null if string cannot be parsed or value + unit.
    */
   static parseCSSLengthProperty(cssLength = '') {
@@ -52,7 +50,6 @@ export default class Util {
 
   /**
    * Get root field.
-   *
    * @param {object} field H5P editor field.
    * @returns {null|object} H5P editor field.
    */
@@ -71,7 +68,6 @@ export default class Util {
 
   /**
    * Double click handler.
-   *
    * @param {Event} event Regular click event.
    * @param {function} callback Function to execute on doubleClick.
    */
@@ -93,6 +89,48 @@ export default class Util {
       }
       event.target.count = 0;
     }, Util.DOUBLE_CLICK_TIME);
+  }
+
+  /**
+   * Determine whether a device supports touch events
+   * @returns {boolean} True, if device supports touch events, else false.
+   */
+  static supportsTouch() {
+    return (
+      ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+    );
+  }
+
+  /**
+   * Add mixins to a class, useful for splitting files.
+   * @param {object} [master] Master class to add mixins to.
+   * @param {object[]|object} [mixins] Mixins to be added to master.
+   */
+  static addMixins(master = {}, mixins = []) {
+    if (!master.prototype) {
+      return;
+    }
+
+    if (!Array.isArray(mixins)) {
+      mixins = [mixins];
+    }
+
+    const masterPrototype = master.prototype;
+
+    mixins.forEach((mixin) => {
+      const mixinPrototype = mixin.prototype;
+      Object.getOwnPropertyNames(mixinPrototype).forEach((property) => {
+        if (property === 'constructor') {
+          return; // Don't need constructor
+        }
+
+        if (Object.getOwnPropertyNames(masterPrototype).includes(property)) {
+          return; // property already present, do not override
+        }
+
+        masterPrototype[property] = mixinPrototype[property];
+      });
+    });
   }
 }
 

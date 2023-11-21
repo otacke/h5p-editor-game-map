@@ -1,9 +1,10 @@
-import '@styles/h5peditor-game-map.scss';
 import Dictionary from '@services/dictionary';
 import Globals from '@services/globals';
 import Util from '@services/util';
-import NoImage from '@components/no-image';
 import MapEditor from '@components/map-editor/map-editor';
+import NoImage from '@components/no-image/no-image';
+import ParentReadyInitialization from '@mixins/parent-ready-initialization';
+import './h5peditor-game-map.scss';
 
 /** Class for Boilerplate H5P widget */
 export default class GameMap {
@@ -16,6 +17,10 @@ export default class GameMap {
    * @param {function} setValue Callback to set parameters.
    */
   constructor(parent, field, params, setValue) {
+    Util.addMixins(
+      GameMap, [ParentReadyInitialization]
+    );
+
     this.parent = parent;
     this.field = field;
     this.params = Util.extend({
@@ -23,10 +28,12 @@ export default class GameMap {
     }, params);
     this.setValue = setValue;
 
+    this.dictionary = new Dictionary();
     this.fillDictionary();
 
-    Globals.set('mainInstance', this);
-    Globals.set('getStylePropertyValue', (key) => {
+    this.globals = new Globals();
+    this.globals.set('mainInstance', this);
+    this.globals.set('getStylePropertyValue', (key) => {
       return this.dom.style.getPropertyValue(key);
     });
 
@@ -41,24 +48,31 @@ export default class GameMap {
     this.$container = H5P.jQuery(this.dom);
 
     // No image source info
-    this.noImage = new NoImage({}, {
-      onClick: () => {
-        this.parent.$tabs[0].click();
+    this.noImage = new NoImage(
+      {
+        dictionary: this.dictionary
+      },
+      {
+        onClick: () => {
+          this.parent.$tabs[0].click();
+        }
       }
-    });
+    );
     this.dom.appendChild(this.noImage.getDOM());
 
     // Create instance for elements group field
     const elementsGroup = this.field.fields
       .find((field) => field.name === 'elements').field;
     const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    Globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
+    this.globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
       this, elementsGroup, this.params.elements, () => {} // No setValue needed
     ));
 
     // Map canvas
     this.mapEditor = new MapEditor(
       {
+        dictionary: this.dictionary,
+        globals: this.globals,
         elements: this.params.elements,
         elementsFields: elementsFields
       },
@@ -81,7 +95,6 @@ export default class GameMap {
 
   /**
    * Ready handler.
-   *
    * @param {function} ready Ready callback.
    */
   ready(ready) {
@@ -91,39 +104,6 @@ export default class GameMap {
     }
 
     this.parent.ready(ready);
-  }
-
-  /**
-   * Handle parent ready.
-   */
-  handleParentReady() {
-    this.passReadies = false;
-
-    this.initializeColors();
-
-    this.backgroundImageField = H5PEditor.findField(
-      'backgroundImageSettings/backgroundImage', this.parent
-    );
-
-    if (!this.backgroundImageField) {
-      throw H5PEditor.t(
-        'core', 'unknownFieldPath', { ':path': this.backgroundImageField }
-      );
-    }
-
-    this.mapEditor.setMapImage(
-      H5P.getPath(this.backgroundImageField?.params?.path ?? '', H5PEditor.contentId)
-    );
-
-    this.backgroundImageField.changes.push((change) => {
-      if (change) {
-        this.mapEditor.setMapImage(
-          H5P.getPath(change.path, H5PEditor.contentId)
-        );
-
-        return;
-      }
-    });
   }
 
   /**
@@ -142,7 +122,6 @@ export default class GameMap {
 
   /**
    * Set map values.
-   *
    * @param {object[]} elements Element parameters of elements.
    */
   setMapValues(elements) {
@@ -152,7 +131,6 @@ export default class GameMap {
 
   /**
    * Build DOM.
-   *
    * @returns {HTMLElement} DOM for this class.
    */
   buildDOM() {
@@ -164,7 +142,6 @@ export default class GameMap {
 
   /**
    * Append field to wrapper. Invoked by H5P core.
-   *
    * @param {H5P.jQuery} $wrapper Wrapper.
    */
   appendTo($wrapper) {
@@ -173,7 +150,6 @@ export default class GameMap {
 
   /**
    * Validate current values. Invoked by H5P core.
-   *
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
@@ -214,29 +190,11 @@ export default class GameMap {
       current[lastSplit] = plainTranslations[key];
     }
 
-    Dictionary.fill(translations);
-  }
-
-  /**
-   * Initialize colors.
-   */
-  initializeColors() {
-    const style = document.createElement('style');
-
-    if (style.styleSheet) {
-      style.styleSheet.cssText = '.h5peditor-game-map{}';
-    }
-    else {
-      style.appendChild(document.createTextNode('.h5peditor-game-map{}'));
-    }
-    document.head.appendChild(style);
-
-    this.addVisualsChangeListeners(Util.getRootField(this));
+    this.dictionary.fill(translations);
   }
 
   /**
    * Update custom CSS property.
-   *
    * @param {string} key Key.
    * @param {string} value Value.
    */
@@ -248,7 +206,6 @@ export default class GameMap {
   /**
    * Add change listeners for Color selectors.
    * Updates custom CSS property values.
-   *
    * @param {object} field H5P editor field.
    * @param {string} path Path and name for variable
    */

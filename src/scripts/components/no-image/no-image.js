@@ -1,4 +1,3 @@
-import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import './no-image.scss';
 
@@ -6,8 +5,8 @@ export default class NoImage {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
@@ -26,20 +25,19 @@ export default class NoImage {
 
     const title = document.createElement('div');
     title.classList.add('h5p-no-image-title');
-    title.innerText = title.innerText =
-      Dictionary.get('l10n.noBackgroundImage');
+    title.innerText = this.params.dictionary.get('l10n.noBackgroundImage');
     this.dom.appendChild(title);
 
     const message = document.createElement('div');
     message.classList.add('h5p-no-image-message');
     message.innerText = message.innerText =
-      Dictionary.get('l10n.noBackgroundImageMessage');
+      this.params.dictionary.get('l10n.noBackgroundImageMessage');
     this.dom.appendChild(message);
 
     const button = document.createElement('button');
     button.classList.add('h5p-no-image-button');
     button.classList.add('h5p-joubelui-button');
-    button.innerText = Dictionary.get('l10n.back');
+    button.innerText = this.params.dictionary.get('l10n.back');
     button.addEventListener('click', () => {
       this.callbacks.onClick();
     });
@@ -50,7 +48,6 @@ export default class NoImage {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {

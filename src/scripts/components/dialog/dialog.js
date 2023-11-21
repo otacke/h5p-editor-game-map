@@ -1,4 +1,3 @@
-import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 import './dialog.scss';
 
@@ -6,12 +5,13 @@ export default class Dialog {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
     }, params);
+
     this.callbacks = Util.extend({
       onDone: () => {},
       onRemoved: () => {}
@@ -29,7 +29,7 @@ export default class Dialog {
     const buttonDone = document.createElement('button');
     buttonDone.classList.add('h5p-editor-game-map-fluid-dialog-button');
     buttonDone.classList.add('h5p-editor-done');
-    buttonDone.innerText = Dictionary.get('l10n.done');
+    buttonDone.innerText = this.params.dictionary.get('l10n.done');
     buttonDone.addEventListener('click', () => {
       this.handleDone();
     });
@@ -38,7 +38,7 @@ export default class Dialog {
     const buttonRemove = document.createElement('button');
     buttonRemove.classList.add('h5p-editor-game-map-fluid-dialog-button');
     buttonRemove.classList.add('h5p-editor-remove');
-    buttonRemove.innerText = Dictionary.get('l10n.remove');
+    buttonRemove.innerText = this.params.dictionary.get('l10n.remove');
     buttonRemove.addEventListener('click', () => {
       this.handleRemove();
     });
@@ -52,7 +52,6 @@ export default class Dialog {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -75,8 +74,7 @@ export default class Dialog {
 
   /**
    * Show dialog form.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {HTMLElement} params.form Form.
    */
   showForm(params = {}) {
@@ -97,7 +95,6 @@ export default class Dialog {
 
   /**
    * Handle "done" option in dialog.
-   *
    * @returns {boolean} False.
    */
   handleDone() {

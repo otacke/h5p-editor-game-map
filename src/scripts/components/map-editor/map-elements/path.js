@@ -3,7 +3,6 @@ import './path.scss';
 export default class Path {
   /**
    * Construct a path.
-   *
    * @class
    */
   constructor() {
@@ -13,7 +12,6 @@ export default class Path {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -22,7 +20,6 @@ export default class Path {
 
   /**
    * Get height from CSS.
-   *
    * @returns {string} Defined height.
    */
   getHeight() {
@@ -38,8 +35,7 @@ export default class Path {
 
   /**
    * Update telemetry.
-   *
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {number} params.x Start position x in percent.
    * @param {number} params.y Start position y in percent.
    * @param {number} params.length length in px.
