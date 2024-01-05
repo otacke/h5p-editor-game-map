@@ -178,6 +178,7 @@ export default class MapElement {
    * Generate form.
    * @param {object} semantics Semantics for form.
    * @param {object} params Parameters for form.
+   * @param {string} type Type of element.
    * @returns {object} Form object.
    */
   generateForm(semantics, params, type) {
