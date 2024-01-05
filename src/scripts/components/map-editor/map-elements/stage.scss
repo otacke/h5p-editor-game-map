@@ -1,5 +1,40 @@
 .h5p-editor-game-map-stage {
   background-color: var(--editor-fields-visual-stages-colorStage, rgba(250, 223, 10, 0.7));
+  color: var(--editor-fields-visual-stages-colorStage-text, #000000);
   border: 2px solid rgba(0,0,0,0.4);
   border-radius: 50%;
+  --stage-height: calc(var(--map-height) * var(--map-element-percentage-height) / 100);
+
+  &.icon-finish::before {
+    content: "\f11e";
+    font-family: "H5PFontAwesome4", sans-serif;
+    font-size: calc(0.6 * var(--stage-height));
+    left: 50%;
+    line-height: calc(0.6 * var(--stage-height));
+    position: absolute;
+    top: calc(50% + 2px);
+    transform: translate(-50%, -50%);
+  }
+
+  &.icon-extra-life::before {
+    content: "\f004";
+    font-family: "H5PFontAwesome4", sans-serif;
+    font-size: calc(0.6 * var(--stage-height));
+    left: 50%;
+    line-height: calc(0.6 * var(--stage-height));
+    position: absolute;
+    top: calc(50% + 2px);
+    transform: translate(-50%, -50%);
+  }
+
+  &.icon-extra-time::before {
+    content: "\f017";
+    font-family: "H5PFontAwesome4", sans-serif;
+    font-size: calc(0.6 * var(--stage-height));
+    left: 50%;
+    line-height: calc(0.6 * var(--stage-height));
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 }

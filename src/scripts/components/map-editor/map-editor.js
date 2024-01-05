@@ -1,11 +1,12 @@
-import Paths from '@models/paths';
-import Util from '@services/util';
-import Dialog from '@components/dialog/dialog';
-import Map from '@components/map-editor/map/map';
-import Toolbar from '@components/toolbar/toolbar';
-import DnBCalls from './mixins/map-editor-dnb-calls';
-import PathHandling from './mixins/map-editor-path-handling';
+import Paths from '@models/paths.js';
+import Util from '@services/util.js';
+import Dialog from '@components/dialog/dialog.js';
+import Map from '@components/map-editor/map/map.js';
+import Toolbar from '@components/toolbar/toolbar.js';
+import DnBCalls from './mixins/map-editor-dnb-calls.js';
+import PathHandling from './mixins/map-editor-path-handling.js';
 import './map-editor.scss';
+import { STAGE_TYPES } from './map-elements/stage.js';
 
 export default class MapEditor {
 
@@ -46,7 +47,16 @@ export default class MapEditor {
 
     this.toolbar = new Toolbar(
       {
-        buttons: [this.createButton('stage')],
+        buttons: [
+          this.createButton({
+            id: 'stage',
+            type: STAGE_TYPES['stage']
+          }),
+          this.createButton({
+            id: 'special-stage',
+            type: STAGE_TYPES['special-stage']
+          })
+        ],
         mapContainer: this.map.getDOM(),
         dialogContainer: this.dom
       },
@@ -76,7 +86,12 @@ export default class MapEditor {
     this.dom.appendChild(this.dialog.getDOM());
 
     this.params.elements.forEach((elementParams) => {
-      this.createElement(elementParams);
+      let type = STAGE_TYPES['stage'];
+      if (elementParams.specialStageType) {
+        type = STAGE_TYPES['special-stage'];
+      }
+
+      this.createElement(type, elementParams);
     });
 
     this.hide();
@@ -119,16 +134,18 @@ export default class MapEditor {
 
   /**
    * Create button for toolbar.
-   * @param {string} id Id.
+   * @param {object} [params] Parameters.
+   * @param {string} params.id Id.
+   * @param {string} params.type Type.
    * @returns {object} Button object for DragNBar.
    */
-  createButton(id) {
+  createButton(params = {}) {
     // Button configuration is set by DragNBar :-/
     return {
-      id: id,
-      title: this.params.dictionary.get(`l10n.toolbarButton-${id}`),
+      id: params.id,
+      title: this.params.dictionary.get(`l10n.toolbarButton-${params.id}`),
       createElement: () => {
-        return this.createElement();
+        return this.createElement(params.type ?? params.id, {});
       }
     };
   }
@@ -196,6 +213,17 @@ export default class MapEditor {
   resize() {
     this.toolbar.blurAll();
     this.updatePaths();
+
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      const mapSize = this.map.getSize();
+      if (mapSize.height === 0 || mapSize.width === 0) {
+        return;
+      }
+
+      this.dom.style.setProperty('--map-height', `${mapSize.height}px`);
+      this.dom.style.setProperty('--map-width', `${mapSize.width}px`);
+    }, 0);
   }
 
   /**

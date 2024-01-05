@@ -1,6 +1,7 @@
 import Util from '@services/util';
 import Label from './label';
 import './map-element.scss';
+import { STAGE_TYPES } from './stage.js';
 
 export default class MapElement {
 
@@ -39,7 +40,7 @@ export default class MapElement {
 
     this.updateParams(this.params.elementParams);
 
-    if (this.params.elementParams.type === 'stage') {
+    if (!this.params.elementParams.specialStageType) {
       this.label = new Label({ text: this.params.elementParams.label });
       this.dom.appendChild(this.label.getDOM());
 
@@ -58,7 +59,9 @@ export default class MapElement {
     }
 
     this.form = this.generateForm(
-      this.params.elementFields, this.params.elementParams
+      this.params.elementFields,
+      this.params.elementParams,
+      params.type
     );
     this.form.$element = H5P.jQuery(this.dom);
 
@@ -128,6 +131,7 @@ export default class MapElement {
         styleProperty = 'top';
       }
       this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
+      this.dom.style.setProperty(`--map-element-percentage-${property}`, `${params.telemetry[property]}`);
     }
 
     this.label?.setText(this.params.elementParams.label);
@@ -176,7 +180,7 @@ export default class MapElement {
    * @param {object} params Parameters for form.
    * @returns {object} Form object.
    */
-  generateForm(semantics, params) {
+  generateForm(semantics, params, type) {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
@@ -203,9 +207,61 @@ export default class MapElement {
       }
     }
 
+    /*
+     * We unfortunately cannot remove fields that are not needed for the given
+     * type of the element before processSemanticsChunk, because we must not
+     * modify the original elementsGroupField and we cannot clone it either,
+     * because then we lose the reference to the neighbors fields for the
+     * dynamic checkboxes. We instead remove the field instances and DOM
+     * elements here.
+     */
+
+    const toBeRemoved = {};
+    toBeRemoved[STAGE_TYPES['stage']] =
+      ['specialStageType'];
+    toBeRemoved[STAGE_TYPES['special-stage']] =
+      ['canBeStartStage', 'time', 'contentType'];
+
+    // Remove DOM elements
+    toBeRemoved[type].forEach((fieldName) => {
+      let domElement = form.querySelector(`.field-name-${fieldName}`);
+      if (!domElement) {
+        /*
+         * Workaround for library widget that does not have a field name in
+         * classname. Beware though: This workaround is fine, because the
+         * content's library field should be the first one. If some other
+         * library field is added before, this will break.
+         */
+        if (fieldName === 'contentType') {
+          domElement = form.querySelector('.field.library');
+        }
+      }
+      if (domElement) {
+        domElement.remove();
+      }
+    });
+
+    // Fetch indexes of field instances from semantics.
+    const removeIndexes = toBeRemoved[type]
+      .reduce((indexes, fieldName) => {
+        const index = semantics.findIndex((field) => field.name === fieldName);
+        if (index !== -1) {
+          indexes.push(index);
+        }
+        return indexes;
+      }, []);
+
+    // Remove field instances
+    const children = this.params.globals.get('elementsGroupField').children
+      .map((child) => child);
+
+    for (let i = removeIndexes.length - 1; i >= 0; i--) {
+      children.splice(removeIndexes[i], 1);
+    }
+
     return {
       form: form,
-      children: this.params.globals.get('elementsGroupField').children
+      children: children
     };
   }
 

@@ -214,12 +214,21 @@ export default class GameMap {
       return;
     }
 
+    const prefix = path.replace(/\//g, '-');
     if (field instanceof H5PEditor.ColorSelector) {
       field.changes.push(() => {
-        this.updateCSSProperty(path.replace(/\//g, '-'), field.params);
+        this.updateCSSProperty(prefix, field.params);
+        this.updateCSSProperty(
+          `${prefix}-text`,
+          Util.getTextContrastColor(field.params)
+        );
       });
 
-      this.updateCSSProperty(path.replace(/\//g, '-'), field.params);
+      this.updateCSSProperty(prefix, field.params);
+      this.updateCSSProperty(
+        `${prefix}-text`,
+        Util.getTextContrastColor(field.params)
+      );
     }
     else if (
       field instanceof H5PEditor.Select) {
@@ -228,10 +237,10 @@ export default class GameMap {
         field.field.name === 'pathWidth'
       ) {
         field.changes.push(() => {
-          this.updateCSSProperty(path.replace(/\//g, '-'), field.value);
+          this.updateCSSProperty(prefix, field.value);
         });
 
-        this.updateCSSProperty(path.replace(/\//g, '-'), field.value);
+        this.updateCSSProperty(prefix, field.value);
       }
     }
     else if (field.children) {

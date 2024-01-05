@@ -1,6 +1,7 @@
-import MapElement from '@components/map-editor/map-elements/map-element';
-import Stage from '@components/map-editor/map-elements/stage';
-import Util from '@services/util';
+import MapElement from '@components/map-editor/map-elements/map-element.js';
+import Stage, { DEFAULT_SIZE_PERCENT } from '@components/map-editor/map-elements/stage.js';
+import Util from '@services/util.js';
+import { STAGE_TYPES } from '@components/map-editor/map-elements/stage.js';
 
 /**
  * Mixin containing methods that are related to being called from DnB.
@@ -8,10 +9,11 @@ import Util from '@services/util';
 export default class DnBCalls {
   /**
    * Create map element.
+   * @param {number} [type] Type of element.
    * @param {object} [params] Element parameters as used in semantics.json.
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
-  createElement(params) {
+  createElement(type, params) {
     /*
      * This is okay for now, but if other elements than stages need to be
      * added to map elements, this needs changing - including semantics :-/.
@@ -20,29 +22,36 @@ export default class DnBCalls {
       return element.label.indexOf(`${this.params.dictionary.get('l10n.unnamedStage')} `) === 0;
     }).length + 1;
 
-    const stage = new Stage({});
+    const stage = new Stage();
 
     const newContent = stage;
 
     const mapSize = this.map.getSize();
     const mapRatio = mapSize.width / mapSize.height;
 
-    const elementParams = Util.extend({
-      id: H5P.createUUID(),
-      type: 'stage',
-      label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
-      content: newContent,
-      telemetry: {
-        x: `${50 - newContent.getDefaultSize().width / 2 }`,
-        y: `${50 - newContent.getDefaultSize().height * mapRatio / 2 }`,
-        width: `${newContent.getDefaultSize().width}`,
-        height: `${newContent.getDefaultSize().height * mapRatio}`
-      },
-      neighbors: []
-    }, params);
+    let elementParams = {};
+
+    if (
+      type === STAGE_TYPES['stage'] ||
+      type === STAGE_TYPES['special-stage']
+    ) {
+      elementParams = Util.extend({
+        id: H5P.createUUID(),
+        label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
+        content: newContent,
+        telemetry: {
+          x: `${50 - DEFAULT_SIZE_PERCENT.width / 2 }`,
+          y: `${50 - DEFAULT_SIZE_PERCENT.height * mapRatio / 2 }`,
+          width: `${DEFAULT_SIZE_PERCENT.width}`,
+          height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`
+        },
+        neighbors: []
+      }, params);
+    }
 
     const mapElement = new MapElement(
       {
+        type: type,
         globals: this.params.globals,
         index: this.mapElements.length,
         content: newContent,
@@ -64,6 +73,13 @@ export default class DnBCalls {
           this.sendToBack(mapElement);
         },
         onChanged: (index, elementParams) => {
+          if (elementParams.specialStageType) {
+            stage.setIcon(elementParams.specialStageType);
+          }
+          else {
+            stage.setIcon(null);
+          }
+
           this.params.elements[index] = elementParams;
           this.callbacks.onChanged(this.params.elements);
         }

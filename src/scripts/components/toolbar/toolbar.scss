@@ -39,7 +39,6 @@
 
         &:hover {
           background-color: rgba(26,115,217,.1);
-          // text-decoration: none;
         }
 
         &:active {
@@ -47,14 +46,28 @@
         }
 
         &.h5p-dragnbar-stage-button:before {
-          content: "\f1db";
+          content: "\f10c";
           font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
           font-size: 1.15rem;
           font-weight: bold;
           height: 1.15rem;
           left: 50%;
           margin-left: -0.575rem;
-          margin-top: -0.575rem;
+          margin-top: -0.4rem;
+          position: absolute;
+          top: 50%;
+          width: 1.15rem;
+        }
+
+        &.h5p-dragnbar-special-stage-button:before {
+          content: "\f111";
+          font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
+          font-size: 1.15rem;
+          font-weight: bold;
+          height: 1.15rem;
+          left: 50%;
+          margin-left: -0.575rem;
+          margin-top: -0.4rem;
           position: absolute;
           top: 50%;
           width: 1.15rem;
