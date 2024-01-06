@@ -12,10 +12,14 @@
   .h5p-editor-game-map-fluid-dialog-inner {
     padding: 1rem;
 
-    > div > .field.library {
+    .field-name-accessRestrictions {
       border-bottom: 2px solid #eee;
+      padding-bottom: 1rem;
+    }
+
+    .field-name-neighbors {
       border-top: 2px solid #eee;
-      padding: 1rem 0;
+      padding-top: 1rem;
     }
   }
 
