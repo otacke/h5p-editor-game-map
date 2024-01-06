@@ -131,7 +131,10 @@ export default class MapElement {
         styleProperty = 'top';
       }
       this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
-      this.dom.style.setProperty(`--map-element-percentage-${property}`, `${params.telemetry[property]}`);
+      this.dom.style.setProperty(
+        `--map-element-percentage-${property}`,
+        `${params.telemetry[property]}`
+      );
     }
 
     this.label?.setText(this.params.elementParams.label);
@@ -178,10 +181,10 @@ export default class MapElement {
    * Generate form.
    * @param {object} semantics Semantics for form.
    * @param {object} params Parameters for form.
-   * @param {string} type Type of element.
-   * @returns {object} Form object.
+   * @param {string} elementType Type of element.
+   * @returns {object} Form object with DOM and H5P widget instances.
    */
-  generateForm(semantics, params, type) {
+  generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
@@ -216,43 +219,62 @@ export default class MapElement {
      * dynamic checkboxes. We instead remove the field instances and DOM
      * elements here.
      */
-
     const toBeRemoved = {};
     toBeRemoved[STAGE_TYPES['stage']] =
       ['specialStageType'];
     toBeRemoved[STAGE_TYPES['special-stage']] =
       ['canBeStartStage', 'time', 'contentType'];
 
+    const removeIndexes = [];
+
     // Remove DOM elements
-    toBeRemoved[type].forEach((fieldName) => {
-      let domElement = form.querySelector(`.field-name-${fieldName}`);
-      if (!domElement) {
-        /*
-         * Workaround for library widget that does not have a field name in
-         * classname. Beware though: This workaround is fine, because the
-         * content's library field should be the first one. If some other
-         * library field is added before, this will break.
-         */
-        if (fieldName === 'contentType') {
-          domElement = form.querySelector('.field.library');
-        }
+    toBeRemoved[elementType].forEach((fieldName) => {
+      // Fetch indexes of field instances from semantics.
+      const index = semantics.findIndex((field) => field.name === fieldName);
+      if (index !== -1) {
+        removeIndexes.push(index);
       }
-      if (domElement) {
-        domElement.remove();
-      }
+
+      this.removeFormFields(form, fieldName);
     });
 
-    // Fetch indexes of field instances from semantics.
-    const removeIndexes = toBeRemoved[type]
-      .reduce((indexes, fieldName) => {
-        const index = semantics.findIndex((field) => field.name === fieldName);
-        if (index !== -1) {
-          indexes.push(index);
-        }
-        return indexes;
-      }, []);
+    const children = this.removeFormInstances(removeIndexes);
 
-    // Remove field instances
+    return {
+      form: form,
+      children: children
+    };
+  }
+
+  /**
+   * Remove fields from form. Works in-place on form.
+   * @param {HTMLElement} form Form.
+   * @param {string} fieldName Field name from semantics.
+   */
+  removeFormFields(form, fieldName) {
+    let domElement = form.querySelector(`.field-name-${fieldName}`);
+    if (!domElement) {
+      /*
+       * Workaround for library widget that does not have a field name in
+       * classname. Beware though: This workaround is fine, because the
+       * content's library field should be the first one. If some other
+       * library field is added before, this will break.
+       */
+      if (fieldName === 'contentType') {
+        domElement = form.querySelector('.field.library');
+      }
+    }
+    if (domElement) {
+      domElement.remove();
+    }
+  }
+
+  /**
+   * Remove H5P editor widget instances from form.
+   * @param {number[]} removeIndexes Indexes of instances to remove.
+   * @returns {object[]} Remaining instances.
+   */
+  removeFormInstances(removeIndexes) {
     const children = this.params.globals.get('elementsGroupField').children
       .map((child) => child);
 
@@ -260,10 +282,7 @@ export default class MapElement {
       children.splice(removeIndexes[i], 1);
     }
 
-    return {
-      form: form,
-      children: children
-    };
+    return children;
   }
 
   /**
