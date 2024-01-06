@@ -239,11 +239,51 @@ export default class MapElement {
     });
 
     const children = this.removeFormInstances(removeIndexes);
+    /*
+     * The showWhen widget seems to have trouble with being attached to all
+     * the different forms of the stages. Introducing custom conditional
+     * visibility handling for the specialStageType features here.
+     */
+    this.applyCustomShowWhenHandling(children, form);
 
     return {
       form: form,
       children: children
     };
+  }
+
+  /**
+   * Apply custom conditional visibility handling for specialStageType.
+   * @param {object[]} children Editor widget instances.
+   * @param {HTMLElement} form Editor form for stage
+   */
+  applyCustomShowWhenHandling(children, form) {
+    children.forEach((child) => {
+      if (
+        !(child instanceof H5PEditor.Select) ||
+        child.field.name !== 'specialStageType'
+      ) {
+        return;
+      }
+
+      child.changes.push(() => {
+        this.toggleSpecialStageFields(form, child.value);
+      });
+      this.toggleSpecialStageFields(form, child.value);
+    });
+  }
+
+  /**
+   * Toggle special stage fields visibility.
+   * @param {HTMLElement} form Form.
+   * @param {string} specialStageType Value of specialStageType select field.
+   */
+  toggleSpecialStageFields(form, specialStageType) {
+    form.querySelector('.field-name-specialStageExtraLives')?.classList
+      .toggle('display-none', specialStageType !== 'extra-life');
+
+    form.querySelector('.field-name-specialStageExtraTime')?.classList
+      .toggle('display-none', specialStageType !== 'extra-time');
   }
 
   /**
