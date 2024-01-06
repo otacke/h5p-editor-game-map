@@ -52,10 +52,9 @@
           font-weight: bold;
           height: 1.15rem;
           left: 50%;
-          margin-left: -0.575rem;
-          margin-top: -0.4rem;
           position: absolute;
           top: 50%;
+          transform: translate(-50%, -50%);
           width: 1.15rem;
         }
 
@@ -66,10 +65,9 @@
           font-weight: bold;
           height: 1.15rem;
           left: 50%;
-          margin-left: -0.575rem;
-          margin-top: -0.4rem;
           position: absolute;
           top: 50%;
+          transform: translate(-50%, -50%);
           width: 1.15rem;
         }
       }
