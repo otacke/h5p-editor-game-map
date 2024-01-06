@@ -18,9 +18,12 @@ export default class DnBCalls {
      * This is okay for now, but if other elements than stages need to be
      * added to map elements, this needs changing - including semantics :-/.
      */
-    const numberUnnamedStages = this.params.elements.filter((element) => {
-      return element.label.indexOf(`${this.params.dictionary.get('l10n.unnamedStage')} `) === 0;
-    }).length + 1;
+    const numberUnnamedStages =
+    this.params.elements.filter((element) =>
+      element.label.startsWith(
+        `${this.params.dictionary.get('l10n.unnamedStage')} `,
+      ),
+    ).length + 1;
 
     const stage = new Stage();
 
@@ -212,34 +215,7 @@ export default class DnBCalls {
     this.dialog.showForm({
       form: mapElement.getData().form,
       doneCallback: () => {
-        /*
-         * `some` would be quicker than `every`, but all fields should display
-         * their validation message
-         */
-        const isValid = mapElement.getData().children.every((child) => {
-          // Accept incomplete subcontent, but not no subcontent
-          if (child instanceof H5PEditor.Library && !child.validate()) {
-            if (child.$select.get(0).value === '-') {
-              const errors = mapElement.getData().form
-                .querySelector('.field.library .h5p-errors');
-
-              if (errors) {
-                errors.innerHTML = `<p>${this.params.dictionary.get('l10n.contentRequired')}</p>`;
-              }
-            }
-            else {
-              return true;
-            }
-          }
-
-          if (child instanceof H5PEditor.Number && !child.validate()) {
-            if (child.value === undefined && child.field.optional) {
-              return true;
-            }
-          }
-
-          return child.validate();
-        });
+        const isValid = this.validateFormChildren(mapElement);
 
         if (isValid) {
           this.toolbar.show();
@@ -262,6 +238,37 @@ export default class DnBCalls {
     setTimeout(() => {
       this.toolbar.blurAll();
     }, 0);
+  }
+
+  /**
+   * Validate form children.
+   * @param {MapElement} mapElement Mapelement that the form belongs to.
+   * @returns {boolean} True if form is valid, else false.
+   */
+  validateFormChildren(mapElement) {
+    /*
+     * `some` would be quicker than `every`, but all fields should display
+     * their validation message
+     */
+    return mapElement.getData().children.every((child) => {
+      // Accept incomplete subcontent, but not no subcontent
+      if (child instanceof H5PEditor.Library && !child.validate()) {
+        if (child.$select.get(0).value !== '-') {
+          return true; // Some subcontent is selected at least
+        }
+
+        const errors = mapElement.getData().form
+          .querySelector('.field.library .h5p-errors');
+
+        if (errors) {
+          errors.innerHTML = `<p>${this.params.dictionary.get('l10n.contentRequired')}</p>`;
+        }
+
+        return false;
+      }
+
+      return child.validate() ?? true; // Some widgets return `undefined` instead of true
+    });
   }
 
   /**
