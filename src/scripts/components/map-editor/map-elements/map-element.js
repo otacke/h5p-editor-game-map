@@ -221,7 +221,7 @@ export default class MapElement {
      */
     const toBeRemoved = {};
     toBeRemoved[STAGE_TYPES['stage']] =
-      ['specialStageType'];
+      ['specialStageType', 'specialStageExtraLives', 'specialStageExtraTime'];
     toBeRemoved[STAGE_TYPES['special-stage']] =
       ['canBeStartStage', 'time', 'contentType'];
 
@@ -239,12 +239,15 @@ export default class MapElement {
     });
 
     const children = this.removeFormInstances(removeIndexes);
-    /*
-     * The showWhen widget seems to have trouble with being attached to all
-     * the different forms of the stages. Introducing custom conditional
-     * visibility handling for the specialStageType features here.
-     */
-    this.applyCustomShowWhenHandling(children, form);
+
+    if (elementType === STAGE_TYPES['special-stage']) {
+      /*
+      * The showWhen widget seems to have trouble with being attached to all
+      * the different forms of the stages. Introducing custom conditional
+      * visibility handling for the specialStageType features here.
+      */
+      this.applyCustomShowWhenHandling(children, form);
+    }
 
     return {
       form: form,
