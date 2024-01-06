@@ -24,8 +24,8 @@ export default class Stage {
    * @param {string} name CSS class name key for icon.
    */
   setIcon(name) {
+    this.dom.className = this.dom.className.replace(/icon-\w*/g, '');
     if (name === null) {
-      this.dom.className = this.dom.className.replace(/icon-\w*/g, '');
       return;
     }
 
