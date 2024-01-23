@@ -2,7 +2,7 @@
   "libraryStrings": {
     "l10n.back": "Atgal",
     "l10n.noBackgroundImage": "Nėra fono paveiksliuko",
-    "l10n.noBackgroundImageMessage": "You must select a background image before adding stages to your map.",
+    "l10n.noBackgroundImageMessage": "Prieš įtraukdami etapus į žemėlapį turite pasirinkti fono paveikslėlį.",
     "l10n.toolbarButton-stage": "Žingsnis",
     "l10n.done": "Atlikta",
     "l10n.remove": "Pašalinti",
@@ -13,7 +13,7 @@
     "l10n.unnamedStage": "Unnamed stage",
     "l10n.confirmationDialogRemoveHeader": "Delete stage",
     "l10n.confirmationDialogRemoveDialog": "Do you really want to delete this stage?",
-    "l10n.confirmationDialogRemoveCancel": "No",
-    "l10n.confirmationDialogRemoveConfirm": "Yes, delete!"
+    "l10n.confirmationDialogRemoveCancel": "Ne",
+    "l10n.confirmationDialogRemoveConfirm": "Taip, ištrinti!"
   }
 }
