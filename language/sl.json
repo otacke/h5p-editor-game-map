@@ -4,6 +4,7 @@
     "l10n.noBackgroundImage": "Ni slike ozadja",
     "l10n.noBackgroundImageMessage": "Pred dodajanjem stopnje je treba dodati sliko za ozadje.",
     "l10n.toolbarButton-stage": "Stopnja",
+    "l10n.toolbarButton-special-stage": "Add special stage",
     "l10n.done": "Potrdi",
     "l10n.remove": "Odstrani",
     "l10n.selectAll": "Izberi vse",

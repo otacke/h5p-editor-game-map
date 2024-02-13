@@ -4,6 +4,7 @@
     "l10n.noBackgroundImage": "Sin imagen de fondo",
     "l10n.noBackgroundImageMessage": "Usted debe seleccionar una imagen de fondo antes de añadirle etapas a su escenario.",
     "l10n.toolbarButton-stage": "Escenario",
+    "l10n.toolbarButton-special-stage": "Add special stage",
     "l10n.done": "Hecho",
     "l10n.remove": "Quitar",
     "l10n.selectAll": "Seleccionar todo",
