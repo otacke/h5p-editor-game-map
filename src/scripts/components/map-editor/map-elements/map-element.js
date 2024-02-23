@@ -40,23 +40,21 @@ export default class MapElement {
 
     this.updateParams(this.params.elementParams);
 
-    if (!this.params.elementParams.specialStageType) {
-      this.label = new Label({ text: this.params.elementParams.label });
-      this.dom.appendChild(this.label.getDOM());
+    this.label = new Label({ text: this.params.elementParams.label });
+    this.dom.appendChild(this.label.getDOM());
 
-      this.dom.addEventListener('mouseenter', (event) => {
-        this.handleMouseOver(event);
-      });
-      this.dom.addEventListener('focus', (event) => {
-        this.handleMouseOver(event);
-      });
-      this.dom.addEventListener('mouseleave', () => {
-        this.handleMouseOut();
-      });
-      this.dom.addEventListener('blur', (event) => {
-        this.handleMouseOut(event);
-      });
-    }
+    this.dom.addEventListener('mouseenter', (event) => {
+      this.handleMouseOver(event);
+    });
+    this.dom.addEventListener('focus', (event) => {
+      this.handleMouseOver(event);
+    });
+    this.dom.addEventListener('mouseleave', () => {
+      this.handleMouseOut();
+    });
+    this.dom.addEventListener('blur', (event) => {
+      this.handleMouseOut(event);
+    });
 
     this.form = this.generateForm(
       this.params.elementFields,
