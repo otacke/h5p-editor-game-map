@@ -1,19 +1,20 @@
 {
   "libraryStrings": {
-    "l10n.noBackgroundImageMessage": "You must select a background image before adding stages to your map.",
     "l10n.back": "Atzera",
     "l10n.noBackgroundImage": "Ez dago atzeko planoko irudirik",
-    "l10n.toolbarButton-stage": "Stage",
-    "l10n.done": "Done",
-    "l10n.remove": "Remove",
-    "l10n.selectAll": "Select all",
-    "l10n.deselectAll": "Unselect all",
-    "l10n.noNeighbors": "There are no stages to connect to yet.",
-    "l10n.unnamedStage": "Unnamed stage",
-    "l10n.contentRequired": "You need to select a content type for this stage.",
-    "l10n.confirmationDialogRemoveHeader": "Delete stage",
-    "l10n.confirmationDialogRemoveDialog": "Do you really want to delete this stage?",
-    "l10n.confirmationDialogRemoveCancel": "No",
-    "l10n.confirmationDialogRemoveConfirm": "Yes, delete!"
+    "l10n.noBackgroundImageMessage": "Atzeko planoko irudi bat hautatu behar duzu zure mapan etapak gehitu aurretik.",
+    "l10n.toolbarButton-stage": "Etapa",
+    "l10n.toolbarButton-special-stage": "Add special stage",
+    "l10n.done": "Egina",
+    "l10n.remove": "Kendu",
+    "l10n.selectAll": "Hautatu guztiak",
+    "l10n.deselectAll": "Deshautatu guztiak",
+    "l10n.noNeighbors": "Oraindik ez dago konektatzeko etaparik.",
+    "l10n.contentRequired": "Etapa honetarako eduki mota bat hautatu behar duzu.",
+    "l10n.unnamedStage": "Izenik gabeko etapa",
+    "l10n.confirmationDialogRemoveHeader": "Ezabatu etapa",
+    "l10n.confirmationDialogRemoveDialog": "Ziur zaude nahi duzula etapa hau ezabatu?",
+    "l10n.confirmationDialogRemoveCancel": "Ez",
+    "l10n.confirmationDialogRemoveConfirm": "Bai, ezabatu!"
   }
 }

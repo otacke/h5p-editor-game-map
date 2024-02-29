@@ -4,6 +4,7 @@
     "l10n.noBackgroundImage": "背景图像缺失",
     "l10n.noBackgroundImageMessage": "在向地图添加关卡之前，您必须先选择背景图像。",
     "l10n.toolbarButton-stage": "关卡",
+    "l10n.toolbarButton-special-stage": "Add special stage",
     "l10n.done": "完成",
     "l10n.remove": "移除",
     "l10n.selectAll": "全选",

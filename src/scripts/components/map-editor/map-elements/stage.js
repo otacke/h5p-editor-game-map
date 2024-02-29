@@ -20,11 +20,20 @@ export default class Stage {
   }
 
   /**
-   * Get default size in px.
-   * @returns {object} Default size (width + height) in px.
+   * Set icon.
+   * @param {string} name CSS class name key for icon.
    */
-  getDefaultSize() {
-    return Stage.DEFAULT_SIZE_PERCENT;
+  setIcon(name) {
+    this.dom.className = this.dom.className.replace(/icon-\w*/g, '');
+    if (name === null) {
+      return;
+    }
+
+    if (typeof name !== 'string') {
+      return;
+    }
+
+    this.dom.classList.add(`icon-${name}`);
   }
 }
 
@@ -34,4 +43,10 @@ export default class Stage {
  * of 4.375% is compromise. Feels large on 1920 wide screens, but still leaving
  * 42px for good a11y on 960 wide screens.
  */
-Stage.DEFAULT_SIZE_PERCENT = { width: 4.375, height: 4.375 };
+export const DEFAULT_SIZE_PERCENT = { width: 4.375, height: 4.375 };
+
+/** @constant {object} STAGE_TYPES types lookup */
+export const STAGE_TYPES = {
+  'stage': 0,
+  'special-stage': 1
+};

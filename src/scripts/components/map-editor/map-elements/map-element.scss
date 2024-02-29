@@ -1,15 +1,25 @@
-.h5p-editor-game-map-element {
-  cursor: move;
-  position: absolute;
+.h5p-gamemap-editor {
+  .h5p-editor-game-map-element {
+    cursor: move;
+    position: absolute;
 
-  &.h5p-moving {
-    opacity: 1;
+    &.h5p-moving {
+      opacity: 1;
+    }
+
+    .h5p-editor-game-map-element-content {
+      box-sizing: border-box;
+      height: 100%;
+      position: relative;
+      width: 100%;
+    }
   }
 
-  .h5p-editor-game-map-element-content {
-    box-sizing: border-box;
-    height: 100%;
-    position: relative;
-    width: 100%;
+  .field-name-specialStageExtraLives.display-none {
+    display: none;
+  }
+
+  .field-name-specialStageExtraTime.display-none {
+    display: none;
   }
 }

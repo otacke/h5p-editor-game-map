@@ -1,3 +1,5 @@
+import Color from 'color';
+
 /** Class for utility functions */
 export default class Util {
   /**
@@ -131,6 +133,31 @@ export default class Util {
         masterPrototype[property] = mixinPrototype[property];
       });
     });
+  }
+
+  /**
+   * Deep clone an object.
+   *
+   * `structuredClone()` can be used to replace the jQuery dependency (and this)
+   * util function alltogether, when jQuery is removed from H5P core, but
+   * currently it's not supported by Safari 15.4 which would mean to still
+   * violate the latest 3 browsers rule.
+   * @param {object} obj Object to clone.
+   * @returns {object} Cloned object.
+   */
+  static clone(obj) {
+    return window.structuredClone ?
+      structuredClone(obj) :
+      H5P.jQuery.extend(true, {}, obj);
+  }
+
+  /**
+   * Get contrast color for text based on background color.
+   * @param {string} backgroundColor Background color in common format.
+   * @returns {string} Text color in common format.
+   */
+  static getTextContrastColor(backgroundColor) {
+    return Color(backgroundColor).isDark() ? '#ffffff' : '#000000';
   }
 }
 

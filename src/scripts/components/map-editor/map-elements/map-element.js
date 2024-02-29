@@ -1,6 +1,7 @@
 import Util from '@services/util';
 import Label from './label';
 import './map-element.scss';
+import { STAGE_TYPES } from './stage.js';
 
 export default class MapElement {
 
@@ -39,26 +40,26 @@ export default class MapElement {
 
     this.updateParams(this.params.elementParams);
 
-    if (this.params.elementParams.type === 'stage') {
-      this.label = new Label({ text: this.params.elementParams.label });
-      this.dom.appendChild(this.label.getDOM());
+    this.label = new Label({ text: this.params.elementParams.label });
+    this.dom.appendChild(this.label.getDOM());
 
-      this.dom.addEventListener('mouseenter', (event) => {
-        this.handleMouseOver(event);
-      });
-      this.dom.addEventListener('focus', (event) => {
-        this.handleMouseOver(event);
-      });
-      this.dom.addEventListener('mouseleave', () => {
-        this.handleMouseOut();
-      });
-      this.dom.addEventListener('blur', (event) => {
-        this.handleMouseOut(event);
-      });
-    }
+    this.dom.addEventListener('mouseenter', (event) => {
+      this.handleMouseOver(event);
+    });
+    this.dom.addEventListener('focus', (event) => {
+      this.handleMouseOver(event);
+    });
+    this.dom.addEventListener('mouseleave', () => {
+      this.handleMouseOut();
+    });
+    this.dom.addEventListener('blur', (event) => {
+      this.handleMouseOut(event);
+    });
 
     this.form = this.generateForm(
-      this.params.elementFields, this.params.elementParams
+      this.params.elementFields,
+      this.params.elementParams,
+      params.type
     );
     this.form.$element = H5P.jQuery(this.dom);
 
@@ -128,6 +129,10 @@ export default class MapElement {
         styleProperty = 'top';
       }
       this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
+      this.dom.style.setProperty(
+        `--map-element-percentage-${property}`,
+        `${params.telemetry[property]}`
+      );
     }
 
     this.label?.setText(this.params.elementParams.label);
@@ -174,9 +179,10 @@ export default class MapElement {
    * Generate form.
    * @param {object} semantics Semantics for form.
    * @param {object} params Parameters for form.
-   * @returns {object} Form object.
+   * @param {string} elementType Type of element.
+   * @returns {object} Form object with DOM and H5P widget instances.
    */
-  generateForm(semantics, params) {
+  generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
     H5PEditor.processSemanticsChunk(
@@ -203,10 +209,121 @@ export default class MapElement {
       }
     }
 
+    /*
+     * We unfortunately cannot remove fields that are not needed for the given
+     * type of the element before processSemanticsChunk, because we must not
+     * modify the original elementsGroupField and we cannot clone it either,
+     * because then we lose the reference to the neighbors fields for the
+     * dynamic checkboxes. We instead remove the field instances and DOM
+     * elements here.
+     */
+    const toBeRemoved = {};
+    toBeRemoved[STAGE_TYPES['stage']] =
+      ['specialStageType', 'specialStageExtraLives', 'specialStageExtraTime'];
+    toBeRemoved[STAGE_TYPES['special-stage']] =
+      ['canBeStartStage', 'time', 'contentType'];
+
+    const removeIndexes = [];
+
+    // Remove DOM elements
+    toBeRemoved[elementType].forEach((fieldName) => {
+      // Fetch indexes of field instances from semantics.
+      const index = semantics.findIndex((field) => field.name === fieldName);
+      if (index !== -1) {
+        removeIndexes.push(index);
+      }
+
+      this.removeFormFields(form, fieldName);
+    });
+
+    const children = this.removeFormInstances(removeIndexes);
+
+    if (elementType === STAGE_TYPES['special-stage']) {
+      /*
+      * The showWhen widget seems to have trouble with being attached to all
+      * the different forms of the stages. Introducing custom conditional
+      * visibility handling for the specialStageType features here.
+      */
+      this.applyCustomShowWhenHandling(children, form);
+    }
+
     return {
       form: form,
-      children: this.params.globals.get('elementsGroupField').children
+      children: children
     };
+  }
+
+  /**
+   * Apply custom conditional visibility handling for specialStageType.
+   * @param {object[]} children Editor widget instances.
+   * @param {HTMLElement} form Editor form for stage
+   */
+  applyCustomShowWhenHandling(children, form) {
+    children.forEach((child) => {
+      if (
+        !(child instanceof H5PEditor.Select) ||
+        child.field.name !== 'specialStageType'
+      ) {
+        return;
+      }
+
+      child.changes.push(() => {
+        this.toggleSpecialStageFields(form, child.value);
+      });
+      this.toggleSpecialStageFields(form, child.value);
+    });
+  }
+
+  /**
+   * Toggle special stage fields visibility.
+   * @param {HTMLElement} form Form.
+   * @param {string} specialStageType Value of specialStageType select field.
+   */
+  toggleSpecialStageFields(form, specialStageType) {
+    form.querySelector('.field-name-specialStageExtraLives')?.classList
+      .toggle('display-none', specialStageType !== 'extra-life');
+
+    form.querySelector('.field-name-specialStageExtraTime')?.classList
+      .toggle('display-none', specialStageType !== 'extra-time');
+  }
+
+  /**
+   * Remove fields from form. Works in-place on form.
+   * @param {HTMLElement} form Form.
+   * @param {string} fieldName Field name from semantics.
+   */
+  removeFormFields(form, fieldName) {
+    let domElement = form.querySelector(`.field-name-${fieldName}`);
+    if (!domElement) {
+      /*
+       * Workaround for library widget that does not have a field name in
+       * classname. Beware though: This workaround is fine, because the
+       * content's library field should be the first one. If some other
+       * library field is added before, this will break.
+       */
+      if (fieldName === 'contentType') {
+        domElement = form.querySelector('.field.library');
+      }
+    }
+    if (domElement) {
+      domElement.remove();
+    }
+  }
+
+  /**
+   * Remove H5P editor widget instances from form.
+   * @param {number[]} removeIndexes Indexes of instances to remove.
+   * @returns {object[]} Remaining instances.
+   */
+  removeFormInstances(removeIndexes) {
+    const children = this.params.globals.get('elementsGroupField').children
+      .map((child) => child);
+
+    for (let i = removeIndexes.length - 1; i >= 0; i--) {
+      children.splice(removeIndexes[i], 1);
+    }
+
+    return children;
   }
 
   /**
