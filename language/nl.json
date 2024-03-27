@@ -1,0 +1,20 @@
+{
+  "libraryStrings": {
+    "l10n.back": "Back",
+    "l10n.noBackgroundImage": "No Background Image",
+    "l10n.noBackgroundImageMessage": "You must select a background image before adding stages to your map.",
+    "l10n.toolbarButton-stage": "Add exercise stage",
+    "l10n.toolbarButton-special-stage": "Add special stage",
+    "l10n.done": "Done",
+    "l10n.remove": "Remove",
+    "l10n.selectAll": "Select all",
+    "l10n.deselectAll": "Unselect all",
+    "l10n.noNeighbors": "There are no stages to connect to yet.",
+    "l10n.contentRequired": "You need to select a content type for this stage.",
+    "l10n.unnamedStage": "Unnamed stage",
+    "l10n.confirmationDialogRemoveHeader": "Delete stage",
+    "l10n.confirmationDialogRemoveDialog": "Do you really want to delete this stage?",
+    "l10n.confirmationDialogRemoveCancel": "No",
+    "l10n.confirmationDialogRemoveConfirm": "Yes, delete!"
+  }
+}
