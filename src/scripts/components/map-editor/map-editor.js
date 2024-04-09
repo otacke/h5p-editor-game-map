@@ -179,7 +179,7 @@ export default class MapEditor {
       xPx = Math.max(0, Math.min(xPx, mapSize.width - widthPx));
       yPx = Math.max(0, Math.min(yPx, mapSize.height - heightPx));
 
-      this.mapElements[index].updateParams({telemetry: {
+      this.mapElements[index].updateParams({ telemetry: {
         x: xPx * 100 / mapSize.width,
         y: yPx * 100 / mapSize.height,
         height: telemetry.height
