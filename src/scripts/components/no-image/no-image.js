@@ -1,4 +1,4 @@
-import Util from '@services/util';
+import Util from '@services/util.js';
 import './no-image.scss';
 
 export default class NoImage {

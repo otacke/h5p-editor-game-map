@@ -1,9 +1,9 @@
-import Dictionary from '@services/dictionary';
-import Globals from '@services/globals';
-import Util from '@services/util';
-import MapEditor from '@components/map-editor/map-editor';
-import NoImage from '@components/no-image/no-image';
-import ParentReadyInitialization from '@mixins/parent-ready-initialization';
+import Dictionary from '@services/dictionary.js';
+import Globals from '@services/globals.js';
+import Util from '@services/util.js';
+import MapEditor from '@components/map-editor/map-editor.js';
+import NoImage from '@components/no-image/no-image.js';
+import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import './h5peditor-game-map.scss';
 
 /** Class for Boilerplate H5P widget */

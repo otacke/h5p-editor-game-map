@@ -1,5 +1,5 @@
-import Util from '@services/util';
-import Label from './label';
+import Util from '@services/util.js';
+import Label from './label.js';
 import './map-element.scss';
 import { STAGE_TYPES } from './stage.js';
 

@@ -1,4 +1,4 @@
-import Util from '@services/util';
+import Util from '@services/util.js';
 
 /**
  * Mixin containing methods parent ready initialization.

@@ -1,4 +1,4 @@
-import Util from '@services/util';
+import Util from '@services/util.js';
 import './dialog.scss';
 
 export default class Dialog {
