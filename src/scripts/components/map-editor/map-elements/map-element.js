@@ -218,10 +218,18 @@ export default class MapElement {
      * elements here.
      */
     const toBeRemoved = {};
-    toBeRemoved[STAGE_TYPES['stage']] =
-      ['specialStageType', 'specialStageExtraLives', 'specialStageExtraTime'];
-    toBeRemoved[STAGE_TYPES['special-stage']] =
-      ['canBeStartStage', 'time', 'contentType'];
+    toBeRemoved[STAGE_TYPES['stage']] = [
+      'specialStageType',
+      'specialStageExtraLives',
+      'specialStageExtraTime',
+      'alwaysVisible'
+    ];
+
+    toBeRemoved[STAGE_TYPES['special-stage']] = [
+      'canBeStartStage',
+      'time',
+      'contentType'
+    ];
 
     const removeIndexes = [];
 
