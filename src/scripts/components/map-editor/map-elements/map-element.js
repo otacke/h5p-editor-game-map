@@ -222,7 +222,8 @@ export default class MapElement {
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
-      'alwaysVisible'
+      'alwaysVisible',
+      'overrideSymbol'
     ];
 
     toBeRemoved[STAGE_TYPES['special-stage']] = [
