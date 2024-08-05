@@ -35,7 +35,7 @@ export default class DnBCalls {
     let elementParams = {};
 
     if (
-      type === STAGE_TYPES['stage'] ||
+      type === STAGE_TYPES.stage ||
       type === STAGE_TYPES['special-stage']
     ) {
       elementParams = Util.extend({

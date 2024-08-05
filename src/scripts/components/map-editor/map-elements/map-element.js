@@ -218,7 +218,7 @@ export default class MapElement {
      * elements here.
      */
     const toBeRemoved = {};
-    toBeRemoved[STAGE_TYPES['stage']] = [
+    toBeRemoved[STAGE_TYPES.stage] = [
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',

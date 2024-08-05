@@ -50,7 +50,7 @@ export default class MapEditor {
         buttons: [
           this.createButton({
             id: 'stage',
-            type: STAGE_TYPES['stage']
+            type: STAGE_TYPES.stage
           }),
           this.createButton({
             id: 'special-stage',
@@ -86,7 +86,7 @@ export default class MapEditor {
     this.dom.appendChild(this.dialog.getDOM());
 
     this.params.elements.forEach((elementParams) => {
-      let type = STAGE_TYPES['stage'];
+      let type = STAGE_TYPES.stage;
       if (elementParams.specialStageType) {
         type = STAGE_TYPES['special-stage'];
       }
