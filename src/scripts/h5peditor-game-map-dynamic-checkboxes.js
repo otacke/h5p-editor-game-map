@@ -103,6 +103,7 @@ export default class GameMapDynamicCheckboxes {
    * @param {function} params.onNeighborsChanged Callback when neighbors changed.
    */
   setActive(params = {}) {
+    const MIN_OPTIONS = 2;
     this.currentId = params.id;
     this.params = params.neighbors;
     this.callbacks.onNeighborsChanged = params.onNeighborsChanged;
@@ -115,7 +116,7 @@ export default class GameMapDynamicCheckboxes {
     label.innerText = this.field.label;
     list.appendChild(label);
 
-    if (this.field.options.length < 2) {
+    if (this.field.options.length < MIN_OPTIONS) {
       const message = document.createElement('div');
       message.classList.add('h5p-gamemap-editor-no-neighbors');
       message.classList.add('h5peditor-field-description');

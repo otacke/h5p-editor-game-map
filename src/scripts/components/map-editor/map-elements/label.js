@@ -1,6 +1,9 @@
 import Util from '@services/util.js';
 import './label.scss';
 
+/** @constant {number} VISIBILITY_CHANGE_DELAY_MS Delay for visibility change. */
+const VISIBILITY_CHANGE_DELAY_MS = 10;
+
 export default class Label {
 
   /**
@@ -81,7 +84,7 @@ export default class Label {
     else {
       window.setTimeout(() => {
         this.dom.classList.remove('visibility-hidden');
-      }, 10);
+      }, VISIBILITY_CHANGE_DELAY_MS);
     }
 
     this.dom.classList.remove('display-none');

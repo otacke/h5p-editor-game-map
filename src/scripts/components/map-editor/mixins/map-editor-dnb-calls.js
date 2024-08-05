@@ -2,6 +2,13 @@ import MapElement from '@components/map-editor/map-elements/map-element.js';
 import Stage, { DEFAULT_SIZE_PERCENT } from '@components/map-editor/map-elements/stage.js';
 import Util from '@services/util.js';
 import { STAGE_TYPES } from '@components/map-editor/map-elements/stage.js';
+import { MATH_TWO } from '@services/constants.js';
+
+/** @constant {number} HORIZONTAL_CENTER Horizontal center. */
+const HORIZONTAL_CENTER = 50;
+
+/** @constant {number} VERTICAL_CENTER Vertical center. */
+const VERTICAL_CENTER = 50;
 
 /**
  * Mixin containing methods that are related to being called from DnB.
@@ -43,8 +50,8 @@ export default class DnBCalls {
         label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
         content: newContent,
         telemetry: {
-          x: `${50 - DEFAULT_SIZE_PERCENT.width / 2 }`,
-          y: `${50 - DEFAULT_SIZE_PERCENT.height * mapRatio / 2 }`,
+          x: `${HORIZONTAL_CENTER - DEFAULT_SIZE_PERCENT.width / MATH_TWO}`,
+          y: `${VERTICAL_CENTER - DEFAULT_SIZE_PERCENT.height * mapRatio / MATH_TWO}`,
           width: `${DEFAULT_SIZE_PERCENT.width}`,
           height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`
         },

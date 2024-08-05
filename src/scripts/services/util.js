@@ -74,6 +74,8 @@ export default class Util {
    * @param {function} callback Function to execute on doubleClick.
    */
   static doubleClick(event, callback) {
+    const DOUBLE_CLICK_COUNT = 2;
+
     if (!event || typeof callback !== 'function') {
       return;
     }
@@ -86,7 +88,7 @@ export default class Util {
     }
 
     setTimeout(() => {
-      if (event.target.count === 2) {
+      if (event.target.count === DOUBLE_CLICK_COUNT) {
         callback();
       }
       event.target.count = 0;

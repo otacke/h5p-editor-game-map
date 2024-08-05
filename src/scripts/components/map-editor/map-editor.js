@@ -7,6 +7,7 @@ import DnBCalls from './mixins/map-editor-dnb-calls.js';
 import PathHandling from './mixins/map-editor-path-handling.js';
 import './map-editor.scss';
 import { STAGE_TYPES } from './map-elements/stage.js';
+import { MATH_HUNDRED } from '@services/constants.js';
 
 export default class MapEditor {
 
@@ -163,7 +164,10 @@ export default class MapEditor {
       const telemetry = elementParams.telemetry;
 
       // Convert percentage values to px.
-      const toPxFactor = { x: mapSize.width / 100, y: mapSize.height / 100 };
+      const toPxFactor = {
+        x: mapSize.width / MATH_HUNDRED,
+        y: mapSize.height / MATH_HUNDRED
+      };
       let xPx = parseFloat(telemetry.x) * toPxFactor.x;
       let yPx = parseFloat(telemetry.y) * toPxFactor.y;
 
@@ -180,8 +184,8 @@ export default class MapEditor {
       yPx = Math.max(0, Math.min(yPx, mapSize.height - heightPx));
 
       this.mapElements[index].updateParams({ telemetry: {
-        x: xPx * 100 / mapSize.width,
-        y: yPx * 100 / mapSize.height,
+        x: xPx * MATH_HUNDRED / mapSize.width,
+        y: yPx * MATH_HUNDRED / mapSize.height,
         height: telemetry.height
       }
       });
@@ -197,11 +201,11 @@ export default class MapEditor {
    */
   convertToPercent(value = {}) {
     if (typeof value.x === 'number') {
-      return value.x * 100 / this.map.getSize().width;
+      return value.x * MATH_HUNDRED / this.map.getSize().width;
     }
 
     if (typeof value.y === 'number') {
-      return value.y * 100 / this.map.getSize().height;
+      return value.y * MATH_HUNDRED / this.map.getSize().height;
     }
 
     return 0;

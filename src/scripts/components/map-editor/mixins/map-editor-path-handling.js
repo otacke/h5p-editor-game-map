@@ -1,4 +1,8 @@
 import Util from '@services/util.js';
+import { MATH_TWO, MATH_HUNDRED } from '@services/constants.js';
+
+/** @constant {number} BORDER_WIDTH_FACTOR Factor for border width. */
+const BORDER_WIDTH_FACTOR = 0.3;
 
 /**
  * Mixin containing methods for path handling.
@@ -25,12 +29,12 @@ export default class PathHandling {
       return null;
     }
 
-    const fromXPx = parseFloat(params.from.x) / 100 * mapSize.width;
-    const fromYPx = parseFloat(params.from.y) / 100 * mapSize.height;
-    const toXPx = parseFloat(params.to.x) / 100 * mapSize.width;
-    const toYPx = parseFloat(params.to.y) / 100 * mapSize.height;
-    const widthPx = parseFloat(params.from.width) / 100 * mapSize.width;
-    const heightPx = parseFloat(params.from.height) / 100 * mapSize.height;
+    const fromXPx = parseFloat(params.from.x) / MATH_HUNDRED * mapSize.width;
+    const fromYPx = parseFloat(params.from.y) / MATH_HUNDRED * mapSize.height;
+    const toXPx = parseFloat(params.to.x) / MATH_HUNDRED * mapSize.width;
+    const toYPx = parseFloat(params.to.y) / MATH_HUNDRED * mapSize.height;
+    const widthPx = parseFloat(params.from.width) / MATH_HUNDRED * mapSize.width;
+    const heightPx = parseFloat(params.from.height) / MATH_HUNDRED * mapSize.height;
 
     const deltaXPx = fromXPx - toXPx;
     const deltaYPx = fromYPx - toYPx;
@@ -41,8 +45,8 @@ export default class PathHandling {
 
     // Distance from center to border
     const offsetToBorder = {
-      x: widthPx / 2 * Math.cos(angle) * 100 / mapSize.width,
-      y: heightPx / 2 * Math.sin(angle) * 100 / mapSize.height
+      x: widthPx / MATH_TWO * Math.cos(angle) * MATH_HUNDRED / mapSize.width,
+      y: heightPx / MATH_TWO * Math.sin(angle) * MATH_HUNDRED / mapSize.height
     };
 
     // Border width
@@ -52,18 +56,18 @@ export default class PathHandling {
       )
     );
     const width = Math.min(
-      Math.max(1, widthPx * targetPathWidth), widthPx * 0.3
+      Math.max(1, widthPx * targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
     );
 
-    const offsetPathStroke = width / 2 * 100 / mapSize.height;
+    const offsetPathStroke = width / MATH_TWO * MATH_HUNDRED / mapSize.height;
 
     // Position + offset for centering + offset for border (+ stroke offset)
     const x = parseFloat(params.from.x) +
-      parseFloat(params.from.width) / 2 +
+      parseFloat(params.from.width) / MATH_TWO +
       offsetToBorder.x;
 
     const y = parseFloat(params.from.y) +
-      parseFloat(params.from.height) / 2 +
+      parseFloat(params.from.height) / MATH_TWO +
       offsetToBorder.y -
       offsetPathStroke;
 
