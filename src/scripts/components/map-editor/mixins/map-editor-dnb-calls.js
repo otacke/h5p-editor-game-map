@@ -2,7 +2,6 @@ import MapElement from '@components/map-editor/map-elements/map-element.js';
 import Stage, { DEFAULT_SIZE_PERCENT } from '@components/map-editor/map-elements/stage.js';
 import Util from '@services/util.js';
 import { STAGE_TYPES } from '@components/map-editor/map-elements/stage.js';
-import { MATH_TWO } from '@services/constants.js';
 
 /** @constant {number} HORIZONTAL_CENTER Horizontal center. */
 const HORIZONTAL_CENTER = 50;
@@ -50,8 +49,10 @@ export default class DnBCalls {
         label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
         content: newContent,
         telemetry: {
-          x: `${HORIZONTAL_CENTER - DEFAULT_SIZE_PERCENT.width / MATH_TWO}`,
-          y: `${VERTICAL_CENTER - DEFAULT_SIZE_PERCENT.height * mapRatio / MATH_TWO}`,
+          // eslint-disable-next-line no-magic-numbers
+          x: `${HORIZONTAL_CENTER - DEFAULT_SIZE_PERCENT.width / 2}`,
+          // eslint-disable-next-line no-magic-numbers
+          y: `${VERTICAL_CENTER - DEFAULT_SIZE_PERCENT.height * mapRatio / 2}`,
           width: `${DEFAULT_SIZE_PERCENT.width}`,
           height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`
         },

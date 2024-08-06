@@ -2,7 +2,6 @@ import Util from '@services/util.js';
 import Label from './label.js';
 import './map-element.scss';
 import { STAGE_TYPES } from './stage.js';
-import { MATH_TWO } from '@services/constants.js';
 
 export default class MapElement {
 
@@ -346,7 +345,8 @@ export default class MapElement {
     }
 
     const fontSize = this.params.content.getDOM()
-      .getBoundingClientRect().height / MATH_TWO; // Half height of stage element
+      // eslint-disable-next-line no-magic-numbers
+      .getBoundingClientRect().height / 2; // Half height of stage element
 
     this.label?.setFontSize(`${fontSize}px`);
     this.label?.show({ skipDelay: event instanceof FocusEvent });
