@@ -7,7 +7,7 @@
   "machineName": "H5PEditor.GameMap",
   "coreApi": {
     "majorVersion": 1,
-    "minorVersion": 12
+    "minorVersion": 27
   },
   "author": "Oliver Tacke",
   "preloadedJs": [
