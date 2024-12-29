@@ -37,11 +37,16 @@ export default class MapEditor {
     this.dom = document.createElement('div');
     this.dom.classList.add('h5p-editor-game-map-editor');
 
-    this.map = new Map({}, {
-      onImageLoaded: (image) => {
-        this.handleBackgroundImageLoaded(image);
+    this.map = new Map(
+      {
+        backgroundColor: this.params.backgroundColor,
+      },
+      {
+        onImageLoaded: (image) => {
+          this.handleBackgroundImageLoaded(image);
+        }
       }
-    });
+    );
 
     this.paths = new Paths({ map: this.map });
 
@@ -126,7 +131,7 @@ export default class MapEditor {
 
   /**
    * Set map background image.
-   * @param {string} url URL of image.
+   * @param {string|null} url URL of image or null
    */
   setMapImage(url) {
     this.map.setImage(url);

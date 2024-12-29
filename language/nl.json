@@ -1,8 +1,6 @@
 {
   "libraryStrings": {
     "l10n.back": "Terug",
-    "l10n.noBackgroundImage": "Geen achtergrondafbeelding",
-    "l10n.noBackgroundImageMessage": "Je moet een achtergrondafbeelding selecteren voordat je fases aan je kaart toevoegt.",
     "l10n.toolbarButton-stage": "Oefeningsfase toevoegen",
     "l10n.toolbarButton-special-stage": "Voeg een speciale fase toe",
     "l10n.done": "Klaar",

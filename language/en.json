@@ -1,8 +1,6 @@
 {
   "libraryStrings": {
     "l10n.back": "Back",
-    "l10n.noBackgroundImage": "No Background Image",
-    "l10n.noBackgroundImageMessage": "You must select a background image before adding stages to your map.",
     "l10n.toolbarButton-stage": "Add exercise stage",
     "l10n.toolbarButton-special-stage": "Add special stage",
     "l10n.done": "Done",

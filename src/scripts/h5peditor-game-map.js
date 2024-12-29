@@ -2,7 +2,6 @@ import Dictionary from '@services/dictionary.js';
 import Globals from '@services/globals.js';
 import Util from '@services/util.js';
 import MapEditor from '@components/map-editor/map-editor.js';
-import NoImage from '@components/no-image/no-image.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import './h5peditor-game-map.scss';
 
@@ -47,19 +46,6 @@ export default class GameMap {
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
 
-    // No image source info
-    this.noImage = new NoImage(
-      {
-        dictionary: this.dictionary
-      },
-      {
-        onClick: () => {
-          this.parent.$tabs[0].click();
-        }
-      }
-    );
-    this.dom.appendChild(this.noImage.getDOM());
-
     // Create instance for elements group field
     const elementsGroup = this.field.fields
       .find((field) => field.name === 'elements').field;
@@ -71,6 +57,7 @@ export default class GameMap {
     // Map canvas
     this.mapEditor = new MapEditor(
       {
+        backgroundColor: this.params.backgroundColor,
         dictionary: this.dictionary,
         globals: this.globals,
         elements: this.params.elements,
@@ -110,14 +97,7 @@ export default class GameMap {
    * Set active (called by H5P.Wizard when changing tabs).
    */
   setActive() {
-    if (!!this.backgroundImageField?.params) {
-      this.noImage.hide();
-      this.mapEditor.show();
-    }
-    else {
-      this.mapEditor.hide();
-      this.noImage.show();
-    }
+    this.mapEditor.show();
   }
 
   /**

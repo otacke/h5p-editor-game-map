@@ -47,18 +47,18 @@ export default class ParentReadyInitialization {
       );
     }
 
-    this.mapEditor.setMapImage(
-      H5P.getPath(this.backgroundImageField?.params?.path ?? '', H5PEditor.contentId)
-    );
+    const backgroundImage = (this.backgroundImageField?.params?.path) ?
+      H5P.getPath(this.backgroundImageField.params.path, H5PEditor.contentId) :
+      null;
+
+    this.mapEditor.setMapImage(backgroundImage);
 
     this.backgroundImageField.changes.push((change) => {
-      if (change) {
-        this.mapEditor.setMapImage(
-          H5P.getPath(change.path, H5PEditor.contentId)
-        );
+      const backgroundImage = (change?.path) ?
+        H5P.getPath(change.path, H5PEditor.contentId) :
+        null;
 
-        return;
-      }
+      this.mapEditor.setMapImage(backgroundImage);
     });
   }
 

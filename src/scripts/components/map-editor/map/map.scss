@@ -1,5 +1,5 @@
 .h5p-editor-game-map-editor-map {
-  background-color: #fff;
+  background-color: var(--editor-fields-gamemapSteps-backgroundImageSettings-backgroundColor, #fff);
   box-sizing: border-box;
   display: block;
   position: relative;
@@ -14,6 +14,14 @@
     height: auto;
     width: 100%;
     pointer-events: none;
+  }
+
+  .h5p-editor-game-map-editor-map-background-image-placeholder {
+    aspect-ratio: var(--map-aspect-ratio);
+
+    &.display-none {
+      display: none;
+    }
   }
 
   .h5p-editor-game-map-editor-map-path-wrapper {

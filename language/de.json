@@ -1,8 +1,6 @@
 {
   "libraryStrings": {
     "l10n.back": "Zurück",
-    "l10n.noBackgroundImage": "Kein Hintergrundbild",
-    "l10n.noBackgroundImageMessage": "Du musst ein Hintergrundbild hinzufügen bevor du der Karte Etappen hinzufügen kannst.",
     "l10n.toolbarButton-stage": "Etappe hinzufügen",
     "l10n.toolbarButton-special-stage": "Spezial-Etappe hinzufügen",
     "l10n.done": "Fertig",

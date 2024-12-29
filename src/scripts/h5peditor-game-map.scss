@@ -77,6 +77,8 @@
 }
 
 .h5peditor-game-map {
+  --map-aspect-ratio: 16/9;
+
   width: 100%;
 
   &> .group > .title {

@@ -1,8 +1,6 @@
 {
   "libraryStrings": {
     "l10n.back": "Atzera",
-    "l10n.noBackgroundImage": "Ez dago atzeko planoko irudirik",
-    "l10n.noBackgroundImageMessage": "Atzeko planoko irudi bat hautatu behar duzu zure mapan etapak gehitu aurretik.",
     "l10n.toolbarButton-stage": "Etapa",
     "l10n.toolbarButton-special-stage": "Add special stage",
     "l10n.done": "Egina",

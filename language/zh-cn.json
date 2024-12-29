@@ -1,8 +1,6 @@
 {
   "libraryStrings": {
     "l10n.back": "返回",
-    "l10n.noBackgroundImage": "背景图像缺失",
-    "l10n.noBackgroundImageMessage": "在添加关卡到地图之前，您必须选择一个背景图像。",
     "l10n.toolbarButton-stage": "增加练习关卡",
     "l10n.toolbarButton-special-stage": "添加特殊关卡",
     "l10n.done": "完成",
