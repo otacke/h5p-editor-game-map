@@ -222,6 +222,7 @@ export default class MapElement {
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
+      'specialStageExtraLinkURL',
       'alwaysVisible',
       'overrideSymbol'
     ];
@@ -294,6 +295,12 @@ export default class MapElement {
 
     form.querySelector('.field-name-specialStageExtraTime')?.classList
       .toggle('display-none', specialStageType !== 'extra-time');
+
+    form.querySelector('.field-name-specialStageLinkURL')?.classList
+      .toggle('display-none', specialStageType !== 'link');
+
+    form.querySelector('.field-name-specialStageLinkTarget')?.classList
+      .toggle('display-none', specialStageType !== 'link');
   }
 
   /**
