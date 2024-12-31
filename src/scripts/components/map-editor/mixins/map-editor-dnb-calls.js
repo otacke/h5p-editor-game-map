@@ -275,6 +275,10 @@ export default class DnBCalls {
         return false;
       }
 
+      if (child.$item?.get(0)?.classList.contains('display-none')) {
+        return true; // Hidden fields are not required, but values must be sanitzed in view
+      }
+
       return child.validate() ?? true; // Some widgets return `undefined` instead of true
     });
   }
