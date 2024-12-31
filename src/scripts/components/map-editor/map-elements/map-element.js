@@ -222,7 +222,8 @@ export default class MapElement {
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
-      'specialStageExtraLinkURL',
+      'specialStageLinkURL',
+      'specialStageLinkTarget',
       'alwaysVisible',
       'overrideSymbol'
     ];
