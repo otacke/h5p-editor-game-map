@@ -28,12 +28,6 @@ export default class Map {
     }
     this.dom.appendChild(this.image);
 
-    // We cannot set the aspect ratio of this.dom as it impacts the position of the path wrapper and stage wrapper
-    // this.imagePlaceholder = document.createElement('div');
-    // this.imagePlaceholder.classList.add('h5p-editor-game-map-editor-map-background-image-placeholder');
-    // this.imagePlaceholder.classList.add('display-none');
-    // this.dom.appendChild(this.imagePlaceholder);
-
     this.pathWrapper = document.createElement('div');
     this.pathWrapper.classList.add('h5p-editor-game-map-editor-map-path-wrapper');
     this.dom.appendChild(this.pathWrapper);
