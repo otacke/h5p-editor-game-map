@@ -231,7 +231,7 @@ export default class MapElement {
     toBeRemoved[STAGE_TYPES['special-stage']] = [
       'canBeStartStage',
       'time',
-      'contentType'
+      'contentslist'
     ];
 
     const removeIndexes = [];
@@ -311,17 +311,26 @@ export default class MapElement {
    */
   removeFormFields(form, fieldName) {
     let domElement = form.querySelector(`.field-name-${fieldName}`);
+
+    /*
+     * Workaround for list widget in H5P core that does not have "field-name" class but puts a lower-case identifier
+     * onto the label child.
+     */
     if (!domElement) {
-      /*
-       * Workaround for library widget that does not have a field name in
-       * classname. Beware though: This workaround is fine, because the
-       * content's library field should be the first one. If some other
-       * library field is added before, this will break.
-       */
-      if (fieldName === 'contentType') {
-        domElement = form.querySelector('.field.library');
-      }
+      const label = form.querySelector(`label[for^="field-${fieldName.toLowerCase()}-"]`);
+      domElement = label?.parentElement;
     }
+
+    /*
+     * Workaround for library widget in H5P core that does not have "field-name" class but puts a lower-case identifier
+     * onto the select child.
+     */
+    if (!domElement) {
+      const select = form.querySelector(`select[id^="field-${fieldName.toLowerCase()}-"]`);
+      domElement = select?.parentElement;
+
+    }
+
     if (domElement) {
       domElement.remove();
     }

@@ -275,7 +275,19 @@ export default class DnBCalls {
         return false;
       }
 
-      if (child.$item?.get(0)?.classList.contains('display-none')) {
+      // Unfortunately, H5P core widgets do not have a common interface. Custom detection is needed.
+      let childDOM;
+      if (child instanceof H5PEditor.List) {
+        childDOM = mapElement.getData().form.querySelector(`[id=${child.getId()}]`);
+      }
+      else if (child instanceof H5PEditor.Group) {
+        childDOM = child.$group.get(0);
+      }
+      else {
+        childDOM = child.$item?.get(0);
+      }
+
+      if (!childDOM?.offsetParent) {
         return true; // Hidden fields are not required, but values must be sanitzed in view
       }
 
