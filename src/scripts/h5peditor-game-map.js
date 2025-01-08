@@ -85,12 +85,14 @@ export default class GameMap {
    * @param {function} ready Ready callback.
    */
   ready(ready) {
-    if (!this.passReadies) {
-      ready();
-      return;
+    if (this.passReadies) {
+      this.parent.ready(ready);
     }
-
-    this.parent.ready(ready);
+    else {
+      window.requestAnimationFrame(() => {
+        ready();
+      });
+    }
   }
 
   /**
