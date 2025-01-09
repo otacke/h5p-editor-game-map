@@ -31,6 +31,10 @@ export default class GameMapStageSelect {
     this.$errors = this.$container.find('.h5p-errors');
   }
 
+  /**
+   * Set dynamic options.
+   * @param {object} options Options to set.
+   */
   setOptions(options) {
     const select = this.fieldInstance.$select.get(0);
     const previouslySelectedValue = select.value;
@@ -49,6 +53,8 @@ export default class GameMapStageSelect {
       select.appendChild(optionElement);
     }
 
+    // Ensure that H5P core stores the current value.
+    select.dispatchEvent(new Event('change'));
   }
 
   /**
