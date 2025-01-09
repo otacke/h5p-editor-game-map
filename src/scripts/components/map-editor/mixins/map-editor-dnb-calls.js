@@ -220,6 +220,8 @@ export default class DnBCalls {
       });
     }
 
+    this.updateStageScoreIdOptions(mapElement);
+
     this.dialog.showForm({
       form: mapElement.getData().form,
       doneCallback: () => {
@@ -246,6 +248,38 @@ export default class DnBCalls {
     setTimeout(() => {
       this.toolbar.blurAll();
     }, 0);
+  }
+
+  /**
+   * Update the stage score id options to list all possible stages.
+   * @param {MapElement} mapElement Map element to be edited.
+   */
+  updateStageScoreIdOptions(mapElement) {
+    const listFields = [
+      ...Util.findAllFields('restrictionSetList', mapElement.form),
+      ...Util.findAllFields('restrictionList', mapElement.form)
+    ];
+
+    listFields.forEach((field) => {
+      if (field.isObservedByGameMap) {
+        return;
+      }
+
+      field.isObservedByGameMap = true;
+      field.on('addedItem', () => {
+        this.updateStageScoreIdOptions(mapElement);
+      });
+    });
+
+    // Exclude the current stage from the list of options
+    const otherElementsParams = [
+      ...this.params.elements.slice(0, mapElement.getIndex()),
+      ...this.params.elements.slice(mapElement.getIndex() + 1)
+    ];
+
+    Util.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
+      field.setOptions(otherElementsParams);
+    });
   }
 
   /**
@@ -296,7 +330,7 @@ export default class DnBCalls {
   }
 
   /**
-   * Remove map element after confirmation.
+   * Remove map element and related restrictions after confirmation.
    * @param {MapElement} mapElement Map element to be removed.
    */
   removeIfConfirmed(mapElement) {
@@ -320,6 +354,7 @@ export default class DnBCalls {
    */
   remove(mapElement) {
     const removeIndex = mapElement.getIndex();
+    this.removeRestrictions(mapElement.getParams().id);
 
     // Remove from neigbors and re-index rest
     this.params.elements.forEach((element) => {
@@ -350,6 +385,38 @@ export default class DnBCalls {
     this.callbacks.onChanged(this.params.elements);
 
     this.updatePaths();
+  }
+
+  /**
+   * Remove restrictions related to a stage.
+   * @param {string} elementId Id of the stage to remove restrictions for.
+   */
+  removeRestrictions(elementId) {
+    this.mapElements.forEach((mapElement) => {
+      const listFields = [
+        ...Util.findAllFields('restrictionList', mapElement.form)
+      ];
+
+      listFields.forEach((field) => {
+        const items = field.getValue();
+        const index = items.findIndex((item) => item.stageScoreGroup?.stageScoreId === elementId);
+        if (index !== -1) {
+          field.removeItem(index);
+          /*
+           * Need to apply this stupid workaround here, because H5P Core's list widget does not
+           * remove the item from the DOM when calling `removeItem` on the field.
+           * @see {@link https://github.com/h5p/h5p-editor-php-library/pull/255}
+           * TODO: Remove workaround if H5P Group ever takes care of HFP-3989.
+           */
+          const newNumberOfItems = field.getValue().length;
+          const listItemDOMs = [...field.widget.container.querySelectorAll('.h5p-li.listgroup')];
+          if (listItemDOMs.length > newNumberOfItems) {
+            [...field.widget.container.querySelectorAll('.h5p-li.listgroup')][index].remove();
+          }
+        }
+      });
+    });
+
   }
 
   /**

@@ -54,6 +54,10 @@ export default class GameMap {
       this, elementsGroup, this.params.elements, () => {} // No setValue needed
     ));
 
+    // Ensure that dynamically set stageScoreId select options are available to match saved params.
+    const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
+    Util.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
+
     // Map canvas
     this.mapEditor = new MapEditor(
       {
