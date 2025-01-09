@@ -161,6 +161,57 @@ export default class Util {
   static getTextContrastColor(backgroundColor) {
     return Color(backgroundColor).isDark() ? '#ffffff' : '#000000';
   }
+
+  static findAllFields(fieldName, parent) {
+    let found = [];
+
+    if (parent.field?.name === fieldName) {
+      return [parent];
+    }
+    else if (parent instanceof H5PEditor.List) {
+      parent.forEachChild((child) => {
+        found = [...found, ...Util.findAllFields(fieldName, child)];
+      });
+    }
+    else if (parent.children) {
+      parent.children.forEach((child) => {
+        found = [...found, ...Util.findAllFields(fieldName, child)];
+      });
+    }
+
+    return found;
+  }
+
+  /**
+   * Override semantics with new properties/values.
+   * @param {object|object[]} semantics Semantics to override.
+   * @param {object} matchCriteria Criteria to match.
+   * @param {object} newProperties New properties to set.
+   */
+  static overrideSemantics(semantics, matchCriteria = {}, newProperties = {}) {
+    if (!Array.isArray(semantics)) {
+      semantics = [semantics];
+    }
+
+    const traverse = (element) => {
+      if (Object.keys(matchCriteria).every((key) => element[key] === matchCriteria[key])) {
+        for (const key in newProperties) {
+          element[key] = newProperties[key];
+        }
+      }
+
+      if (element.type === 'group') {
+        element.fields.forEach(traverse);
+      }
+      else if (element.type === 'list') {
+        traverse(element.field);
+      }
+    };
+
+    semantics.forEach((semantic) => {
+      traverse(semantic);
+    });
+  }
 }
 
 /** @constant {number} DOUBLE_CLICK_TIME Double click time in ms. */
