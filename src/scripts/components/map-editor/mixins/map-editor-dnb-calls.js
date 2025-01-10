@@ -393,13 +393,14 @@ export default class DnBCalls {
    */
   removeRestrictions(elementId) {
     this.mapElements.forEach((mapElement) => {
-      const listFields = [
-        ...Util.findAllFields('restrictionList', mapElement.form)
-      ];
-
+      const listFields = [...Util.findAllFields('restrictionList', mapElement.form)];
       listFields.forEach((field) => {
-        const items = field.getValue();
-        const index = items.findIndex((item) => item.stageScoreGroup?.stageScoreId === elementId);
+        const index = (field.getValue() ?? []).findIndex((item) => {
+          return (
+            item.restrictionType === 'stageScore' &&
+            item.stageScoreGroup?.stageScoreId === elementId
+          );
+        });
         if (index !== -1) {
           field.removeItem(index);
           /*
@@ -408,15 +409,19 @@ export default class DnBCalls {
            * @see {@link https://github.com/h5p/h5p-editor-php-library/pull/255}
            * TODO: Remove workaround if H5P Group ever takes care of HFP-3989.
            */
-          const newNumberOfItems = field.getValue().length;
-          const listItemDOMs = [...field.widget.container.querySelectorAll('.h5p-li.listgroup')];
-          if (listItemDOMs.length > newNumberOfItems) {
-            [...field.widget.container.querySelectorAll('.h5p-li.listgroup')][index].remove();
-          }
+          const newNumberOfItems = (field.getValue() ?? []).length;
+
+          // Ensure that trigger/listener in ListEditor widget have run
+          window.requestAnimationFrame(() => {
+            const listItemDOMs = [...field.widget.container.querySelectorAll('.h5p-li.listgroup')];
+            // Preventing to run if HFP-3989 is implemented and workaround not needed anymore
+            if (listItemDOMs.length > newNumberOfItems) {
+              [...field.widget.container.querySelectorAll('.h5p-li.listgroup')][index].remove();
+            }
+          });
         }
       });
     });
-
   }
 
   /**

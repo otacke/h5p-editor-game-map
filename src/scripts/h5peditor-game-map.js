@@ -111,6 +111,7 @@ export default class GameMap {
    * @param {object[]} elements Element parameters of elements.
    */
   setMapValues(elements) {
+    // TODO: Filter out empty restrictions to avoid saving them
     this.params.elements = elements;
     this.setValue(this.field, this.params);
   }
