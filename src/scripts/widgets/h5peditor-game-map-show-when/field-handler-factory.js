@@ -12,7 +12,7 @@ export default class FieldHandlerFactory {
    * @static
    */
   static create(field, equals) {
-    switch (field.field.type) {
+    switch (field.field?.type) {
 
       case 'library':
         return new LibraryHandler(field, equals);
