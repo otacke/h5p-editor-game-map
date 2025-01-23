@@ -57,13 +57,13 @@ export default class PathHandling {
     };
 
     // Border width
-    const targetPathWidth = parseFloat(
+    params.targetPathWidth = params.targetPathWidth ?? parseFloat(
       this.params.globals.get('getStylePropertyValue')(
         '--editor-fields-visual-paths-style-pathWidth'
       )
     );
     const width = Math.min(
-      Math.max(1, widthPx * targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
+      Math.max(1, widthPx * params.targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
     );
 
     // eslint-disable-next-line no-magic-numbers
@@ -103,4 +103,39 @@ export default class PathHandling {
 
     return 1; // Fallback
   }
+
+  /**
+   * Handle path clicked.
+   * @param {object} params Parameters.
+   */
+  handlePathClicked(params) {
+    this.toolbar.hide();
+    this.map.hide();
+
+    this.dialog.showForm({
+      form: params.form,
+      doneCallback: () => {
+        const isValid = params.children.every((child) => child.validate() ?? true);
+
+        if (isValid) {
+          this.toolbar.show();
+          this.map.show();
+          this.updatePaths();
+
+          this.params.paths = this.paths.getPathsParams();
+          this.callbacks.onChanged(null, this.params.paths);
+        }
+
+        return isValid;
+      },
+      removeCallback: () => {
+        this.toolbar.show();
+        this.map.show();
+      }
+    });
+
+    setTimeout(() => {
+      this.toolbar.blurAll();
+    }, 0);
+  };
 }

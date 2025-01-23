@@ -1,5 +1,10 @@
 import Color from 'color';
 
+/** @constant {number} DOUBLE_CLICK_TIME_MS Double click time in ms. */
+const DOUBLE_CLICK_TIME_MS = 300;
+
+// TODO: Split into separate utility files (at least + H5PUtil)
+
 /** Class for utility functions */
 export default class Util {
   /**
@@ -92,7 +97,7 @@ export default class Util {
         callback();
       }
       event.target.count = 0;
-    }, Util.DOUBLE_CLICK_TIME);
+    }, DOUBLE_CLICK_TIME_MS);
   }
 
   /**
@@ -212,7 +217,68 @@ export default class Util {
       traverse(semantic);
     });
   }
-}
 
-/** @constant {number} DOUBLE_CLICK_TIME Double click time in ms. */
-Util.DOUBLE_CLICK_TIME = 300;
+  /**
+   * Remove a field including the field instance from a form used with H5PEditor.processSemanticsChunk().
+   * @param {string[]} fieldNames Field names to remove.
+   * @param {object} semantics Semantics structure.
+   * @param {HTMLElement} form Form DOM element.
+   * @param {object} children Field instances.
+   * @returns {object[]} Remaining field instances.
+   */
+  static removeFromForm(fieldNames = [], semantics, form, children) {
+    const removeIndexes = [];
+
+    // Remove DOM elements
+    fieldNames.forEach((fieldName) => {
+      // Fetch indexes of field instances from semantics.
+      const index = semantics.findIndex((field) => field.name === fieldName);
+      if (index !== -1) {
+        removeIndexes.push(index);
+      }
+
+      Util.removeFormField(form, fieldName);
+    });
+
+    // Cloning, because the original may still be needed as a template
+    const childrenClone = [...children];
+
+    for (let i = removeIndexes.length - 1; i >= 0; i--) {
+      childrenClone.splice(removeIndexes[i], 1);
+    }
+
+    return childrenClone;
+  }
+
+  /**
+   * Remove a field from the form DOM created by H5PEditor.processSemanticsChunk()
+   * @param {HTMLElement} parentDOM Parent DOM element (aka form).
+   * @param {string} fieldName Field name to remove.
+   */
+  static removeFormField(parentDOM, fieldName) {
+    let domElement = parentDOM.querySelector(`.field-name-${fieldName}`);
+
+    /*
+     * Workaround for list widget in H5P core that does not have "field-name" class but puts a lower-case identifier
+     * onto the label child.
+     */
+    if (!domElement) {
+      const label = parentDOM.querySelector(`label[for^="field-${fieldName.toLowerCase()}-"]`);
+      domElement = label?.parentElement;
+    }
+
+    /*
+     * Workaround for library widget in H5P core that does not have "field-name" class but puts a lower-case identifier
+     * onto the select child.
+     */
+    if (!domElement) {
+      const select = parentDOM.querySelector(`select[id^="field-${fieldName.toLowerCase()}-"]`);
+      domElement = select?.parentElement;
+
+    }
+
+    if (domElement) {
+      domElement.remove();
+    }
+  }
+}
