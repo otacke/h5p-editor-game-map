@@ -1,10 +1,16 @@
 .h5p-editor-game-map-path {
+  background: none;
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 0;
   border-top: 4px var(--editor-fields-visual-paths-style-pathStyle, solid) var(--editor-fields-visual-paths-style-colorPath, rgba(0, 0, 0, 0.7));
   cursor: pointer;
+  padding: 0;
   position: absolute;
   transform-origin: 0 center;
 
   &:hover {
     filter: invert(0.2);
+    outline: 1px solid #0099ff; // Dnb blue
   }
 }

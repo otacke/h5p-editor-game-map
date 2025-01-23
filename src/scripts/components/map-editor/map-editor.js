@@ -54,7 +54,8 @@ export default class MapEditor {
         map: this.map,
         paths: this.params.paths,
         pathFields: this.params.pathFields,
-        globals: this.params.globals
+        globals: this.params.globals,
+        dictionary: this.params.dictionary,
       },
       {
         onPathClicked: (params) => {

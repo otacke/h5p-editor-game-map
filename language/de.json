@@ -13,6 +13,7 @@
     "l10n.confirmationDialogRemoveHeader": "Etappe löschen",
     "l10n.confirmationDialogRemoveDialog": "Willst du diese Etappe wirklich löschen?",
     "l10n.confirmationDialogRemoveCancel": "Nein",
-    "l10n.confirmationDialogRemoveConfirm": "Ja, löschen!"
+    "l10n.confirmationDialogRemoveConfirm": "Ja, löschen!",
+    "a11y.pathFromTo": "Pfad von Etappe @from nach Etappe @to"
   }
 }

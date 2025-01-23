@@ -74,6 +74,7 @@ export default class Paths {
         pathFields: this.params.pathFields,
         pathParams: { ...params.pathParams, from: params.from, to: params.to },
         globals: this.params.globals,
+        dictionary: this.params.dictionary,
       },
       {
         onClicked: (params) => {

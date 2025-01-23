@@ -13,6 +13,7 @@
     "l10n.confirmationDialogRemoveHeader": "Eliminar etapa",
     "l10n.confirmationDialogRemoveDialog": "Realmente queres eliminar esta etapa?",
     "l10n.confirmationDialogRemoveCancel": "Non",
-    "l10n.confirmationDialogRemoveConfirm": "Si, borrar!"
+    "l10n.confirmationDialogRemoveConfirm": "Si, borrar!",
+    "a11y.pathFromTo": "Path from stage @from to stage @to"
   }
 }
