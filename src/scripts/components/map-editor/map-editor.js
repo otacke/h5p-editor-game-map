@@ -23,7 +23,8 @@ export default class MapEditor {
     );
 
     this.params = Util.extend({
-      elements: []
+      elements: [],
+      paths: [],
     }, params);
 
     this.params.elements = this.params.elements ?? [];
@@ -48,7 +49,19 @@ export default class MapEditor {
       }
     );
 
-    this.paths = new Paths({ map: this.map });
+    this.paths = new Paths(
+      {
+        map: this.map,
+        paths: this.params.paths,
+        pathFields: this.params.pathFields,
+        globals: this.params.globals
+      },
+      {
+        onPathClicked: (params) => {
+          this.handlePathClicked(params);
+        }
+      }
+    );
 
     this.toolbar = new Toolbar(
       {

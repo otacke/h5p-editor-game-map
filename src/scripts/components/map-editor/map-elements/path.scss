@@ -1,5 +1,10 @@
 .h5p-editor-game-map-path {
   border-top: 4px var(--editor-fields-visual-paths-style-pathStyle, solid) var(--editor-fields-visual-paths-style-colorPath, rgba(0, 0, 0, 0.7));
+  cursor: pointer;
   position: absolute;
   transform-origin: 0 center;
+
+  &:hover {
+    filter: invert(0.2);
+  }
 }

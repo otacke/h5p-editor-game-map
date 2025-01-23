@@ -23,7 +23,8 @@ export default class GameMap {
     this.parent = parent;
     this.field = field;
     this.params = Util.extend({
-      elements: []
+      elements: [],
+      paths: [],
     }, params);
     this.setValue = setValue;
 
@@ -46,16 +47,31 @@ export default class GameMap {
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
 
-    // Create instance for elements group field
-    const elementsGroup = this.field.fields
-      .find((field) => field.name === 'elements').field;
-    const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    this.globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
-      this, elementsGroup, this.params.elements, () => {} // No setValue needed
-    ));
+    // TODO: Don't pass these as globals, but as parameters
+
+    // Create template for elements group field
+    const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
+    this.globals.set('elementsGroupTemplate', {
+      type: elementsGroup.type,
+      parent: this,
+      field: elementsGroup,
+      params: this.params.elements,
+      setValue: (value) => {} // No setValue needed
+    });
+
+    // Create template for paths group field
+    const pathsGroup = this.field.fields.find((field) => field.name === 'paths').field;
+    this.globals.set('pathsGroupTemplate', {
+      type: pathsGroup.type,
+      parent: this,
+      field: pathsGroup,
+      params: this.params.paths,
+      setValue: () => {} // No setValue needed
+    });
 
     // Ensure that dynamically set stageScoreId select options are available to match saved params.
     const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
+    const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
     Util.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
 
     // Map canvas
@@ -65,11 +81,13 @@ export default class GameMap {
         dictionary: this.dictionary,
         globals: this.globals,
         elements: this.params.elements,
-        elementsFields: elementsFields
+        elementsFields: elementsFields,
+        paths: this.params.paths,
+        pathFields: H5P.cloneObject(pathsGroup.fields, true),
       },
       {
-        onChanged: (elements) => {
-          this.setMapValues(elements);
+        onChanged: (elements, paths) => {
+          this.setMapValues(elements, paths);
         }
       }
     );
@@ -108,10 +126,22 @@ export default class GameMap {
 
   /**
    * Set map values.
-   * @param {object[]} elements Element parameters of elements.
+   * @param {object[]} elements Element parameters.
+   * @param {object[]} paths Path parameters.
    */
-  setMapValues(elements) {
-    this.params.elements = elements;
+  setMapValues(elements, paths) {
+    if (!elements && !paths) {
+      return;
+    }
+
+    if (elements) {
+      this.params.elements = elements;
+    }
+
+    if (paths) {
+      this.params.paths = paths;
+    }
+
     this.setValue(this.field, this.params);
   }
 

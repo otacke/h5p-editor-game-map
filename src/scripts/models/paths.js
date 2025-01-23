@@ -1,15 +1,48 @@
+import Util from '@services/util.js';
 import Path from '@components/map-editor/map-elements/path.js';
 
+/*
+ * TODO: The parameter structure here and in path.js needs to be cleaned up.
+ * It works, but got messy after adding "real" path element to the map.
+ * For instance, instead of indexing by from/to, a simple array and a lookup function should suffice.
+ */
 export default class Paths {
   /**
    * Paths model.
    * @class
    * @param {object} [params] Parameters.
    * @param {Map} params.map Map to draw on.
+   * @param {object} [callbacks] Callbacks.
    */
-  constructor(params = {}) {
-    this.params = params;
+  constructor(params = {}, callbacks = {}) {
+    this.params = Util.extend({
+      paths: [],
+    }, params);
+
     this.paths = {};
+
+    this.params.paths.forEach((path) => {
+      this.addPath(
+        {
+          pathParams: {
+            customVisuals: path.customVisuals,
+            visualsType: path.visualsType,
+          },
+          from: path.from,
+          to: path.to,
+        }
+      );
+
+      this.paths[path.from][path.to].updateParams({
+        from: path.from,
+        to: path.to,
+        customVisuals: path.customVisuals
+      });
+    });
+
+    this.callbacks = Util.extend({
+      onPathClicked: () => {},
+    }, callbacks);
   }
 
   /**
@@ -36,7 +69,18 @@ export default class Paths {
     }
 
     this.paths[params.from] = this.paths[params.from] || {};
-    const path = new Path();
+    const path = new Path(
+      {
+        pathFields: this.params.pathFields,
+        pathParams: { ...params.pathParams, from: params.from, to: params.to },
+        globals: this.params.globals,
+      },
+      {
+        onClicked: (params) => {
+          this.callbacks.onPathClicked(params);
+        }
+      }
+    );
 
     this.paths[params.from][params.to] = path;
     this.params.map.addPath(path.getDOM());
@@ -67,22 +111,21 @@ export default class Paths {
    * @param {object|null} params.pathTelemetry Telemetry data for path.
    */
   updatePath(params = {}) {
-    if (params.pathTelemetry === null) {
-      return; // Nothing to update here
-    }
-
-    const from = (typeof params.from === 'number') ?
-      params.from :
-      parseInt(params.from);
-
-    const to = (typeof params.to === 'number') ?
-      params.to :
-      parseInt(params.to);
+    const from = (typeof params.from === 'number') ? params.from : parseInt(params.from);
+    const to = (typeof params.to === 'number') ? params.to : parseInt(params.to);
 
     // Add path if not already present
     this.addPath({ from: from, to: to });
 
-    this.paths[from][to].update(params.pathTelemetry);
+    this.paths[from][to].updateParams({
+      from: params.from,
+      to: params.to,
+      colorPath: params.colorPath,
+      pathWidth: params.pathWidth,
+      pathStyle: params.pathStyle,
+    });
+
+    this.paths[from][to].updateTelemetry(params.pathTelemetry);
   }
 
   /**
@@ -111,5 +154,15 @@ export default class Paths {
         }
       }
     }
+  }
+
+  /**
+   * Get paths parameters.
+   * @returns {object[]} Paths parameters.
+   */
+  getPathsParams() {
+    return Object.values(this.paths).flatMap((fromPaths) =>
+      Object.values(fromPaths).map((path) => path.getParams())
+    );
   }
 }

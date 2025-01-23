@@ -12,8 +12,7 @@ export default class MapElement {
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
-    this.params = Util.extend({
-    }, params);
+    this.params = Util.extend({}, params);
 
     this.callbacks = Util.extend({
       onEdited: () => {},
@@ -185,11 +184,16 @@ export default class MapElement {
   generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
+    const template = this.params.globals.get('elementsGroupTemplate');
+    this.formParent = new H5PEditor.widgets[template.type](
+      template.parent, template.field, template.params, template.setValue
+    );
+
     H5PEditor.processSemanticsChunk(
       semantics,
       params,
       H5P.jQuery(form),
-      this.params.globals.get('elementsGroupField')
+      this.formParent
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -199,9 +203,7 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      const libraryWidget = this.params.globals.get('elementsGroupField')?.children
-        .find((child) => child.field.name === 'contentType');
-
+      const libraryWidget = this.formParent?.children.find((child) => child.field.name === 'contentType');
       if (libraryWidget) {
         libraryWidget.changes.push(() => {
           errors.innerHTML = ''; // Erase once a library is selected
@@ -234,20 +236,7 @@ export default class MapElement {
       'contentslist'
     ];
 
-    const removeIndexes = [];
-
-    // Remove DOM elements
-    toBeRemoved[elementType].forEach((fieldName) => {
-      // Fetch indexes of field instances from semantics.
-      const index = semantics.findIndex((field) => field.name === fieldName);
-      if (index !== -1) {
-        removeIndexes.push(index);
-      }
-
-      this.removeFormFields(form, fieldName);
-    });
-
-    const children = this.removeFormInstances(removeIndexes);
+    const children = Util.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
 
     if (elementType === STAGE_TYPES['special-stage']) {
       /*
@@ -305,45 +294,12 @@ export default class MapElement {
   }
 
   /**
-   * Remove fields from form. Works in-place on form.
-   * @param {HTMLElement} form Form.
-   * @param {string} fieldName Field name from semantics.
-   */
-  removeFormFields(form, fieldName) {
-    let domElement = form.querySelector(`.field-name-${fieldName}`);
-
-    /*
-     * Workaround for list widget in H5P core that does not have "field-name" class but puts a lower-case identifier
-     * onto the label child.
-     */
-    if (!domElement) {
-      const label = form.querySelector(`label[for^="field-${fieldName.toLowerCase()}-"]`);
-      domElement = label?.parentElement;
-    }
-
-    /*
-     * Workaround for library widget in H5P core that does not have "field-name" class but puts a lower-case identifier
-     * onto the select child.
-     */
-    if (!domElement) {
-      const select = form.querySelector(`select[id^="field-${fieldName.toLowerCase()}-"]`);
-      domElement = select?.parentElement;
-
-    }
-
-    if (domElement) {
-      domElement.remove();
-    }
-  }
-
-  /**
    * Remove H5P editor widget instances from form.
    * @param {number[]} removeIndexes Indexes of instances to remove.
    * @returns {object[]} Remaining instances.
    */
   removeFormInstances(removeIndexes) {
-    const children = this.params.globals.get('elementsGroupField').children
-      .map((child) => child);
+    const children = [...this.formParent.children];
 
     for (let i = removeIndexes.length - 1; i >= 0; i--) {
       children.splice(removeIndexes[i], 1);

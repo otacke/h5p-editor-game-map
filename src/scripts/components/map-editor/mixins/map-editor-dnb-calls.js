@@ -91,8 +91,9 @@ export default class DnBCalls {
             stage.setIcon(null);
           }
 
+          this.params.paths = this.paths.getPathsParams();
           this.params.elements[index] = elementParams;
-          this.callbacks.onChanged(this.params.elements);
+          this.callbacks.onChanged(this.params.elements, this.params.paths);
         }
       }
     );
@@ -142,20 +143,25 @@ export default class DnBCalls {
 
       // Don't compute telemetry values for paths that have not changed
       let pathTelemetry = null;
-      if (
-        typeof params.limit !== 'number' ||
-        parseInt(stages[0]) === params.limit ||
-        parseInt(stages[1]) === params.limit
-      ) {
+      const from = parseInt(stages[0]);
+      const to = parseInt(stages[1]);
+
+      if (typeof params.limit !== 'number' || from === params.limit || to === params.limit) {
+        const pathParams = this.paths.paths[from]?.[to]?.getParams();
+        const targetPathWidth = (pathParams?.visualsType === 'custom' && pathParams?.customVisuals?.pathWidth) ?
+          pathParams.customVisuals.pathWidth :
+          null;
+
         pathTelemetry = this.computePathTelemetry({
-          from: this.params.elements[parseInt(stages[0])].telemetry,
-          to: this.params.elements[parseInt(stages[1])].telemetry
+          from: this.params.elements[from].telemetry,
+          to: this.params.elements[to].telemetry,
+          targetPathWidth: targetPathWidth
         });
       }
 
       return {
-        from: parseInt(stages[0]),
-        to: parseInt(stages[1]),
+        from: from,
+        to: to,
         pathTelemetry: pathTelemetry
       };
     });
@@ -233,7 +239,8 @@ export default class DnBCalls {
           this.updatePaths();
           mapElement.updateParams();
 
-          this.callbacks.onChanged(this.params.elements);
+          this.params.paths = this.paths.getPathsParams();
+          this.callbacks.onChanged(this.params.elements, this.params.paths);
         }
 
         return isValid;
@@ -298,6 +305,7 @@ export default class DnBCalls {
      */
     return mapElement.getData().children.every((child) => {
       // Accept incomplete subcontent, but not no subcontent
+
       if (child instanceof H5PEditor.Library && !child.validate()) {
         if (child.$select.get(0).value !== '-') {
           return true; // Some subcontent is selected at least
@@ -386,9 +394,10 @@ export default class DnBCalls {
       element.setIndex(elementIndex);
     });
 
-    this.callbacks.onChanged(this.params.elements);
-
     this.updatePaths();
+
+    this.params.paths = this.paths.getPathsParams();
+    this.callbacks.onChanged(this.params.elements);
   }
 
   /**

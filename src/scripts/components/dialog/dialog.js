@@ -59,6 +59,14 @@ export default class Dialog {
   }
 
   /**
+   * Detect if dialog is shown.
+   * @returns {boolean} True if shown, false otherwise.
+   */
+  isShown() {
+    return !this.dom.classList.contains('display-none');
+  }
+
+  /**
    * Show.
    */
   show() {
