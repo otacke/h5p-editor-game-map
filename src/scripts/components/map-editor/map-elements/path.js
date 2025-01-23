@@ -22,7 +22,7 @@ export default class Path {
       onClicked: () => {},
     }, callbacks);
 
-    this.dom = document.createElement('div');
+    this.dom = document.createElement('button');
     this.dom.classList.add('h5p-editor-game-map-path');
 
     this.dom.addEventListener('click', () => {
@@ -113,7 +113,6 @@ export default class Path {
    * @param {number} params.from Start stage for path.
    * @param {number} params.to Target stage for path.
    * @param {string} params.colorPath Color for path.
-   * @param {string} params.colorPathCleared Color for path when cleared.
    * @param {string} params.pathWidth Width for path.
    * @param {string} params.pathStyle Style for path.
    */
@@ -141,6 +140,11 @@ export default class Path {
       else if (property === 'pathStyle' && typeof params[property] === 'string') {
         this.params.pathParams.customVisuals.pathStyle = params[property];
       }
+
+      const ariaLabel = this.params.dictionary.get('a11y.pathFromTo')
+        .replace('@from', this.params.pathParams.from + 1)
+        .replace('@to', this.params.pathParams.to + 1);
+      this.dom.setAttribute('aria-label', ariaLabel);
     }
 
     if (this.params.pathParams.visualsType === 'custom') {

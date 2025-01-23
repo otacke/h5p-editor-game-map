@@ -13,6 +13,7 @@
     "l10n.confirmationDialogRemoveHeader": "Ištrintas etapas",
     "l10n.confirmationDialogRemoveDialog": "Ar tikrai norite ištrinti šį etapą?",
     "l10n.confirmationDialogRemoveCancel": "Ne",
-    "l10n.confirmationDialogRemoveConfirm": "Taip, ištrinti!"
+    "l10n.confirmationDialogRemoveConfirm": "Taip, ištrinti!",
+    "a11y.pathFromTo": "Path from stage @from to stage @to"
   }
 }

@@ -13,6 +13,7 @@
     "l10n.confirmationDialogRemoveHeader": "删除关卡",
     "l10n.confirmationDialogRemoveDialog": "确定要删除此关卡？",
     "l10n.confirmationDialogRemoveCancel": "取消",
-    "l10n.confirmationDialogRemoveConfirm": "是的"
+    "l10n.confirmationDialogRemoveConfirm": "是的",
+    "a11y.pathFromTo": "Path from stage @from to stage @to"
   }
 }
