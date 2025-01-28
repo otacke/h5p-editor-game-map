@@ -1,5 +1,3 @@
-import './h5peditor-game-map-stage-select.scss';
-
 export default class GameMapStageSelect {
 
   /**
