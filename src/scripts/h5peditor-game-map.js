@@ -47,8 +47,6 @@ export default class GameMap {
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
 
-    // TODO: Don't pass these as globals, but as parameters
-
     // Create template for elements group field
     const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
     const elementsGroupTemplate = {
