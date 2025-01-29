@@ -83,6 +83,31 @@ export default class Paths {
   }
 
   /**
+   * Remove all paths leading to or from a stage.
+   * @param {number} stageIndex Stage index.
+   */
+  removePathsForStage(stageIndex) {
+    this.paths.forEach((path) => {
+      const pathParams = path.getParams();
+      if (pathParams.from === stageIndex || pathParams.to === stageIndex) {
+        this.removePath({ from: pathParams.from, to: pathParams.to });
+      }
+    });
+
+    // Re-index paths to accont for removed stage
+    this.paths.forEach((path) => {
+      const pathParams = path.getParams();
+      if (pathParams.from > stageIndex) {
+        path.updateParams({ from: pathParams.from - 1 });
+      }
+
+      if (pathParams.to > stageIndex) {
+        path.updateParams({ to: pathParams.to - 1 });
+      }
+    });
+  }
+
+  /**
    * Update all existing paths.
    * @param {object} [params] Parameters.
    * @param {string|number} params.from Start stage for path.
