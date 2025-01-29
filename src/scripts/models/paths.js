@@ -14,7 +14,7 @@ export default class Paths {
       paths: [],
     }, params);
 
-    this.paths = {};
+    this.paths = [];
 
     this.params.paths.forEach((path) => {
       this.addPath(path);
@@ -32,7 +32,7 @@ export default class Paths {
    * @returns {Path|undefined} Path.
    */
   getPath(from, to) {
-    return this.paths[from]?.[to];
+    return this.paths.find((path) => path.getParams().from === from && path.getParams().to === to);
   }
 
   /**
@@ -46,7 +46,6 @@ export default class Paths {
       return oldPath; // Path already exists.
     }
 
-    this.paths[params.from] = this.paths[params.from] || {};
     const path = new Path(
       {
         pathsGroupTemplate: this.params.pathsGroupTemplate,
@@ -62,7 +61,7 @@ export default class Paths {
       }
     );
 
-    this.paths[params.from][params.to] = path;
+    this.paths.push(path);
     this.params.map.addPath(path.getDOM());
 
     return path;
@@ -79,11 +78,7 @@ export default class Paths {
 
     if (path) {
       path.remove(); // Remove dom from map
-      delete this.paths[params.from][params.to];
-    }
-
-    if (!Object.keys(this.paths[params.from]).length) {
-      delete this.paths[params.from];
+      this.paths = this.paths.filter((p) => p !== path);
     }
   }
 
@@ -124,20 +119,21 @@ export default class Paths {
     });
 
     // Delete obsolete paths
-    for (const from in this.paths) {
-      for (const to in this.paths[from]) {
-        const isRequired = params.paths.some((path) => {
-          return (
-            path.from === parseInt(from) && path.to === parseInt(to) ||
-            path.to === parseInt(from) && path.from === parseInt(to)
-          );
-        });
+    this.paths = this.paths.filter((path) => {
+      const pathParams = path.getParams();
+      const isRequired = params.paths.some((p) => {
+        return (
+          p.from === pathParams.from && p.to === pathParams.to ||
+          p.to === pathParams.from && p.from === pathParams.to
+        );
+      });
 
-        if (!isRequired) {
-          this.removePath({ from: from, to: to });
-        }
+      if (!isRequired) {
+        this.removePath({ from: pathParams.from, to: pathParams.to });
       }
-    }
+
+      return isRequired;
+    });
   }
 
   /**
@@ -145,8 +141,6 @@ export default class Paths {
    * @returns {object[]} Paths parameters.
    */
   getPathsParams() {
-    return Object.values(this.paths).flatMap((fromPaths) =>
-      Object.values(fromPaths).map((path) => path.getParams())
-    );
+    return this.paths.map((path) => path.getParams());
   }
 }
