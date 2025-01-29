@@ -149,7 +149,7 @@ export default class DnBCalls {
       const to = parseInt(stages[1]);
 
       if (typeof params.limit !== 'number' || from === params.limit || to === params.limit) {
-        const pathParams = this.paths.getPath(from, to).getParams(); // TODO: Should probably be a direct method
+        const pathParams = this.paths.getPath(from, to)?.getParams(); // TODO: Should probably be a direct method
         const targetPathWidth = (pathParams?.visualsType === 'custom' && pathParams?.customVisuals?.pathWidth) ?
           pathParams.customVisuals.pathWidth :
           null;
