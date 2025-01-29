@@ -19,13 +19,13 @@ export default class GameMapDynamicCheckboxes {
    * @param {object} params Parameters entered in editor form.
    * @param {function} setValue Callback to set parameters.
    */
-  constructor(parent, field, params, setValue) {
+  constructor(parent, field, params = [], setValue) {
     this.parent = parent;
 
     this.field = field;
     this.field.options = this.field.options ?? [];
 
-    this.params = params || [];
+    this.params = params;
 
     this.setValue = setValue;
 

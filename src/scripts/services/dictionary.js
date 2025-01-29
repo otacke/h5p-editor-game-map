@@ -28,7 +28,7 @@ export default class Dictionary {
     const splits = key.split(/[./]+/);
 
     if (splits.length === 1) {
-      return base[key];
+      return base[key] || `Translation for '${key}' not found`;
     }
 
     key = splits.shift();
