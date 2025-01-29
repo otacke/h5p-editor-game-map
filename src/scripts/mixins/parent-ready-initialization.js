@@ -1,4 +1,4 @@
-import Util from '@services/util.js';
+import UtilH5P from '@services/util-h5p.js';
 
 /**
  * Mixin containing methods parent ready initialization.
@@ -30,7 +30,7 @@ export default class ParentReadyInitialization {
     }
     document.head.appendChild(style);
 
-    this.addVisualsChangeListeners(Util.getRootField(this));
+    this.addVisualsChangeListeners(UtilH5P.getRootField(this));
   }
 
   /**

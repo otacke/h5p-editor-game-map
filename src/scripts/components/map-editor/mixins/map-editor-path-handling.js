@@ -1,4 +1,4 @@
-import Util from '@services/util.js';
+import UtilCSS from '@services/util.js';
 
 /** @constant {number} BORDER_WIDTH_FACTOR Factor for border width. */
 const BORDER_WIDTH_FACTOR = 0.3;
@@ -92,7 +92,7 @@ export default class PathHandling {
    * @returns {number} Height in px.
    */
   getPathsHeight() {
-    const height = Util.parseCSSLengthProperty(this.paths.getHeight());
+    const height = UtilCSS.parseCSSLengthProperty(this.paths.getHeight());
     if (!height) {
       return 1;
     }

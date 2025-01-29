@@ -1,4 +1,6 @@
 import Util from '@services/util.js';
+import UtilDOM from '@services/util-dom.js';
+import UtilH5P from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
 import { STAGE_TYPES } from './stage.js';
@@ -28,7 +30,7 @@ export default class MapElement {
     H5P.jQuery(this.dom).data('id', this.params.index); // DnB tradeoff
 
     this.dom.addEventListener('click', (event) => {
-      Util.doubleClick(event, () => {
+      UtilDOM.doubleClick(event, () => {
         this.callbacks.onEdited(this);
       });
     });
@@ -236,7 +238,7 @@ export default class MapElement {
       'contentslist'
     ];
 
-    const children = Util.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
+    const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
 
     if (elementType === STAGE_TYPES['special-stage']) {
       /*
@@ -313,7 +315,7 @@ export default class MapElement {
    * @param {Event} event Event that triggered.
    */
   handleMouseOver(event) {
-    if (Util.supportsTouch()) {
+    if (UtilDOM.supportsTouch()) {
       return;
     }
 
@@ -329,7 +331,7 @@ export default class MapElement {
    * Handle mouseout.
    */
   handleMouseOut() {
-    if (Util.supportsTouch()) {
+    if (UtilDOM.supportsTouch()) {
       return;
     }
 

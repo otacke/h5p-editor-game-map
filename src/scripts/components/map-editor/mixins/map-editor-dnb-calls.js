@@ -1,6 +1,7 @@
 import MapElement from '@components/map-editor/map-elements/map-element.js';
 import Stage, { DEFAULT_SIZE_PERCENT } from '@components/map-editor/map-elements/stage.js';
 import Util from '@services/util.js';
+import UtilH5P from '@services/util-h5p.js';
 import { STAGE_TYPES } from '@components/map-editor/map-elements/stage.js';
 
 /** @constant {number} HORIZONTAL_CENTER Horizontal center. */
@@ -264,8 +265,8 @@ export default class DnBCalls {
    */
   updateStageIdOptions(mapElement) {
     const listFields = [
-      ...Util.findAllFields('restrictionSetList', mapElement.form),
-      ...Util.findAllFields('restrictionList', mapElement.form)
+      ...UtilH5P.findAllFields('restrictionSetList', mapElement.form),
+      ...UtilH5P.findAllFields('restrictionList', mapElement.form)
     ];
 
     listFields.forEach((field) => {
@@ -285,11 +286,11 @@ export default class DnBCalls {
       ...this.params.elements.slice(mapElement.getIndex() + 1)
     ];
 
-    Util.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
+    UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
       field.setOptions(otherElementsParams);
     });
 
-    Util.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
+    UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
       field.setOptions(otherElementsParams);
     });
   }
@@ -407,7 +408,7 @@ export default class DnBCalls {
    */
   removeRestrictions(elementId) {
     this.mapElements.forEach((mapElement) => {
-      const listFields = [...Util.findAllFields('restrictionList', mapElement.form)];
+      const listFields = [...UtilH5P.findAllFields('restrictionList', mapElement.form)];
       listFields.forEach((field) => {
         const index = (field.getValue() ?? []).findIndex((item) => {
           return (
