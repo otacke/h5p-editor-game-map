@@ -1,5 +1,3 @@
-import UtilCSS from '@services/util.js';
-
 /** @constant {number} BORDER_WIDTH_FACTOR Factor for border width. */
 const BORDER_WIDTH_FACTOR = 0.3;
 
