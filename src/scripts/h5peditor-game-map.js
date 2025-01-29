@@ -1,6 +1,8 @@
 import Dictionary from '@services/dictionary.js';
 import Globals from '@services/globals.js';
 import Util from '@services/util.js';
+import UtilCSS from '@services/util-css.js';
+import UtilH5P from '@services/util-h5p.js';
 import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import './h5peditor-game-map.scss';
@@ -70,7 +72,7 @@ export default class GameMap {
     // Ensure that dynamically set stageScoreId select options are available to match saved params.
     const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
     const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    Util.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
+    UtilH5P.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
 
     // Map canvas
     this.mapEditor = new MapEditor(
@@ -236,14 +238,14 @@ export default class GameMap {
         this.updateCSSProperty(prefix, field.params);
         this.updateCSSProperty(
           `${prefix}-text`,
-          Util.getTextContrastColor(field.params)
+          UtilCSS.getTextContrastColor(field.params)
         );
       });
 
       this.updateCSSProperty(prefix, field.params);
       this.updateCSSProperty(
         `${prefix}-text`,
-        Util.getTextContrastColor(field.params)
+        UtilCSS.getTextContrastColor(field.params)
       );
     }
     else if (
