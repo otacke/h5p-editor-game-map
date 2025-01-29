@@ -170,7 +170,7 @@ export default class Path {
   generateForm(semantics, params) {
     const form = document.createElement('div');
 
-    const template = this.params.globals.get('pathsGroupTemplate');
+    const template = this.params.pathsGroupTemplate;
     const parent = new H5PEditor.widgets[template.type](
       template.parent, template.field, template.params, template.setValue
     );

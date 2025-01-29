@@ -66,6 +66,7 @@ export default class DnBCalls {
         globals: this.params.globals,
         index: this.mapElements.length,
         content: newContent,
+        elementsGroupTemplate: this.params.elementsGroupTemplate,
         elementParams: elementParams,
         elementFields: this.params.elementsFields,
         toolbar: this.toolbar

@@ -184,7 +184,7 @@ export default class MapElement {
   generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
-    const template = this.params.globals.get('elementsGroupTemplate');
+    const template = this.params.elementsGroupTemplate;
     this.formParent = new H5PEditor.widgets[template.type](
       template.parent, template.field, template.params, template.setValue
     );
