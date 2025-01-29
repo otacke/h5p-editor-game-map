@@ -44,14 +44,6 @@ export default class Path {
   }
 
   /**
-   * Get height from CSS.
-   * @returns {string} Defined height.
-   */
-  getHeight() {
-    return window.getComputedStyle(this.dom).getPropertyValue('border-top-width');
-  }
-
-  /**
    * Remove.
    */
   remove() {

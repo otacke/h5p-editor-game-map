@@ -88,23 +88,6 @@ export default class PathHandling {
   }
 
   /**
-   * Get height of paths. Supports px only for now.
-   * @returns {number} Height in px.
-   */
-  getPathsHeight() {
-    const height = UtilCSS.parseCSSLengthProperty(this.paths.getHeight());
-    if (!height) {
-      return 1;
-    }
-
-    if (height.unit === 'px') {
-      return height.value;
-    }
-
-    return 1; // Fallback
-  }
-
-  /**
    * Handle path clicked.
    * @param {object} params Parameters.
    */

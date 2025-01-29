@@ -3,7 +3,7 @@ import Path from '@components/map-editor/map-elements/path.js';
 
 /*
  * TODO: The parameter structure here and in path.js needs to be cleaned up.
- * It works, but got messy after adding "real" path element to the map.
+ * It works, but got messy after adding "real" path elements to the map.
  * For instance, instead of indexing by from/to, a simple array and a lookup function should suffice.
  */
 export default class Paths {
@@ -46,17 +46,13 @@ export default class Paths {
   }
 
   /**
-   * Get height of paths as CSS value.
-   * @returns {string} Defined height.
+   * Get path.
+   * @param {string|number} from Start stage.
+   * @param {string|number} to Target stage.
+   * @returns {Path|undefined} Path.
    */
-  getHeight() {
-    const somePath = Object.values(Object.values(this.paths)[0] || {})[0];
-
-    if (!somePath) {
-      return null; // No path set
-    }
-
-    return somePath.getHeight();
+  getPath(from, to) {
+    return this.paths[from]?.[to];
   }
 
   /**
