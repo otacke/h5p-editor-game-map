@@ -369,6 +369,7 @@ export default class DnBCalls {
   remove(mapElement) {
     const removeIndex = mapElement.getIndex();
     this.removeRestrictions(mapElement.getParams().id);
+    this.paths.removePathsForStage(removeIndex);
 
     // Remove from neigbors and re-index rest
     this.params.elements.forEach((element) => {
