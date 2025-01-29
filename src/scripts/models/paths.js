@@ -71,6 +71,7 @@ export default class Paths {
     this.paths[params.from] = this.paths[params.from] || {};
     const path = new Path(
       {
+        pathsGroupTemplate: this.params.pathsGroupTemplate,
         pathFields: this.params.pathFields,
         pathParams: { ...params.pathParams, from: params.from, to: params.to },
         globals: this.params.globals,

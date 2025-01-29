@@ -51,23 +51,23 @@ export default class GameMap {
 
     // Create template for elements group field
     const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
-    this.globals.set('elementsGroupTemplate', {
+    const elementsGroupTemplate = {
       type: elementsGroup.type,
       parent: this,
       field: elementsGroup,
       params: this.params.elements,
       setValue: (value) => {} // No setValue needed
-    });
+    };
 
     // Create template for paths group field
     const pathsGroup = this.field.fields.find((field) => field.name === 'paths').field;
-    this.globals.set('pathsGroupTemplate', {
+    const pathsGroupTemplate = {
       type: pathsGroup.type,
       parent: this,
       field: pathsGroup,
       params: this.params.paths,
-      setValue: () => {} // No setValue needed
-    });
+      setValue: (value) => {} // No setValue needed
+    };
 
     // Ensure that dynamically set stageScoreId select options are available to match saved params.
     const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
@@ -80,8 +80,10 @@ export default class GameMap {
         backgroundColor: this.params.backgroundColor,
         dictionary: this.dictionary,
         globals: this.globals,
+        elementsGroupTemplate: elementsGroupTemplate,
         elements: this.params.elements,
         elementsFields: elementsFields,
+        pathsGroupTemplate: pathsGroupTemplate,
         paths: this.params.paths,
         pathFields: H5P.cloneObject(pathsGroup.fields, true),
       },

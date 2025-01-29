@@ -52,6 +52,7 @@ export default class MapEditor {
     this.paths = new Paths(
       {
         map: this.map,
+        pathsGroupTemplate: this.params.pathsGroupTemplate,
         paths: this.params.paths,
         pathFields: this.params.pathFields,
         globals: this.params.globals,
