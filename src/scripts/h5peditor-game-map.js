@@ -232,54 +232,44 @@ export default class GameMap {
     }
 
     const prefix = path.replace(/\//g, '-');
-    if (field instanceof H5PEditor.ColorSelector) {
-      field.changes.push(() => {
-        this.updateCSSProperty(prefix, field.params);
-        this.updateCSSProperty(
-          `${prefix}-text`,
-          UtilCSS.getTextContrastColor(field.params)
-        );
-        this.mapEditor.updatePaths();
-      });
 
-      this.updateCSSProperty(prefix, field.params);
-      this.updateCSSProperty(
-        `${prefix}-text`,
-        UtilCSS.getTextContrastColor(field.params)
-      );
-      this.mapEditor.updatePaths();
-    }
-    else if (
-      field instanceof H5PEditor.Select) {
-      if (
-        field.field.name === 'pathStyle' ||
-        field.field.name === 'pathWidth'
-      ) {
-        field.changes.push(() => {
-          this.updateCSSProperty(prefix, field.value);
-          this.mapEditor.updatePaths();
-        });
-
-        this.updateCSSProperty(prefix, field.value);
-        this.mapEditor.updatePaths();
+    const updateField = (value, textColor) => {
+      this.updateCSSProperty(prefix, value);
+      if (textColor) {
+        this.updateCSSProperty(`${prefix}-text`, textColor);
       }
+      this.mapEditor.updatePaths();
+    };
+
+    if (field instanceof H5PEditor.ColorSelector) {
+      const updateColorSelector = () => {
+        updateField(field.params, UtilCSS.getTextContrastColor(field.params));
+      };
+
+      field.changes.push(() => {
+        updateColorSelector();
+      });
+      updateColorSelector();
+    }
+    else if (field instanceof H5PEditor.Select && ['pathStyle', 'pathWidth'].includes(field.field.name)) {
+      const updateSelectField = () => {
+        updateField(field.value);
+      };
+
+      field.changes.push(() => {
+        updateSelectField();
+      });
+      updateSelectField();
     }
     else if (field.children) {
-      (field.children || []).forEach((child) => {
-        this.addVisualsChangeListeners(
-          child, `${path}/${child.field.name}`
-        );
+      field.children.forEach((child) => {
+        this.addVisualsChangeListeners(child, `${path}/${child.field.name}`);
       });
     }
     else if (field instanceof H5PEditor.List) {
       field.forEachChild((listItem) => {
-        this.addVisualsChangeListeners(
-          listItem, `${path}/${listItem.field.name}`
-        );
+        this.addVisualsChangeListeners(listItem, `${path}/${listItem.field.name}`);
       });
-    }
-    else {
-      // Field is not interesting
     }
   }
 }
