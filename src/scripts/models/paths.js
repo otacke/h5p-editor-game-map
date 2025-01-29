@@ -1,11 +1,6 @@
 import Util from '@services/util.js';
 import Path from '@components/map-editor/map-elements/path.js';
 
-/*
- * TODO: The parameter structure here and in path.js needs to be cleaned up.
- * It works, but got messy after adding "real" path elements to the map.
- * For instance, instead of indexing by from/to, a simple array and a lookup function should suffice.
- */
 export default class Paths {
   /**
    * Paths model.
@@ -22,22 +17,7 @@ export default class Paths {
     this.paths = {};
 
     this.params.paths.forEach((path) => {
-      this.addPath(
-        {
-          pathParams: {
-            customVisuals: path.customVisuals,
-            visualsType: path.visualsType,
-          },
-          from: path.from,
-          to: path.to,
-        }
-      );
-
-      this.paths[path.from][path.to].updateParams({
-        from: path.from,
-        to: path.to,
-        customVisuals: path.customVisuals
-      });
+      this.addPath(path);
     });
 
     this.callbacks = Util.extend({
@@ -58,10 +38,12 @@ export default class Paths {
   /**
    * Add path.
    * @param {object} params Parameters.
+   * @returns {Path} Path that was added or existed.
    */
   addPath(params = {}) {
-    if (this.paths[params.from] && this.paths[params.from][params.to]) {
-      return; // Path already exists.
+    const oldPath = this.getPath(params.from, params.to);
+    if (oldPath) {
+      return oldPath; // Path already exists.
     }
 
     this.paths[params.from] = this.paths[params.from] || {};
@@ -69,7 +51,7 @@ export default class Paths {
       {
         pathsGroupTemplate: this.params.pathsGroupTemplate,
         pathFields: this.params.pathFields,
-        pathParams: { ...params.pathParams, from: params.from, to: params.to },
+        pathParams: params,
         globals: this.params.globals,
         dictionary: this.params.dictionary,
       },
@@ -82,6 +64,8 @@ export default class Paths {
 
     this.paths[params.from][params.to] = path;
     this.params.map.addPath(path.getDOM());
+
+    return path;
   }
 
   /**
@@ -91,8 +75,10 @@ export default class Paths {
    * @param {string|number} params.to Target stage for path to be removed.
    */
   removePath(params = {}) {
-    if (this.paths[params.from] && this.paths[params.from][params.to]) {
-      this.paths[params.from][params.to].remove(); // Remove dom from map
+    const path = this.getPath(params.from, params.to);
+
+    if (path) {
+      path.remove(); // Remove dom from map
       delete this.paths[params.from][params.to];
     }
 
@@ -113,9 +99,9 @@ export default class Paths {
     const to = (typeof params.to === 'number') ? params.to : parseInt(params.to);
 
     // Add path if not already present
-    this.addPath({ from: from, to: to });
+    const path = this.addPath({ from: from, to: to });
 
-    this.paths[from][to].updateParams({
+    path.updateParams({
       from: params.from,
       to: params.to,
       colorPath: params.colorPath,
@@ -123,7 +109,7 @@ export default class Paths {
       pathStyle: params.pathStyle,
     });
 
-    this.paths[from][to].updateTelemetry(params.pathTelemetry);
+    path.updateTelemetry(params.pathTelemetry);
   }
 
   /**
