@@ -1,6 +1,11 @@
 /** @constant {number} DOUBLE_CLICK_TIME_MS Double click time in ms. */
 const DOUBLE_CLICK_TIME_MS = 300;
 
+/** @constant {number} DOUBLE_CLICK_COUNT Number of clicks to trigger double click. */
+const DOUBLE_CLICK_COUNT = 2;
+
+const clickCounts = new WeakMap();
+
 /** Class for utility functions */
 export default class UtilDOM {
   /**
@@ -9,24 +14,20 @@ export default class UtilDOM {
    * @param {function} callback Function to execute on doubleClick.
    */
   static doubleClick(event, callback) {
-    const DOUBLE_CLICK_COUNT = 2;
+
 
     if (!event || typeof callback !== 'function') {
       return;
     }
 
-    if (isNaN(event.target.count)) {
-      event.target.count = 1;
-    }
-    else {
-      event.target.count++;
-    }
+    const count = clickCounts.get(event.target) || 0;
+    clickCounts.set(event.target, count + 1);
 
     setTimeout(() => {
-      if (event.target.count === DOUBLE_CLICK_COUNT) {
+      if (clickCounts.get(event.target) === DOUBLE_CLICK_COUNT) {
         callback();
       }
-      event.target.count = 0;
+      clickCounts.set(event.target, 0);
     }, DOUBLE_CLICK_TIME_MS);
   }
 

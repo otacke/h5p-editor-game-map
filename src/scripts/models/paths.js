@@ -94,7 +94,7 @@ export default class Paths {
       }
     });
 
-    // Re-index paths to accont for removed stage
+    // Re-index paths to account for removed stage
     this.paths.forEach((path) => {
       const pathParams = path.getParams();
       if (pathParams.from > stageIndex) {
