@@ -218,7 +218,6 @@ export default class GameMap {
    */
   updateCSSProperty(key, value) {
     this.dom.style.setProperty(`--editor-fields${key}`, value);
-    this.mapEditor.updatePaths();
   }
 
   /**
@@ -240,6 +239,7 @@ export default class GameMap {
           `${prefix}-text`,
           UtilCSS.getTextContrastColor(field.params)
         );
+        this.mapEditor.updatePaths();
       });
 
       this.updateCSSProperty(prefix, field.params);
@@ -247,6 +247,7 @@ export default class GameMap {
         `${prefix}-text`,
         UtilCSS.getTextContrastColor(field.params)
       );
+      this.mapEditor.updatePaths();
     }
     else if (
       field instanceof H5PEditor.Select) {
@@ -256,9 +257,11 @@ export default class GameMap {
       ) {
         field.changes.push(() => {
           this.updateCSSProperty(prefix, field.value);
+          this.mapEditor.updatePaths();
         });
 
         this.updateCSSProperty(prefix, field.value);
+        this.mapEditor.updatePaths();
       }
     }
     else if (field.children) {
