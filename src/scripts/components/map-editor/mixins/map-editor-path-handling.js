@@ -96,7 +96,7 @@ export default class PathHandling {
     this.dialog.showForm({
       form: params.form,
       doneCallback: () => {
-        const isValid = params.children.every((child) => child.validate() ?? true);
+        const isValid = this.validateFormChildren({ getData: () => params });
 
         if (isValid) {
           this.toolbar.show();

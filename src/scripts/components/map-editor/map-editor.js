@@ -265,4 +265,12 @@ export default class MapEditor {
       width: image.naturalWidth
     };
   }
+
+  /**
+   * Validate all form elements.
+   * @returns {boolean} True, if all elements are valid, else false.
+   */
+  validate() {
+    return this.mapElements.every((element) => this.validateFormChildren(element));
+  }
 }

@@ -171,7 +171,7 @@ export default class GameMap {
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
-    return true;
+    return this.mapEditor.validate();
   }
 
   /**
