@@ -85,7 +85,7 @@ export default class GameMapShowWhen {
 
     // The original ShowWhen widget does not relay changes from the original field, not needed here though.
     if (this.fieldInstance.changes) {
-      this.fieldInstance.changes.push(function (value) {
+      this.fieldInstance.changes.push((value) => {
         this.changes.forEach((change) => {
           this.value = value;
           change(value);
