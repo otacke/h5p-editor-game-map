@@ -34,9 +34,9 @@ export default class GameMapStageSelect {
    * @param {object} options Options to set.
    */
   setOptions(options) {
+    const select = this.fieldInstance.$select.get(0);
     const previouslySelectedValue = (select.value === '-') ? this.fieldInstance.value : select.value;
 
-    const select = this.fieldInstance.$select.get(0);
     select.innerHTML = '';
 
     for (const key in options) {
