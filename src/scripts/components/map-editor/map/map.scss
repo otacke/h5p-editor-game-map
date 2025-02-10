@@ -1,4 +1,6 @@
 .h5p-editor-game-map-editor-map {
+  --map-aspect-ratio: 16 / 9;
+
   background-color: var(--editor-fields-gamemapSteps-backgroundImageSettings-backgroundColor, #fff);
   box-sizing: border-box;
   display: block;
@@ -14,13 +16,10 @@
     height: auto;
     width: 100%;
     pointer-events: none;
-  }
 
-  .h5p-editor-game-map-editor-map-background-image-placeholder {
-    aspect-ratio: var(--map-aspect-ratio);
-
-    &.display-none {
-      display: none;
+    &.hidden {
+      aspect-ratio: var(--map-aspect-ratio);
+      visibility: hidden;
     }
   }
 

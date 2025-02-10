@@ -1,4 +1,4 @@
-import Util from '@services/util.js';
+import UtilH5P from '@services/util-h5p.js';
 
 /**
  * Mixin containing methods parent ready initialization.
@@ -30,21 +30,17 @@ export default class ParentReadyInitialization {
     }
     document.head.appendChild(style);
 
-    this.addVisualsChangeListeners(Util.getRootField(this));
+    this.addVisualsChangeListeners(UtilH5P.getRootField(this));
   }
 
   /**
    * Initialize background image.
    */
   initializeBackgroundImage() {
-    this.backgroundImageField = H5PEditor.findField(
-      'backgroundImageSettings/backgroundImage', this.parent
-    );
+    this.backgroundImageField = H5PEditor.findField('backgroundImageSettings/backgroundImage', this.parent);
 
     if (!this.backgroundImageField) {
-      throw H5PEditor.t(
-        'core', 'unknownFieldPath', { ':path': this.backgroundImageField }
-      );
+      throw H5PEditor.t('core', 'unknownFieldPath', { ':path': this.backgroundImageField });
     }
 
     const backgroundImage = (this.backgroundImageField?.params?.path) ?
@@ -54,9 +50,7 @@ export default class ParentReadyInitialization {
     this.mapEditor.setMapImage(backgroundImage);
 
     this.backgroundImageField.changes.push((change) => {
-      const backgroundImage = (change?.path) ?
-        H5P.getPath(change.path, H5PEditor.contentId) :
-        null;
+      const backgroundImage = (change?.path) ? H5P.getPath(change.path, H5PEditor.contentId) : null;
 
       this.mapEditor.setMapImage(backgroundImage);
     });
@@ -66,27 +60,21 @@ export default class ParentReadyInitialization {
    * Initialize roaming mode listener.
    */
   initializeHidePathColorOnFreeRoaming() {
-    const roamingSelectField = H5PEditor.findField(
-      'behaviour/map/roaming', this.parent.parent
-    );
-
-    const colorPathClearedField = H5PEditor.findField(
-      'visual/paths/style/colorPathCleared', this.parent.parent
-    );
+    const roamingSelectField = H5PEditor.findField('behaviour/map/roaming', this.parent.parent);
+    const colorPathClearedField = H5PEditor.findField('visual/paths/style/colorPathCleared', this.parent.parent);
 
     if (!roamingSelectField || !colorPathClearedField) {
       return; // Could not find fields
     }
 
     const toggleColorPathField = (roamingMode) => {
-      colorPathClearedField.$item?.get(0).classList
-        .toggle('display-none', roamingMode === 'free');
+      colorPathClearedField.$item?.get(0).classList.toggle('display-none', roamingMode === 'free');
     };
 
     roamingSelectField.changes.push(() => {
-      toggleColorPathField(roamingSelectField.$select.get(0).value);
+      toggleColorPathField(roamingSelectField.$select.get(0)?.value);
     });
-    toggleColorPathField(roamingSelectField.$select.get(0).value);
+    toggleColorPathField(roamingSelectField.$select.get(0)?.value);
   }
 
   /**
@@ -94,26 +82,20 @@ export default class ParentReadyInitialization {
    * Can't use showWhen as it breaks the editor.
    */
   initializeHidePathOptions() {
-    const pathVisibilityField = H5PEditor.findField(
-      'visual/paths/displayPaths', this.parent.parent
-    );
-
-    const pathOptionsField = H5PEditor.findField(
-      'visual/paths/style', this.parent.parent
-    );
+    const pathVisibilityField = H5PEditor.findField('visual/paths/displayPaths', this.parent.parent);
+    const pathOptionsField = H5PEditor.findField('visual/paths/style', this.parent.parent);
 
     if (!pathVisibilityField || !pathOptionsField) {
       return; // Could not find fields
     }
 
     const togglePathOptionsField = (pathsAreVisible) => {
-      pathOptionsField.$group?.get(0).classList
-        .toggle('display-none', pathsAreVisible);
+      pathOptionsField.$group?.get(0)?.classList.toggle('display-none', pathsAreVisible);
     };
 
     pathVisibilityField.changes.push(() => {
-      togglePathOptionsField(!pathVisibilityField.$input.get(0).checked);
+      togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
     });
-    togglePathOptionsField(!pathVisibilityField.$input.get(0).checked);
+    togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
   }
 }

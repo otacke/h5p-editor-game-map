@@ -1,4 +1,6 @@
 import Util from '@services/util.js';
+import UtilDOM from '@services/util-dom.js';
+import UtilH5P from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
 import { STAGE_TYPES } from './stage.js';
@@ -12,8 +14,7 @@ export default class MapElement {
    * @param {function} [callbacks.onClick] Callback for click on button.
    */
   constructor(params = {}, callbacks = {}) {
-    this.params = Util.extend({
-    }, params);
+    this.params = Util.extend({}, params);
 
     this.callbacks = Util.extend({
       onEdited: () => {},
@@ -29,7 +30,7 @@ export default class MapElement {
     H5P.jQuery(this.dom).data('id', this.params.index); // DnB tradeoff
 
     this.dom.addEventListener('click', (event) => {
-      Util.doubleClick(event, () => {
+      UtilDOM.doubleClick(event, () => {
         this.callbacks.onEdited(this);
       });
     });
@@ -185,11 +186,16 @@ export default class MapElement {
   generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
+    const template = this.params.elementsGroupTemplate;
+    this.formParent = new H5PEditor.widgets[template.type](
+      template.parent, template.field, template.params, template.setValue
+    );
+
     H5PEditor.processSemanticsChunk(
       semantics,
       params,
       H5P.jQuery(form),
-      this.params.globals.get('elementsGroupField')
+      this.formParent
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -199,9 +205,7 @@ export default class MapElement {
       errors.classList.add('h5p-errors');
       library.appendChild(errors);
 
-      const libraryWidget = this.params.globals.get('elementsGroupField')?.children
-        .find((child) => child.field.name === 'contentType');
-
+      const libraryWidget = this.formParent?.children.find((child) => child.field.name === 'contentType');
       if (libraryWidget) {
         libraryWidget.changes.push(() => {
           errors.innerHTML = ''; // Erase once a library is selected
@@ -222,6 +226,8 @@ export default class MapElement {
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
+      'specialStageLinkURL',
+      'specialStageLinkTarget',
       'alwaysVisible',
       'overrideSymbol'
     ];
@@ -229,23 +235,10 @@ export default class MapElement {
     toBeRemoved[STAGE_TYPES['special-stage']] = [
       'canBeStartStage',
       'time',
-      'contentType'
+      'contentslist'
     ];
 
-    const removeIndexes = [];
-
-    // Remove DOM elements
-    toBeRemoved[elementType].forEach((fieldName) => {
-      // Fetch indexes of field instances from semantics.
-      const index = semantics.findIndex((field) => field.name === fieldName);
-      if (index !== -1) {
-        removeIndexes.push(index);
-      }
-
-      this.removeFormFields(form, fieldName);
-    });
-
-    const children = this.removeFormInstances(removeIndexes);
+    const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
 
     if (elementType === STAGE_TYPES['special-stage']) {
       /*
@@ -294,29 +287,12 @@ export default class MapElement {
 
     form.querySelector('.field-name-specialStageExtraTime')?.classList
       .toggle('display-none', specialStageType !== 'extra-time');
-  }
 
-  /**
-   * Remove fields from form. Works in-place on form.
-   * @param {HTMLElement} form Form.
-   * @param {string} fieldName Field name from semantics.
-   */
-  removeFormFields(form, fieldName) {
-    let domElement = form.querySelector(`.field-name-${fieldName}`);
-    if (!domElement) {
-      /*
-       * Workaround for library widget that does not have a field name in
-       * classname. Beware though: This workaround is fine, because the
-       * content's library field should be the first one. If some other
-       * library field is added before, this will break.
-       */
-      if (fieldName === 'contentType') {
-        domElement = form.querySelector('.field.library');
-      }
-    }
-    if (domElement) {
-      domElement.remove();
-    }
+    form.querySelector('.field-name-specialStageLinkURL')?.classList
+      .toggle('display-none', specialStageType !== 'link');
+
+    form.querySelector('.field-name-specialStageLinkTarget')?.classList
+      .toggle('display-none', specialStageType !== 'link');
   }
 
   /**
@@ -325,8 +301,7 @@ export default class MapElement {
    * @returns {object[]} Remaining instances.
    */
   removeFormInstances(removeIndexes) {
-    const children = this.params.globals.get('elementsGroupField').children
-      .map((child) => child);
+    const children = [...this.formParent.children];
 
     for (let i = removeIndexes.length - 1; i >= 0; i--) {
       children.splice(removeIndexes[i], 1);
@@ -340,7 +315,7 @@ export default class MapElement {
    * @param {Event} event Event that triggered.
    */
   handleMouseOver(event) {
-    if (Util.supportsTouch()) {
+    if (UtilDOM.supportsTouch()) {
       return;
     }
 
@@ -356,7 +331,7 @@ export default class MapElement {
    * Handle mouseout.
    */
   handleMouseOut() {
-    if (Util.supportsTouch()) {
+    if (UtilDOM.supportsTouch()) {
       return;
     }
 

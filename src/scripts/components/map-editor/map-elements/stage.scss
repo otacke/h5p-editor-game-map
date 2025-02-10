@@ -5,36 +5,35 @@
   border-radius: 50%;
   --stage-height: calc(var(--map-height) * var(--map-element-percentage-height) / 100);
 
-  &.icon-finish::before {
-    content: "\f11e";
+  &::before {
     font-family: "H5PFontAwesome4", sans-serif;
     font-size: calc(0.6 * var(--stage-height));
-    left: 50%;
     line-height: calc(0.6 * var(--stage-height));
     position: absolute;
-    top: calc(50% + 2px);
     transform: translate(-50%, -50%);
+  }
+
+  &.icon-finish::before {
+    content: "\f11e";
+    left: 50%;
+    top: calc(50% + 2px);
   }
 
   &.icon-extra-life::before {
     content: "\f004";
-    font-family: "H5PFontAwesome4", sans-serif;
-    font-size: calc(0.6 * var(--stage-height));
     left: 50%;
-    line-height: calc(0.6 * var(--stage-height));
-    position: absolute;
     top: calc(50% + 2px);
-    transform: translate(-50%, -50%);
   }
 
   &.icon-extra-time::before {
     content: "\f017";
-    font-family: "H5PFontAwesome4", sans-serif;
-    font-size: calc(0.6 * var(--stage-height));
     left: 50%;
-    line-height: calc(0.6 * var(--stage-height));
-    position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
+  }
+
+  &.icon-link::before {
+    content: "\f0c1";
+    left: 50%;
+    top: calc(50% + 1px);
   }
 }

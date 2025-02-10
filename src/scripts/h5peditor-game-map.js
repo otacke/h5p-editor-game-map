@@ -1,6 +1,8 @@
 import Dictionary from '@services/dictionary.js';
 import Globals from '@services/globals.js';
 import Util from '@services/util.js';
+import UtilCSS from '@services/util-css.js';
+import UtilH5P from '@services/util-h5p.js';
 import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import './h5peditor-game-map.scss';
@@ -23,7 +25,8 @@ export default class GameMap {
     this.parent = parent;
     this.field = field;
     this.params = Util.extend({
-      elements: []
+      elements: [],
+      paths: [],
     }, params);
     this.setValue = setValue;
 
@@ -46,13 +49,30 @@ export default class GameMap {
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
 
-    // Create instance for elements group field
-    const elementsGroup = this.field.fields
-      .find((field) => field.name === 'elements').field;
+    // Create template for elements group field
+    const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
+    const elementsGroupTemplate = {
+      type: elementsGroup.type,
+      parent: this,
+      field: elementsGroup,
+      params: this.params.elements,
+      setValue: (value) => {} // No setValue needed
+    };
+
+    // Create template for paths group field
+    const pathsGroup = this.field.fields.find((field) => field.name === 'paths').field;
+    const pathsGroupTemplate = {
+      type: pathsGroup.type,
+      parent: this,
+      field: pathsGroup,
+      params: this.params.paths,
+      setValue: (value) => {} // No setValue needed
+    };
+
+    // Ensure that dynamically set stageScoreId select options are available to match saved params.
+    const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
     const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    this.globals.set('elementsGroupField', new H5PEditor.widgets[elementsGroup.type](
-      this, elementsGroup, this.params.elements, () => {} // No setValue needed
-    ));
+    UtilH5P.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
 
     // Map canvas
     this.mapEditor = new MapEditor(
@@ -60,12 +80,16 @@ export default class GameMap {
         backgroundColor: this.params.backgroundColor,
         dictionary: this.dictionary,
         globals: this.globals,
+        elementsGroupTemplate: elementsGroupTemplate,
         elements: this.params.elements,
-        elementsFields: elementsFields
+        elementsFields: elementsFields,
+        pathsGroupTemplate: pathsGroupTemplate,
+        paths: this.params.paths,
+        pathFields: H5P.cloneObject(pathsGroup.fields, true),
       },
       {
-        onChanged: (elements) => {
-          this.setMapValues(elements);
+        onChanged: (elements, paths) => {
+          this.setMapValues(elements, paths);
         }
       }
     );
@@ -85,12 +109,14 @@ export default class GameMap {
    * @param {function} ready Ready callback.
    */
   ready(ready) {
-    if (!this.passReadies) {
-      ready();
-      return;
+    if (this.passReadies) {
+      this.parent.ready(ready);
     }
-
-    this.parent.ready(ready);
+    else {
+      window.requestAnimationFrame(() => {
+        ready();
+      });
+    }
   }
 
   /**
@@ -102,10 +128,22 @@ export default class GameMap {
 
   /**
    * Set map values.
-   * @param {object[]} elements Element parameters of elements.
+   * @param {object[]} elements Element parameters.
+   * @param {object[]} paths Path parameters.
    */
-  setMapValues(elements) {
-    this.params.elements = elements;
+  setMapValues(elements, paths) {
+    if (!elements && !paths) {
+      return;
+    }
+
+    if (elements) {
+      this.params.elements = elements;
+    }
+
+    if (paths) {
+      this.params.paths = paths;
+    }
+
     this.setValue(this.field, this.params);
   }
 
@@ -133,7 +171,7 @@ export default class GameMap {
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
-    return true;
+    return this.mapEditor.validate();
   }
 
   /**
@@ -180,7 +218,6 @@ export default class GameMap {
    */
   updateCSSProperty(key, value) {
     this.dom.style.setProperty(`--editor-fields${key}`, value);
-    this.mapEditor.updatePaths();
   }
 
   /**
@@ -195,50 +232,44 @@ export default class GameMap {
     }
 
     const prefix = path.replace(/\//g, '-');
-    if (field instanceof H5PEditor.ColorSelector) {
-      field.changes.push(() => {
-        this.updateCSSProperty(prefix, field.params);
-        this.updateCSSProperty(
-          `${prefix}-text`,
-          Util.getTextContrastColor(field.params)
-        );
-      });
 
-      this.updateCSSProperty(prefix, field.params);
-      this.updateCSSProperty(
-        `${prefix}-text`,
-        Util.getTextContrastColor(field.params)
-      );
-    }
-    else if (
-      field instanceof H5PEditor.Select) {
-      if (
-        field.field.name === 'pathStyle' ||
-        field.field.name === 'pathWidth'
-      ) {
-        field.changes.push(() => {
-          this.updateCSSProperty(prefix, field.value);
-        });
-
-        this.updateCSSProperty(prefix, field.value);
+    const updateField = (value, textColor) => {
+      this.updateCSSProperty(prefix, value);
+      if (textColor) {
+        this.updateCSSProperty(`${prefix}-text`, textColor);
       }
+      this.mapEditor.updatePaths();
+    };
+
+    if (field instanceof H5PEditor.ColorSelector) {
+      const updateColorSelector = () => {
+        updateField(field.params, UtilCSS.getTextContrastColor(field.params));
+      };
+
+      field.changes.push(() => {
+        updateColorSelector();
+      });
+      updateColorSelector();
+    }
+    else if (field instanceof H5PEditor.Select && ['pathStyle', 'pathWidth'].includes(field.field.name)) {
+      const updateSelectField = () => {
+        updateField(field.value);
+      };
+
+      field.changes.push(() => {
+        updateSelectField();
+      });
+      updateSelectField();
     }
     else if (field.children) {
-      (field.children || []).forEach((child) => {
-        this.addVisualsChangeListeners(
-          child, `${path}/${child.field.name}`
-        );
+      field.children.forEach((child) => {
+        this.addVisualsChangeListeners(child, `${path}/${child.field.name}`);
       });
     }
     else if (field instanceof H5PEditor.List) {
       field.forEachChild((listItem) => {
-        this.addVisualsChangeListeners(
-          listItem, `${path}/${listItem.field.name}`
-        );
+        this.addVisualsChangeListeners(listItem, `${path}/${listItem.field.name}`);
       });
-    }
-    else {
-      // Field is not interesting
     }
   }
 }

@@ -1,5 +1,8 @@
 import './h5peditor-game-map-dynamic-checkboxes.scss';
 
+/** @constant {number} MIN_OPTIONS Minimum number of options. */
+const MIN_OPTIONS = 2;
+
 /**
  * Class for H5P widget for dynamic value checkboxes
  * Displays a list of checkboxes, and the list is regenerated each time the
@@ -16,13 +19,13 @@ export default class GameMapDynamicCheckboxes {
    * @param {object} params Parameters entered in editor form.
    * @param {function} setValue Callback to set parameters.
    */
-  constructor(parent, field, params, setValue) {
+  constructor(parent, field, params = [], setValue) {
     this.parent = parent;
 
     this.field = field;
     this.field.options = this.field.options ?? [];
 
-    this.params = params || [];
+    this.params = params;
 
     this.setValue = setValue;
 
@@ -32,6 +35,7 @@ export default class GameMapDynamicCheckboxes {
 
     this.checkboxes = [];
 
+    // Those jQuery variables are expected by the H5P widgets.
     this.$item = H5P.jQuery(H5PEditor.createFieldMarkup(this.field));
     this.$errors = H5P.jQuery(this.$item.children('.h5p-errors'));
 
@@ -103,7 +107,6 @@ export default class GameMapDynamicCheckboxes {
    * @param {function} params.onNeighborsChanged Callback when neighbors changed.
    */
   setActive(params = {}) {
-    const MIN_OPTIONS = 2;
     this.currentId = params.id;
     this.params = params.neighbors;
     this.callbacks.onNeighborsChanged = params.onNeighborsChanged;
@@ -175,6 +178,7 @@ export default class GameMapDynamicCheckboxes {
    * Remove.
    */
   remove() {
-    this.item.remove();
+    // jQuery variable is expected by the H5P widgets.
+    this.$item.remove();
   }
 }

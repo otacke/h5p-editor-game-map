@@ -1,5 +1,3 @@
-import Util from '@services/util.js';
-
 /** @constant {number} BORDER_WIDTH_FACTOR Factor for border width. */
 const BORDER_WIDTH_FACTOR = 0.3;
 
@@ -57,13 +55,13 @@ export default class PathHandling {
     };
 
     // Border width
-    const targetPathWidth = parseFloat(
+    params.targetPathWidth = params.targetPathWidth ?? parseFloat(
       this.params.globals.get('getStylePropertyValue')(
         '--editor-fields-visual-paths-style-pathWidth'
       )
     );
     const width = Math.min(
-      Math.max(1, widthPx * targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
+      Math.max(1, widthPx * params.targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
     );
 
     // eslint-disable-next-line no-magic-numbers
@@ -88,19 +86,37 @@ export default class PathHandling {
   }
 
   /**
-   * Get height of paths. Supports px only for now.
-   * @returns {number} Height in px.
+   * Handle path clicked.
+   * @param {object} params Parameters.
    */
-  getPathsHeight() {
-    const height = Util.parseCSSLengthProperty(this.paths.getHeight());
-    if (!height) {
-      return 1;
-    }
+  handlePathClicked(params) {
+    this.toolbar.hide();
+    this.map.hide();
 
-    if (height.unit === 'px') {
-      return height.value;
-    }
+    this.dialog.showForm({
+      form: params.form,
+      doneCallback: () => {
+        const isValid = this.validateFormChildren({ getData: () => params });
 
-    return 1; // Fallback
-  }
+        if (isValid) {
+          this.toolbar.show();
+          this.map.show();
+          this.updatePaths();
+
+          this.params.paths = this.paths.getPathsParams();
+          this.callbacks.onChanged(null, this.params.paths);
+        }
+
+        return isValid;
+      },
+      removeCallback: () => {
+        this.toolbar.show();
+        this.map.show();
+      }
+    });
+
+    setTimeout(() => {
+      this.toolbar.blurAll();
+    }, 0);
+  };
 }

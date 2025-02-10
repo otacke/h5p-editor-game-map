@@ -13,6 +13,7 @@
     "l10n.confirmationDialogRemoveHeader": "Verwijder fase",
     "l10n.confirmationDialogRemoveDialog": "Wil je deze fase echt verwijderen?",
     "l10n.confirmationDialogRemoveCancel": "Nee",
-    "l10n.confirmationDialogRemoveConfirm": "Ja, verwijder!"
+    "l10n.confirmationDialogRemoveConfirm": "Ja, verwijder!",
+    "a11y.pathFromTo": "Path from stage @from to stage @to"
   }
 }

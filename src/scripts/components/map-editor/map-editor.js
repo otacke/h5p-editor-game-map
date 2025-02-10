@@ -23,7 +23,8 @@ export default class MapEditor {
     );
 
     this.params = Util.extend({
-      elements: []
+      elements: [],
+      paths: [],
     }, params);
 
     this.params.elements = this.params.elements ?? [];
@@ -48,7 +49,21 @@ export default class MapEditor {
       }
     );
 
-    this.paths = new Paths({ map: this.map });
+    this.paths = new Paths(
+      {
+        map: this.map,
+        pathsGroupTemplate: this.params.pathsGroupTemplate,
+        paths: this.params.paths,
+        pathFields: this.params.pathFields,
+        globals: this.params.globals,
+        dictionary: this.params.dictionary,
+      },
+      {
+        onPathClicked: (params) => {
+          this.handlePathClicked(params);
+        }
+      }
+    );
 
     this.toolbar = new Toolbar(
       {
@@ -249,5 +264,13 @@ export default class MapEditor {
       height: image.naturalHeight,
       width: image.naturalWidth
     };
+  }
+
+  /**
+   * Validate all form elements.
+   * @returns {boolean} True, if all elements are valid, else false.
+   */
+  validate() {
+    return this.mapElements.every((element) => this.validateFormChildren(element));
   }
 }
