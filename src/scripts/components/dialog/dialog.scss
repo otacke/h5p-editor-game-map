@@ -22,6 +22,11 @@
       padding-top: 1rem;
     }
 
+    /* Customization for Image Hotspot Question, will force option to false, so hide option */
+    .field-name-contentsGroup .h5p-imagehotspotquestion-editor .show-feedback-as-popup {
+      display: none;
+    }
+
     *.display-none {
       display: none;
     }
