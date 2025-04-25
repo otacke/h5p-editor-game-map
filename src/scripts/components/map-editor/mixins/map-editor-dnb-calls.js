@@ -339,7 +339,11 @@ export default class DnBCalls {
         return true; // Hidden fields are not required, but values must be sanitzed in view
       }
 
-      return child.validate() ?? true; // Some widgets return `undefined` instead of true
+      /*
+       * Always `true` here, because some content types like do not validate well
+       * (e.g. Interactive Video returning false if no values for "summaries" are set)
+       */
+      return true;
     });
   }
 
