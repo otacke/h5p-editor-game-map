@@ -325,6 +325,10 @@ export default class DnBCalls {
 
       // Unfortunately, H5P core widgets do not have a common interface. Custom detection is needed.
       let childDOM;
+
+      // Some editor widgets require a call to validate() or may not update values
+      child.validate();
+
       if (child instanceof H5PEditor.List) {
         childDOM = mapElement.getData().form.querySelector(`[id=${child.getId()}]`);
       }
