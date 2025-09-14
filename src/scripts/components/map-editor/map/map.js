@@ -12,7 +12,7 @@ export default class Map {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({}, params);
     this.callbacks = Util.extend({
-      onImageLoaded: () => {}
+      onImageLoaded: () => {},
     }, callbacks);
 
     this.dom = document.createElement('div');

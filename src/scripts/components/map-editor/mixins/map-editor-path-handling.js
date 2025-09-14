@@ -26,17 +26,17 @@ export default class PathHandling {
       return null;
     }
 
-    // eslint-disable-next-line no-magic-numbers
+     
     const fromXPx = parseFloat(params.from.x) / 100 * mapSize.width;
-    // eslint-disable-next-line no-magic-numbers
+     
     const fromYPx = parseFloat(params.from.y) / 100 * mapSize.height;
-    // eslint-disable-next-line no-magic-numbers
+     
     const toXPx = parseFloat(params.to.x) / 100 * mapSize.width;
-    // eslint-disable-next-line no-magic-numbers
+     
     const toYPx = parseFloat(params.to.y) / 100 * mapSize.height;
-    // eslint-disable-next-line no-magic-numbers
+     
     const widthPx = parseFloat(params.from.width) / 100 * mapSize.width;
-    // eslint-disable-next-line no-magic-numbers
+     
     const heightPx = parseFloat(params.from.height) / 100 * mapSize.height;
 
     const deltaXPx = fromXPx - toXPx;
@@ -51,17 +51,17 @@ export default class PathHandling {
       // eslint-disable-next-line no-magic-numbers
       x: widthPx / 2 * Math.cos(angle) * 100 / mapSize.width,
       // eslint-disable-next-line no-magic-numbers
-      y: heightPx / 2 * Math.sin(angle) * 100 / mapSize.height
+      y: heightPx / 2 * Math.sin(angle) * 100 / mapSize.height,
     };
 
     // Border width
     params.targetPathWidth = params.targetPathWidth ?? parseFloat(
       this.params.globals.get('getStylePropertyValue')(
-        '--editor-fields-visual-paths-style-pathWidth'
-      )
+        '--editor-fields-visual-paths-style-pathWidth',
+      ),
     );
     const width = Math.min(
-      Math.max(1, widthPx * params.targetPathWidth), widthPx * BORDER_WIDTH_FACTOR
+      Math.max(1, widthPx * params.targetPathWidth), widthPx * BORDER_WIDTH_FACTOR,
     );
 
     // eslint-disable-next-line no-magic-numbers
@@ -79,7 +79,7 @@ export default class PathHandling {
     // Good old Pythagoras, length in px
     const length = Math.sqrt(
       Math.abs(deltaXPx) * Math.abs(deltaXPx) +
-      Math.abs(deltaYPx) * Math.abs(deltaYPx)
+      Math.abs(deltaYPx) * Math.abs(deltaYPx),
     ) - widthPx; // assuming circle for stage hotspot
 
     return { x, y, length, angle, width };
@@ -112,7 +112,7 @@ export default class PathHandling {
       removeCallback: () => {
         this.toolbar.show();
         this.map.show();
-      }
+      },
     });
 
     setTimeout(() => {

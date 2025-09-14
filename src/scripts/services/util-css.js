@@ -14,6 +14,7 @@ export default class UtilCSS {
     }
 
     // Cmp. https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units
+    // eslint-disable-next-line @stylistic/js/max-len
     const regex = /((?:\d*\.)*\d+)(?:\s)*(cm|mm|Q|in|pc|pt|px|em|ex|ch|rem|lh|rlh|vw|vh|vmin|vmax|vb|vi|svw|svh|lvw|lvh|dvw|dvh)?/;
     const match = cssLength.match(regex);
 
@@ -23,7 +24,7 @@ export default class UtilCSS {
 
     return {
       value: parseFloat(match[1]),
-      unit: match[2] || 'px'
+      unit: match[2] || 'px',
     };
   }
 

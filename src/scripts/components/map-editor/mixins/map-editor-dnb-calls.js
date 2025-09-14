@@ -26,11 +26,11 @@ export default class DnBCalls {
      * added to map elements, this needs changing - including semantics :-/.
      */
     const numberUnnamedStages =
-    this.params.elements.filter((element) =>
-      element.label.startsWith(
-        `${this.params.dictionary.get('l10n.unnamedStage')} `,
-      ),
-    ).length + 1;
+      this.params.elements.filter((element) =>
+        element.label.startsWith(
+          `${this.params.dictionary.get('l10n.unnamedStage')} `,
+        ),
+      ).length + 1;
 
     const stage = new Stage();
 
@@ -55,9 +55,9 @@ export default class DnBCalls {
           // eslint-disable-next-line no-magic-numbers
           y: `${VERTICAL_CENTER - DEFAULT_SIZE_PERCENT.height * mapRatio / 2}`,
           width: `${DEFAULT_SIZE_PERCENT.width}`,
-          height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`
+          height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`,
         },
-        neighbors: []
+        neighbors: [],
       }, params);
     }
 
@@ -70,7 +70,7 @@ export default class DnBCalls {
         elementsGroupTemplate: this.params.elementsGroupTemplate,
         elementParams: elementParams,
         elementFields: this.params.elementsFields,
-        toolbar: this.toolbar
+        toolbar: this.toolbar,
       },
       {
         onEdited: (mapElement) => {
@@ -96,8 +96,8 @@ export default class DnBCalls {
           this.params.paths = this.paths.getPathsParams();
           this.params.elements[index] = elementParams;
           this.callbacks.onChanged(this.params.elements, this.params.paths);
-        }
-      }
+        },
+      },
     );
 
     this.mapElements.push(mapElement);
@@ -157,14 +157,14 @@ export default class DnBCalls {
         pathTelemetry = this.computePathTelemetry({
           from: this.params.elements[from].telemetry,
           to: this.params.elements[to].telemetry,
-          targetPathWidth: targetPathWidth
+          targetPathWidth: targetPathWidth,
         });
       }
 
       return {
         from: from,
         to: to,
-        pathTelemetry: pathTelemetry
+        pathTelemetry: pathTelemetry,
       };
     });
 
@@ -224,7 +224,7 @@ export default class DnBCalls {
         neighbors: this.params.elements[mapElement.getIndex()].neighbors,
         onNeighborsChanged: (id, neighbors) => {
           this.updateNeighbors(id, neighbors);
-        }
+        },
       });
     }
 
@@ -251,7 +251,7 @@ export default class DnBCalls {
         this.toolbar.show();
         this.map.show();
         this.removeIfConfirmed(mapElement);
-      }
+      },
     });
 
     setTimeout(() => {
@@ -266,7 +266,7 @@ export default class DnBCalls {
   updateStageIdOptions(mapElement) {
     const listFields = [
       ...UtilH5P.findAllFields('restrictionSetList', mapElement.form),
-      ...UtilH5P.findAllFields('restrictionList', mapElement.form)
+      ...UtilH5P.findAllFields('restrictionList', mapElement.form),
     ];
 
     listFields.forEach((field) => {
@@ -283,7 +283,7 @@ export default class DnBCalls {
     // Exclude the current stage from the list of options
     const otherElementsParams = [
       ...this.params.elements.slice(0, mapElement.getIndex()),
-      ...this.params.elements.slice(mapElement.getIndex() + 1)
+      ...this.params.elements.slice(mapElement.getIndex() + 1),
     ];
 
     UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
@@ -360,7 +360,7 @@ export default class DnBCalls {
       headerText: this.params.dictionary.get('l10n.confirmationDialogRemoveHeader'),
       dialogText: this.params.dictionary.get('l10n.confirmationDialogRemoveDialog'),
       cancelText: this.params.dictionary.get('l10n.confirmationDialogRemoveCancel'),
-      confirmText: this.params.dictionary.get('l10n.confirmationDialogRemoveConfirm')
+      confirmText: this.params.dictionary.get('l10n.confirmationDialogRemoveConfirm'),
     });
     this.deleteDialog.on('confirmed', () => {
       this.remove(mapElement);

@@ -12,7 +12,7 @@ export default class Label {
    */
   constructor(params = {}) {
     this.params = Util.extend({
-      position: 'bottom'
+      position: 'bottom',
     }, params);
 
     // Label

@@ -48,5 +48,5 @@ export const DEFAULT_SIZE_PERCENT = { width: 4.375, height: 4.375 };
 /** @constant {object} STAGE_TYPES types lookup */
 export const STAGE_TYPES = {
   'stage': 0,
-  'special-stage': 1
+  'special-stage': 1,
 };

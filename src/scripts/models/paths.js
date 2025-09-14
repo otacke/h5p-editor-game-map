@@ -57,8 +57,8 @@ export default class Paths {
       {
         onClicked: (params) => {
           this.callbacks.onPathClicked(params);
-        }
-      }
+        },
+      },
     );
 
     this.paths.push(path);

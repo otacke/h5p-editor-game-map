@@ -14,7 +14,7 @@ export default class Path {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       pathParams: {
-        customVisuals: {}
+        customVisuals: {},
       },
     }, params);
 
@@ -31,7 +31,7 @@ export default class Path {
 
     this.form = this.generateForm(
       this.params.pathFields,
-      this.params.pathParams
+      this.params.pathParams,
     );
   }
 
@@ -164,19 +164,19 @@ export default class Path {
 
     const template = this.params.pathsGroupTemplate;
     const parent = new H5PEditor.widgets[template.type](
-      template.parent, template.field, template.params, template.setValue
+      template.parent, template.field, template.params, template.setValue,
     );
 
     H5PEditor.processSemanticsChunk(
       semantics,
       params,
       H5P.jQuery(form),
-      parent
+      parent,
     );
 
     return {
       form: form,
-      children: parent.children
+      children: parent.children,
     };
   }
 }

@@ -13,12 +13,12 @@ export default class Toolbar {
    */
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
-      buttons: []
+      buttons: [],
     }, params);
 
     this.callbacks = Util.extend({
       onStoppedMoving: () => {},
-      onReleased: () => {}
+      onReleased: () => {},
     }, callbacks);
 
     this.dom = document.createElement('div');
@@ -28,18 +28,18 @@ export default class Toolbar {
       this.params.buttons,
       H5P.jQuery(this.params.mapContainer),
       H5P.jQuery(this.params.dialogContainer),
-      { enableCopyPaste: false }
+      { enableCopyPaste: false },
     );
 
     // Must set containerEm
     this.toolbar.dnr.setContainerEm(
-      parseFloat(H5P.jQuery(this.params.mapContainer).css('font-size'))
+      parseFloat(H5P.jQuery(this.params.mapContainer).css('font-size')),
     );
 
     this.toolbar.stopMovingCallback = (x, y) => {
       this.callbacks.onStoppedMoving(
         // Seems there's no better way to get hold of element added
-        this.toolbar.dnd.$element.data('id'), x, y
+        this.toolbar.dnd.$element.data('id'), x, y,
       );
     };
 
@@ -56,7 +56,7 @@ export default class Toolbar {
       this.callbacks.onMoved(
         $element.data('id'),
         Math.round(parseFloat($element.css('left'))),
-        Math.round(parseFloat($element.css('top')))
+        Math.round(parseFloat($element.css('top'))),
       );
     };
 

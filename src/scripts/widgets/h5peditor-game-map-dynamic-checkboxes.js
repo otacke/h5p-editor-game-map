@@ -30,7 +30,7 @@ export default class GameMapDynamicCheckboxes {
     this.setValue = setValue;
 
     this.callbacks = {
-      onNeighborsChanged: () => {}
+      onNeighborsChanged: () => {},
     };
 
     this.checkboxes = [];

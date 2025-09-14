@@ -35,7 +35,7 @@ export default class GameMapShowWhen {
 
     if (!config) {
       throw new Error(
-        'You need to set the showWhen property in semantics.json when using the showWhen widget'
+        'You need to set the showWhen property in semantics.json when using the showWhen widget',
       );
     }
 

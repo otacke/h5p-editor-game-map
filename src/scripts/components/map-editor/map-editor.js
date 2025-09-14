@@ -19,7 +19,7 @@ export default class MapEditor {
    */
   constructor(params = {}, callbacks = {}) {
     Util.addMixins(
-      MapEditor, [DnBCalls, PathHandling]
+      MapEditor, [DnBCalls, PathHandling],
     );
 
     this.params = Util.extend({
@@ -30,7 +30,7 @@ export default class MapEditor {
     this.params.elements = this.params.elements ?? [];
 
     this.callbacks = Util.extend({
-      onChanged: () => {}
+      onChanged: () => {},
     }, callbacks);
 
     this.mapElements = [];
@@ -45,8 +45,8 @@ export default class MapEditor {
       {
         onImageLoaded: (image) => {
           this.handleBackgroundImageLoaded(image);
-        }
-      }
+        },
+      },
     );
 
     this.paths = new Paths(
@@ -61,8 +61,8 @@ export default class MapEditor {
       {
         onPathClicked: (params) => {
           this.handlePathClicked(params);
-        }
-      }
+        },
+      },
     );
 
     this.toolbar = new Toolbar(
@@ -70,15 +70,15 @@ export default class MapEditor {
         buttons: [
           this.createButton({
             id: 'stage',
-            type: STAGE_TYPES.stage
+            type: STAGE_TYPES.stage,
           }),
           this.createButton({
             id: 'special-stage',
-            type: STAGE_TYPES['special-stage']
-          })
+            type: STAGE_TYPES['special-stage'],
+          }),
         ],
         mapContainer: this.map.getDOM(),
-        dialogContainer: this.dom
+        dialogContainer: this.dom,
       },
       {
         onStoppedMoving: (index, x, y) => {
@@ -92,11 +92,11 @@ export default class MapEditor {
           this.updateMapElement(
             index,
             this.convertToPercent({ x: x }),
-            this.convertToPercent({ y: y })
+            this.convertToPercent({ y: y }),
           );
           this.updatePaths({ limit: index });
-        }
-      }
+        },
+      },
     );
 
     this.dialog = new Dialog({ dictionary: this.params.dictionary });
@@ -166,7 +166,7 @@ export default class MapEditor {
       title: this.params.dictionary.get(`l10n.toolbarButton-${params.id}`),
       createElement: () => {
         return this.createElement(params.type ?? params.id, {});
-      }
+      },
     };
   }
 
@@ -184,10 +184,10 @@ export default class MapEditor {
 
       // Convert percentage values to px.
       const toPxFactor = {
-        // eslint-disable-next-line no-magic-numbers
+         
         x: mapSize.width / 100,
-        // eslint-disable-next-line no-magic-numbers
-        y: mapSize.height / 100
+         
+        y: mapSize.height / 100,
       };
       let xPx = parseFloat(telemetry.x) * toPxFactor.x;
       let yPx = parseFloat(telemetry.y) * toPxFactor.y;
@@ -205,12 +205,12 @@ export default class MapEditor {
       yPx = Math.max(0, Math.min(yPx, mapSize.height - heightPx));
 
       this.mapElements[index].updateParams({ telemetry: {
-        // eslint-disable-next-line no-magic-numbers
+         
         x: xPx * 100 / mapSize.width,
-        // eslint-disable-next-line no-magic-numbers
+         
         y: yPx * 100 / mapSize.height,
-        height: telemetry.height
-      }
+        height: telemetry.height,
+      },
       });
     });
   }
@@ -224,12 +224,12 @@ export default class MapEditor {
    */
   convertToPercent(value = {}) {
     if (typeof value.x === 'number') {
-      // eslint-disable-next-line no-magic-numbers
+       
       return value.x * 100 / this.map.getSize().width;
     }
 
     if (typeof value.y === 'number') {
-      // eslint-disable-next-line no-magic-numbers
+       
       return value.y * 100 / this.map.getSize().height;
     }
 
@@ -262,7 +262,7 @@ export default class MapEditor {
   handleBackgroundImageLoaded(image) {
     this.backgroundImageSize = {
       height: image.naturalHeight,
-      width: image.naturalWidth
+      width: image.naturalWidth,
     };
   }
 

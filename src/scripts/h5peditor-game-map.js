@@ -19,7 +19,7 @@ export default class GameMap {
    */
   constructor(parent, field, params, setValue) {
     Util.addMixins(
-      GameMap, [ParentReadyInitialization]
+      GameMap, [ParentReadyInitialization],
     );
 
     this.parent = parent;
@@ -56,7 +56,7 @@ export default class GameMap {
       parent: this,
       field: elementsGroup,
       params: this.params.elements,
-      setValue: (value) => {} // No setValue needed
+      setValue: (value) => {}, // No setValue needed
     };
 
     // Create template for paths group field
@@ -66,13 +66,17 @@ export default class GameMap {
       parent: this,
       field: pathsGroup,
       params: this.params.paths,
-      setValue: (value) => {} // No setValue needed
+      setValue: (value) => {}, // No setValue needed
     };
 
     // Ensure that dynamically set stageScoreId select options are available to match saved params.
     const stageScoreIdOptions = this.params.elements.map((element) => ({ value: element.id, label: element.label }));
     const elementsFields = H5P.cloneObject(elementsGroup.fields, true);
-    UtilH5P.overrideSemantics(elementsFields, { name: 'stageScoreId', type: 'select' }, { options: stageScoreIdOptions });
+    UtilH5P.overrideSemantics(
+      elementsFields,
+      { name: 'stageScoreId', type: 'select' },
+      { options: stageScoreIdOptions },
+    );
 
     // Map canvas
     this.mapEditor = new MapEditor(
@@ -90,8 +94,8 @@ export default class GameMap {
       {
         onChanged: (elements, paths) => {
           this.setMapValues(elements, paths);
-        }
-      }
+        },
+      },
     );
     this.dom.appendChild(this.mapEditor.getDOM());
 

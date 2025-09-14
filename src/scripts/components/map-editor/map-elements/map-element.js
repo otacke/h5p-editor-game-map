@@ -21,7 +21,7 @@ export default class MapElement {
       onRemoved: () => {},
       onBroughtToFront: () => {},
       onSentToBack: () => {},
-      onChanged: () => {}
+      onChanged: () => {},
     }, callbacks);
 
     this.dom = document.createElement('div');
@@ -60,7 +60,7 @@ export default class MapElement {
     this.form = this.generateForm(
       this.params.elementFields,
       this.params.elementParams,
-      params.type
+      params.type,
     );
     this.form.$element = H5P.jQuery(this.dom);
 
@@ -132,7 +132,7 @@ export default class MapElement {
       this.dom.style[styleProperty] = `${params.telemetry[property]}%`;
       this.dom.style.setProperty(
         `--map-element-percentage-${property}`,
-        `${params.telemetry[property]}`
+        `${params.telemetry[property]}`,
       );
     }
 
@@ -155,7 +155,7 @@ export default class MapElement {
     const dnbElement = this.params.toolbar.add(
       this.getData().$element,
       '',
-      { disableResize: true, lock: true }
+      { disableResize: true, lock: true },
     );
 
     dnbElement.contextMenu.on('contextMenuEdit', () => {
@@ -188,14 +188,14 @@ export default class MapElement {
 
     const template = this.params.elementsGroupTemplate;
     this.formParent = new H5PEditor.widgets[template.type](
-      template.parent, template.field, template.params, template.setValue
+      template.parent, template.field, template.params, template.setValue,
     );
 
     H5PEditor.processSemanticsChunk(
       semantics,
       params,
       H5P.jQuery(form),
-      this.formParent
+      this.formParent,
     );
 
     // H5PEditor.library widget does not feature an error field. Inject one.
@@ -229,13 +229,13 @@ export default class MapElement {
       'specialStageLinkURL',
       'specialStageLinkTarget',
       'alwaysVisible',
-      'overrideSymbol'
+      'overrideSymbol',
     ];
 
     toBeRemoved[STAGE_TYPES['special-stage']] = [
       'canBeStartStage',
       'time',
-      'contentslist'
+      'contentslist',
     ];
 
     const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
@@ -251,7 +251,7 @@ export default class MapElement {
 
     return {
       form: form,
-      children: children
+      children: children,
     };
   }
 

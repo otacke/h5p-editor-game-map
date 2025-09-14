@@ -18,7 +18,7 @@ export default class GameMapStageSelect {
 
     // DOM, H5P core requires this.$container and jQuery
     this.$container = H5P.jQuery('<div>', {
-      class: 'h5peditor-game-map-stage-select'
+      class: 'h5peditor-game-map-stage-select',
     });
 
     // Instantiate original field (or create your own and call setValue)

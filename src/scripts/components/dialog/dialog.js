@@ -14,7 +14,7 @@ export default class Dialog {
 
     this.callbacks = Util.extend({
       onDone: () => {},
-      onRemoved: () => {}
+      onRemoved: () => {},
     }, callbacks);
 
     this.dom = document.createElement('div');
