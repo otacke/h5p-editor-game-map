@@ -2,7 +2,7 @@
   "libraryStrings": {
     "l10n.back": "Nazaj",
     "l10n.toolbarButton-stage": "Stopnja",
-    "l10n.toolbarButton-special-stage": "Add special stage",
+    "l10n.toolbarButton-special-stage": "Dodaj posebno stopnjo",
     "l10n.done": "Potrdi",
     "l10n.remove": "Odstrani",
     "l10n.selectAll": "Izberi vse",
@@ -14,6 +14,6 @@
     "l10n.confirmationDialogRemoveDialog": "Resnično izbrišem to stopnjo?",
     "l10n.confirmationDialogRemoveCancel": "Ne",
     "l10n.confirmationDialogRemoveConfirm": "Da, izbriši!",
-    "a11y.pathFromTo": "Path from stage @from to stage @to"
+    "a11y.pathFromTo": "Pot od stopnje @from do @to"
   }
 }
