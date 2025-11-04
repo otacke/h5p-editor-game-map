@@ -1,0 +1,19 @@
+{
+  "libraryStrings": {
+    "l10n.back": "Retour",
+    "l10n.toolbarButton-stage": "Ajouter une étape d'exercice",
+    "l10n.toolbarButton-special-stage": "Ajouter une étape spéciale",
+    "l10n.done": "Fait",
+    "l10n.remove": "Retirer",
+    "l10n.selectAll": "Sélectionner tout",
+    "l10n.deselectAll": "Désélectionner tous",
+    "l10n.noNeighbors": "Il n'y a pas encore d'étapes à connecter.",
+    "l10n.contentRequired": "Vous devez sélectionner un type de contenu pour cette étape.",
+    "l10n.unnamedStage": "Étape sans nom",
+    "l10n.confirmationDialogRemoveHeader": "Supprimer l'étape",
+    "l10n.confirmationDialogRemoveDialog": "Voulez-vous vraiment supprimer cette étape ?",
+    "l10n.confirmationDialogRemoveCancel": "Non",
+    "l10n.confirmationDialogRemoveConfirm": "Oui, supprimer !",
+    "a11y.pathFromTo": "Chemin de la scène @from à la scène @to"
+  }
+}
