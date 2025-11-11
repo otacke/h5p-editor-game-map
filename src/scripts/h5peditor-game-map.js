@@ -1,5 +1,4 @@
 import Dictionary from '@services/dictionary.js';
-import Globals from '@services/globals.js';
 import Util from '@services/util.js';
 import UtilCSS from '@services/util-css.js';
 import UtilH5P from '@services/util-h5p.js';
@@ -33,7 +32,7 @@ export default class GameMap {
     this.dictionary = new Dictionary();
     this.fillDictionary();
 
-    this.globals = new Globals();
+    this.globals = new Map();
     this.globals.set('mainInstance', this);
     this.globals.set('getStylePropertyValue', (key) => {
       return this.dom.style.getPropertyValue(key);
