@@ -6,6 +6,11 @@
 }
 
 .h5p-gamemap-editor {
+  --group-border-color: #d0d0d1; /* Copied from group .content */
+  --label-color: #454347; /* Copied from .h5peditor-label */
+  --description-color: #434446; /* Copied from .h5peditor-field-description */
+  --background-color: #ffffff;
+
   .field.wizard {
 
     &.field-name-gamemapSteps {

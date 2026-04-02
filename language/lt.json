@@ -14,6 +14,11 @@
     "l10n.confirmationDialogRemoveDialog": "Ar tikrai norite ištrinti šį etapą?",
     "l10n.confirmationDialogRemoveCancel": "Ne",
     "l10n.confirmationDialogRemoveConfirm": "Taip, ištrinti!",
-    "a11y.pathFromTo": "Path from stage @from to stage @to"
+    "l10n.contentTitle": "Content title",
+    "l10n.errorTotalWeightMustBe100": "The sum of all weights must be 100. Currently it is @current.",
+    "a11y.pathFromTo": "Path from stage @from to stage @to",
+    "a11y.weight": "Weight",
+    "a11y.maxScore": "Maximum score",
+    "a11y.weightedMaxScore": "Weighted maximum score"
   }
 }

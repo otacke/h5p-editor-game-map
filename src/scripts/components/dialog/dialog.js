@@ -1,4 +1,5 @@
 import Util from '@services/util.js';
+import UtilH5P from '@services/util-h5p.js';
 import './dialog.scss';
 
 export default class Dialog {
@@ -13,6 +14,7 @@ export default class Dialog {
     }, params);
 
     this.callbacks = Util.extend({
+      onChange: () => {},
       onDone: () => {},
       onRemoved: () => {},
     }, callbacks);
@@ -86,10 +88,18 @@ export default class Dialog {
    * @param {HTMLElement} params.form Form.
    */
   showForm(params = {}) {
+    this.callbacks.onChange = params.changeCallback ?? (() => {});
     this.callbacks.onDone = params.doneCallback ?? (() => {});
     this.callbacks.onRemoved = params.removeCallback ?? (() => {});
 
-    this.dialogInner.appendChild(params.form);
+    this.formDOM = params.form;
+    this.dialogInner.appendChild(this.formDOM);
+
+    if (params.changeCallback) {
+      this.formDOM.addEventListener('focusout', this.callbacks.onChange.bind(this)); // Form fields
+      this.formDOM.addEventListener('mouseup', this.callbacks.onChange.bind(this)); // VerticalTabs
+    }
+
     this.show();
   }
 
@@ -97,6 +107,9 @@ export default class Dialog {
    * Hide dialog form.
    */
   hideForm() {
+    this.formDOM.removeEventListener('focusout', this.callbacks.onChange.bind(this));
+    this.formDOM.removeEventListener('mouseup', this.callbacks.onChange.bind(this));
+
     this.dialogInner.innerHTML = '';
     this.hide();
   }

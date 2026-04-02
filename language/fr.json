@@ -14,6 +14,11 @@
     "l10n.confirmationDialogRemoveDialog": "Voulez-vous vraiment supprimer cette étape ?",
     "l10n.confirmationDialogRemoveCancel": "Non",
     "l10n.confirmationDialogRemoveConfirm": "Oui, supprimer !",
-    "a11y.pathFromTo": "Chemin de la scène @from à la scène @to"
+    "l10n.contentTitle": "Content title",
+    "l10n.errorTotalWeightMustBe100": "The sum of all weights must be 100. Currently it is @current.",
+    "a11y.pathFromTo": "Chemin de la scène @from à la scène @to",
+    "a11y.weight": "Weight",
+    "a11y.maxScore": "Maximum score",
+    "a11y.weightedMaxScore": "Weighted maximum score"
   }
 }

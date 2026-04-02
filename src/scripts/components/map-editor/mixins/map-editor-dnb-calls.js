@@ -229,34 +229,121 @@ export default class DnBCalls {
     }
 
     this.updateStageIdOptions(mapElement);
+    this.updateScoreScalingValues(mapElement);
+
+    const form = mapElement.getData().form;
 
     this.dialog.showForm({
-      form: mapElement.getData().form,
+      form: form,
+      changeCallback: (event) => {
+        this.handleFormChange(event);
+      },
       doneCallback: () => {
-        const isValid = this.validateFormChildren(mapElement);
-
-        if (isValid) {
-          this.toolbar.show();
-          this.map.show();
-          this.updatePaths();
-          mapElement.updateParams();
-
-          this.params.paths = this.paths.getPathsParams();
-          this.callbacks.onChanged(this.params.elements, this.params.paths);
-        }
-
-        return isValid;
+        return this.handleDialogDone();
       },
       removeCallback: () => {
-        this.toolbar.show();
-        this.map.show();
-        this.removeIfConfirmed(mapElement);
+        this.handleDialogRemove();
       },
     });
 
     setTimeout(() => {
       this.toolbar.blurAll();
     }, 0);
+
+    this.editContext = {
+      mapElementBeingEdited: mapElement,
+      contentListDOM: form.querySelector('.field:has([for^="field-contentslist"])'),
+    };
+  }
+
+  /**
+   * Handle form of content was changed.
+   * @param {Event} event Change event.
+   */
+  handleFormChange(event) {
+    const mapElement = this.editContext.mapElementBeingEdited;
+    if (!mapElement) {
+      return;
+    }
+
+    if (!this.editContext.contentListDOM.contains(event.target)) {
+      return;
+    }
+
+    const isValid = this.validateFormChildren(mapElement);
+    if (isValid) {
+      mapElement.updateParams();
+
+      this.params.paths = this.paths.getPathsParams();
+      this.callbacks.onChanged(this.params.elements, this.params.paths);
+    }
+
+    window.requestAnimationFrame(() => {
+      this.updateScoreScalingValues(mapElement);
+    }); // Event should have passed to update content params before querying for updated score info
+  }
+
+  /**
+   * Update score scaling values for changed content.
+   * @param {object} mapElement Map element whose content has changed and score scaling values should be updated for.
+   */
+  updateScoreScalingValues(mapElement) {
+    const list = mapElement.getData().children.find((child) => child.field?.name === 'contentsList');
+    const scoringValues = [];
+
+    list.forEachChild((listItem) => {
+      const library = listItem.children.find((child) => child instanceof H5PEditor.Library);
+      scoringValues.push({
+        subContentId: library.params.subContentId,
+        title: library.params.metadata?.title || library.params.library,
+        ... UtilH5P.getScoreInfo(library.params, H5PEditor.contentId),
+      });
+    });
+
+    const scoreScalingInstance = H5PEditor.findField('scoreScaling', mapElement.form);
+    scoreScalingInstance.updateValues(scoringValues);
+  };
+
+  /**
+   * Handle dialog "done" action. Validate form and update map element if valid.
+   * @returns {boolean} True if form is valid and dialog can be closed, else false.
+   */
+  handleDialogDone() {
+    if (!this.editContext.mapElementBeingEdited) {
+      return true;
+    }
+
+    const mapElement = this.editContext.mapElementBeingEdited;
+    const isValid = this.validateFormChildren(mapElement);
+
+    if (isValid) {
+      this.toolbar.show();
+      this.map.show();
+      this.updatePaths();
+      mapElement.updateParams();
+
+      this.params.paths = this.paths.getPathsParams();
+      this.callbacks.onChanged(this.params.elements, this.params.paths);
+    }
+
+    return isValid;
+  }
+
+  /**
+   * Handle dialog "remove" action. Ask for confirmation and remove map element if confirmed.
+   */
+  handleDialogRemove() {
+    const mapElement = this.editContext.mapElementBeingEdited;
+    this.toolbar.show();
+    this.map.show();
+    this.removeIfConfirmed(mapElement);
+  }
+
+  /**
+   * Handle dialog closed without saving. Clean up edit context.
+   */
+  handleDialogClosed() {
+    delete this.editContext;
   }
 
   /**
