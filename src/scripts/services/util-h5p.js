@@ -138,4 +138,51 @@ export default class UtilH5P {
       domElement.remove();
     }
   }
+
+  /**
+   * Get score information for H5P content.
+   * Might be "expensive" to create a runnable instance, but H5P does not allow to get the maxScore any other way.
+   * @param {object} params H5P content parameters.
+   * @param {number|string} contentId H5P content ID.
+   * @returns {object} Score information, including whether it's a task, the score, and the max score.
+   */
+  static getScoreInfo(params = {}, contentId) {
+    if (!params.library) {
+      return { isTask: false, maxScore: 0 }; // Fallback
+    }
+
+    const instance = H5P.newRunnable(params, contentId, H5P.jQuery('<div></div>'), true);
+    if (!instance) {
+      return { isTask: false, score: 0, maxScore: 0 }; // Fallback
+    }
+
+    return {
+      isTask: UtilH5P.isInstanceTask(instance),
+      score: instance.getScore?.() ?? 0,
+      maxScore: instance.getMaxScore?.() ?? 0,
+    };
+  }
+
+  /**
+   * Determine whether an H5P instance is a task.
+   * @param {H5P.ContentType} instance Instance.
+   * @returns {boolean} True, if instance is a task.
+   */
+  static isInstanceTask(instance = {}) {
+    if (!instance) {
+      return false;
+    }
+
+    if (typeof instance.isTask === 'boolean') {
+      return instance.isTask; // Content will determine if it's task on its own
+    }
+
+    // Check for maxScore > 0 as indicator for being a task
+    const hasGetMaxScore = (typeof instance.getMaxScore === 'function');
+    if (hasGetMaxScore && instance.getMaxScore() > 0) {
+      return true;
+    }
+
+    return false;
+  }
 }
