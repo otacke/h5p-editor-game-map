@@ -39,7 +39,8 @@ export default class Table {
     const isNoValue = typeof totalScore === 'string';
     const scoreIsValid = typeof totalScore === 'number' && totalScore >= 0;
 
-    this.totalScore = scoreIsValid ? totalScore : 0;
+    const fallbackTotalScore = (this.params.scalingMode === 'totalScore') ? 1 : 0;
+    this.totalScore = scoreIsValid ? totalScore : fallbackTotalScore;
 
     if (!this.weightedTotalScoreDOM) {
       return;
@@ -106,6 +107,8 @@ export default class Table {
 
     this.updateScalingValues(rebuildParams.scalingValues);
     this.setWeightIsPercentage(rebuildParams.weightIsPercentage);
+
+    this.params = rebuildParams;
   }
 
   /**
@@ -302,6 +305,7 @@ export default class Table {
         weightIsPercentage: this.params.weightIsPercentage,
         scalingMode: this.params.scalingMode,
         visualPrecision: this.visualPrecision,
+        weight: parseFloat(scalingValue.weight) || (this.params.weightIsPercentage ? 100 : 1),
       };
 
       if (oldRowValues[index]?.weight && typeof oldRowValues[index].weight === 'number') {
@@ -423,7 +427,6 @@ export default class Table {
       }, 0);
 
       const newWeight = this.totalScore / totalExerciseMaxScore;
-
       this.rows.forEach((row) => {
         if (!row.isTask()) {
           return;

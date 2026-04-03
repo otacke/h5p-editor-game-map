@@ -135,7 +135,7 @@ export default class GameMapScoreScaling {
       const existingObject = this.params.scoreScalingList
         .find((oldObject) => oldObject.subContentId === newObject.subContentId);
 
-      newObject.weight = existingObject?.weight ?? (this.params.weightIsPercentage ? '100' : '1');
+      newObject.weight = existingObject?.weight ?? (!!this.params.weightIsPercentage ? '100' : '1');
 
       return newObject;
     });
