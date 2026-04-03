@@ -252,7 +252,7 @@ export default class Table {
       weightedTotalScoreDOM.inputMode = 'numeric';
       weightedTotalScoreDOM.min = 0;
       weightedTotalScoreDOM.value = params.totalScore;
-      weightedTotalScoreDOM.addEventListener('input', (event) => {
+      weightedTotalScoreDOM.addEventListener('input', () => {
         this.handleTotalScoreInput();
       });
       weightedTotalScoreDOM.addEventListener('change', () => {
