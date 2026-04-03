@@ -39,7 +39,8 @@ export default class Table {
     const isNoValue = typeof totalScore === 'string';
     const scoreIsValid = typeof totalScore === 'number' && totalScore >= 0;
 
-    this.totalScore = scoreIsValid ? totalScore : 0;
+    const fallbackTotalScore = (this.params.scalingMode === 'totalScore') ? 1 : 0;
+    this.totalScore = scoreIsValid ? totalScore : fallbackTotalScore;
 
     if (!this.weightedTotalScoreDOM) {
       return;
@@ -92,10 +93,13 @@ export default class Table {
       rebuildParams.totalScore = Math.round(rebuildParams.totalScore);
     }
 
+    const hasTask = (rebuildParams.scalingValues || []).some((scalingValue) => scalingValue?.isTask);
+
     const { dom, errorsDOM, weightedTotalScoreDOM } = this.buildDOM({
       dictionary: rebuildParams.dictionary,
       scalingMode: rebuildParams.scalingMode,
       totalScore: rebuildParams.totalScore,
+      hasTask,
     });
     this.dom = dom;
     this.errorsDOM = errorsDOM;
@@ -103,6 +107,8 @@ export default class Table {
 
     this.updateScalingValues(rebuildParams.scalingValues);
     this.setWeightIsPercentage(rebuildParams.weightIsPercentage);
+
+    this.params = rebuildParams;
   }
 
   /**
@@ -144,6 +150,7 @@ export default class Table {
       weightedMaxScore: NO_VALUE_STRING,
       scalingMode: params.scalingMode,
       totalScore: params.totalScore,
+      hasTask: params.hasTask,
     });
     totalRow.forEach((element) => {
       table.append(element);
@@ -244,7 +251,7 @@ export default class Table {
     weightDOM.classList.add('h5peditor-game-map-score-scaling-table-weight', 'bottom-row');
 
     let weightedTotalScoreDOM;
-    if (params.scalingMode === 'totalScore') {
+    if (params.scalingMode === 'totalScore' && params.hasTask) {
       weightedTotalScoreDOM = document.createElement('input');
       weightedTotalScoreDOM.classList.add('h5peditor-game-map-score-scaling-table-weighted-max-score', 'bottom-row');
       weightedTotalScoreDOM.type = 'number';
@@ -252,7 +259,7 @@ export default class Table {
       weightedTotalScoreDOM.inputMode = 'numeric';
       weightedTotalScoreDOM.min = 0;
       weightedTotalScoreDOM.value = params.totalScore;
-      weightedTotalScoreDOM.addEventListener('input', (event) => {
+      weightedTotalScoreDOM.addEventListener('input', () => {
         this.handleTotalScoreInput();
       });
       weightedTotalScoreDOM.addEventListener('change', () => {
@@ -298,6 +305,7 @@ export default class Table {
         weightIsPercentage: this.params.weightIsPercentage,
         scalingMode: this.params.scalingMode,
         visualPrecision: this.visualPrecision,
+        weight: parseFloat(scalingValue.weight) || (this.params.weightIsPercentage ? 100 : 1),
       };
 
       if (oldRowValues[index]?.weight && typeof oldRowValues[index].weight === 'number') {
@@ -419,7 +427,6 @@ export default class Table {
       }, 0);
 
       const newWeight = this.totalScore / totalExerciseMaxScore;
-
       this.rows.forEach((row) => {
         if (!row.isTask()) {
           return;
