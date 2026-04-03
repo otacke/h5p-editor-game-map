@@ -168,9 +168,32 @@ export default class Main {
    * @param {object} values Values object.
    */
   updateValues(values) {
-    this.percentageInstance.$input.get(0).checked = values.weightIsPercentage;
-    this.percentageInstance.$input.get(0).dispatchEvent(new Event('change'));
+    const percentageCheckbox = this.percentageInstance.$input.get(0);
+    percentageCheckbox.checked = values.weightIsPercentage;
+    percentageCheckbox.dispatchEvent(new Event('change'));
 
-    this.table.updateScalingValues(values.scoreScalingList);
+    const oldTableDOM = this.table.getDOM();
+
+    this.table.setWeightIsPercentage(values.weightIsPercentage);
+    this.table.rebuild({
+      scalingValues: values.scoreScalingList,
+      totalScore: values.totalScore,
+    });
+
+    const newTableDOM = this.table.getDOM();
+
+    if (oldTableDOM?.parentNode) {
+      oldTableDOM.replaceWith(newTableDOM);
+    }
+    else if (!newTableDOM.isConnected) {
+      const scalingModeDOM = this.scalingModeInstance.$item?.get(0);
+
+      if (scalingModeDOM?.parentNode) {
+        scalingModeDOM.insertAdjacentElement('afterend', newTableDOM);
+      }
+      else {
+        this.dom.appendChild(newTableDOM);
+      }
+    }
   }
 }

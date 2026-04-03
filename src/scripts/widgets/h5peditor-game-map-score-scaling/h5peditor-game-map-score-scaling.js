@@ -142,7 +142,7 @@ export default class GameMapScoreScaling {
 
     this.setValue(this.params);
 
-    this.main.updateValues(this.params);
+    this.main.updateValues(structuredClone(this.params));
   }
 
   /**
