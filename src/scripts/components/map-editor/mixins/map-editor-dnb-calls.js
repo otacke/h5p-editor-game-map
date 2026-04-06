@@ -229,7 +229,12 @@ export default class DnBCalls {
     }
 
     this.updateStageIdOptions(mapElement);
-    this.updateScoreScalingValues(mapElement);
+
+    if (!mapElement.isSpecialStage()) {
+      const scoreInfos = this.getScoreInfos(mapElement);
+      this.updateScoreScalingValues(mapElement, scoreInfos);
+      this.updateIsTaskFlags(mapElement, scoreInfos);
+    }
 
     const form = mapElement.getData().form;
 
@@ -262,7 +267,7 @@ export default class DnBCalls {
    */
   handleFormChange(event) {
     const mapElement = this.editContext.mapElementBeingEdited;
-    if (!mapElement) {
+    if (!mapElement || mapElement.isSpecialStage()) {
       return;
     }
 
@@ -278,31 +283,100 @@ export default class DnBCalls {
       this.callbacks.onChanged(this.params.elements, this.params.paths);
     }
 
-    window.requestAnimationFrame(() => {
-      this.updateScoreScalingValues(mapElement);
-    }); // Event should have passed to update content params before querying for updated score info
+    if (!mapElement.isSpecialStage()) {
+      window.requestAnimationFrame(() => {
+        const scoreInfos = this.getScoreInfos(mapElement);
+        this.updateScoreScalingValues(mapElement, scoreInfos);
+        this.updateIsTaskFlags(mapElement, scoreInfos);
+      }); // Event should have passed to update content params before querying for updated score info
+    }
   }
 
   /**
-   * Update score scaling values for changed content.
-   * @param {object} mapElement Map element whose content has changed and score scaling values should be updated for.
+   * Get score infos for contents.
+   * @param {object} mapElement Map element to get score infos for.
+   * @returns {object[]} Score infos.
    */
-  updateScoreScalingValues(mapElement) {
+  getScoreInfos(mapElement) {
+    const list = mapElement.getData().children.find((child) => child.field?.name === 'contentsList');
+    const scoreInfos = [];
+
+    list.forEachChild((listItem, index) => {
+      const library = listItem.children.find((child) => child instanceof H5PEditor.Library);
+      const scoreInfo = UtilH5P.getScoreInfo(library.params, H5PEditor.contentId);
+
+      scoreInfos.push({
+        subContentId: library.params.subContentId,
+        ... scoreInfo,
+      });
+    });
+
+    return scoreInfos;
+  }
+
+  /**
+   * Update the score scaling values in the form based on the content's score info.
+   * @param {object} mapElement Map element to update score scaling values for.
+   * @param {object[]} scoreInfos Score infos to update score scaling values with.
+   */
+  updateScoreScalingValues(mapElement, scoreInfos) {
     const list = mapElement.getData().children.find((child) => child.field?.name === 'contentsList');
     const scoringValues = [];
 
-    list.forEachChild((listItem) => {
+    list.forEachChild((listItem, index) => {
       const library = listItem.children.find((child) => child instanceof H5PEditor.Library);
+      const scoreInfo = scoreInfos[index] || {};
+
       scoringValues.push({
-        subContentId: library.params.subContentId,
         title: library.params.metadata?.title || library.params.library,
-        ... UtilH5P.getScoreInfo(library.params, H5PEditor.contentId),
+        ... scoreInfo,
       });
     });
 
     const scoreScalingInstance = H5PEditor.findField('scoreScaling', mapElement.form);
     scoreScalingInstance.updateValues(scoringValues);
-  };
+  }
+
+  /**
+   * Update the "is task" flags in the form based on the content's score info.
+   * @param {object} mapElement Map element to update "is task" flags for.
+   * @param {object[]} scoreInfos Score infos to update "is task" flags with.
+   */
+  updateIsTaskFlags(mapElement, scoreInfos) {
+    const contentDOMs = this.getContentDOMs(mapElement);
+
+    scoreInfos.forEach((scoreInfo, index) => {
+      if (!contentDOMs[index]) {
+        return;
+      }
+
+      contentDOMs[index].classList.toggle('is-task', !!scoreInfo.isTask);
+    });
+  }
+
+  /**
+   * Get content DOMs for a map element.
+   * @param {object} mapElement Map element to get content DOMs for.
+   * @returns {HTMLElement[]} Content DOMs.
+   */
+  getContentDOMs(mapElement) {
+    const wrapperSelector = '.field:has([for^="field-contentslist"]) .h5peditor-widget-wrapper';
+    const contentListWrapperDOM = mapElement.getData().form.querySelector(wrapperSelector);
+    if (!contentListWrapperDOM) {
+      return [];
+    }
+
+    const verticalTabsSelector = ':scope > .h5p-vtab-wrapper .h5p-vtab-form .field-name-contentsGroup > .content';
+    let contentDOMs = contentListWrapperDOM.querySelectorAll(`${verticalTabsSelector}`);
+
+    // GameMap may at some point be used as subcontent with nested Vertical Tabs
+    if (contentDOMs.length === 0) {
+      const plainListSelector = ':scope > ul .h5p-li .field-name-contentsGroup > .content';
+      contentDOMs = contentListWrapperDOM.querySelectorAll(`${plainListSelector}`);
+    }
+
+    return contentDOMs;
+  }
 
   /**
    * Handle dialog "done" action. Validate form and update map element if valid.

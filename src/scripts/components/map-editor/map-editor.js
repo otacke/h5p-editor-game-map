@@ -153,6 +153,14 @@ export default class MapEditor {
   }
 
   /**
+   * Toggle visibility of lives details in stage dialog.
+   * @param {boolean} visible Whether the lives details should be visible.
+   */
+  toggleLivesDetailsVisibility(visible) {
+    this.dialog.toggleLivesDetailsVisibility(visible);
+  }
+
+  /**
    * Create button for toolbar.
    * @param {object} [params] Parameters.
    * @param {string} params.id Id.
@@ -184,9 +192,9 @@ export default class MapEditor {
 
       // Convert percentage values to px.
       const toPxFactor = {
-         
+
         x: mapSize.width / 100,
-         
+
         y: mapSize.height / 100,
       };
       let xPx = parseFloat(telemetry.x) * toPxFactor.x;
@@ -205,9 +213,9 @@ export default class MapEditor {
       yPx = Math.max(0, Math.min(yPx, mapSize.height - heightPx));
 
       this.mapElements[index].updateParams({ telemetry: {
-         
+
         x: xPx * 100 / mapSize.width,
-         
+
         y: yPx * 100 / mapSize.height,
         height: telemetry.height,
       },
@@ -224,12 +232,12 @@ export default class MapEditor {
    */
   convertToPercent(value = {}) {
     if (typeof value.x === 'number') {
-       
+
       return value.x * 100 / this.map.getSize().width;
     }
 
     if (typeof value.y === 'number') {
-       
+
       return value.y * 100 / this.map.getSize().height;
     }
 

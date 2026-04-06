@@ -1,4 +1,6 @@
 .h5p-editor-game-map-fluid-dialog {
+  --color-separator: #eee;
+
   background: #fff;
   border: 1px solid #ccc;
   -webkit-box-shadow: 0 0 4px #a7a7a7;
@@ -13,12 +15,35 @@
     padding: 1rem;
 
     .field-name-accessRestrictions {
-      border-bottom: 2px solid #eee;
+      border-bottom: 2px solid var(--color-separator);
       padding-bottom: 1rem;
     }
 
+    .content {
+      .field-name-livesSettings {
+        border-top: 2px solid var(--color-separator);
+        padding-top: 1rem;
+
+        &.display-none {
+          display: none;
+        }
+      }
+
+      &:not(.is-task) {
+        .field-name-livesSettings {
+          display: none;
+        }
+      }
+
+      &:is(:not(.is-task), :has(.field-name-livesSettings.display-none)) {
+        > .field.library {
+          margin-bottom: 0;
+        }
+      }
+    }
+
     .field-name-neighbors {
-      border-top: 2px solid #eee;
+      border-top: 2px solid var(--color-separator);
       padding-top: 1rem;
     }
 

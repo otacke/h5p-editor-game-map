@@ -72,6 +72,12 @@
     }
   }
 
+  .field-name-behaviour {
+    .field-name-livesDetails.display-none {
+      display: none;
+    }
+  }
+
   .h5peditor-dragnbar .h5p-dragnbar-li .h5p-dragnbar-tooltip {
     font-size: 0.9em;
   }

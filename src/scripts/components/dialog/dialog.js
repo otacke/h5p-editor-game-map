@@ -100,6 +100,8 @@ export default class Dialog {
       this.formDOM.addEventListener('mouseup', this.callbacks.onChange.bind(this)); // VerticalTabs
     }
 
+    this.toggleLivesDetailsVisibility(this.showLivesDetailsState);
+
     this.show();
   }
 
@@ -132,5 +134,17 @@ export default class Dialog {
   handleRemove() {
     this.callbacks.onRemoved();
     this.hideForm();
+  }
+
+  /**
+   * Toggle visibility of lives details fields in dialog. May still be overruled by is-task flag on .content.
+   * @param {boolean} visible True to show, false to hide.
+   */
+  toggleLivesDetailsVisibility(visible) {
+    this.showLivesDetailsState = visible;
+
+    this.dialogInner.querySelectorAll('.field.field-name-livesSettings')?.forEach((field) => {
+      field.classList.toggle('display-none', !visible);
+    });
   }
 }

@@ -14,6 +14,7 @@ export default class ParentReadyInitialization {
     this.initializeBackgroundImage();
     this.initializeHidePathColorOnFreeRoaming();
     this.initializeHidePathOptions();
+    this.initializeLifeChangeListener();
   }
 
   /**
@@ -97,5 +98,31 @@ export default class ParentReadyInitialization {
       togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
     });
     togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
+  }
+
+  /**
+   * Initialize life change listener to hide lives details when not required.
+   * Can't use showWhen as it breaks the editor for nested fields.
+   */
+  initializeLifeChangeListener() {
+    const livesNumberField = H5PEditor.findField('behaviour/lives', this.parent.parent);
+    const livesDetailsField = H5PEditor.findField('behaviour/livesDetails', this.parent.parent);
+
+    if (!livesNumberField || !livesDetailsField) {
+      return; // Could not find fields
+    }
+
+    const toggleLivesDetailsField = (livesNumber) => {
+      const parsedLivesNumber = parseInt(livesNumber);
+      const hideDetails = Number.isNaN(parsedLivesNumber) || parsedLivesNumber <= 0;
+      livesDetailsField.$group?.get(0).classList.toggle('display-none', hideDetails);
+
+      this.mapEditor.toggleLivesDetailsVisibility(!hideDetails);
+    };
+
+    livesNumberField.$input?.get(0).addEventListener('input', () => {
+      toggleLivesDetailsField(livesNumberField.$input?.get(0).value);
+    });
+    toggleLivesDetailsField(livesNumberField.$input?.get(0).value);
   }
 }
