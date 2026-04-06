@@ -236,6 +236,7 @@ export default class MapElement {
       'canBeStartStage',
       'time',
       'contentslist',
+      'scoreScaling',
     ];
 
     const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
@@ -336,5 +337,13 @@ export default class MapElement {
     }
 
     this.label.hide();
+  }
+
+  /**
+   * Determine whether map element is a special stage.
+   * @returns {boolean} True if special stage, false otherwise.
+   */
+  isSpecialStage() {
+    return this.params.type === STAGE_TYPES['special-stage'];
   }
 }
