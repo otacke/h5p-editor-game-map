@@ -21,6 +21,8 @@ export default class DnBCalls {
    * @returns {H5P.jQuery} Element DOM. JQuery required by DragNBar.
    */
   createElement(type, params) {
+    this.updateTotalMaxScoreForStageScoreRestrictions = this.updateTotalMaxScoreForStageScoreRestrictions.bind(this);
+
     /*
      * This is okay for now, but if other elements than stages need to be
      * added to map elements, this needs changing - including semantics :-/.
@@ -447,34 +449,79 @@ export default class DnBCalls {
       ...this.params.elements.slice(mapElement.getIndex() + 1),
     ];
 
+    UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
+      field.setOptions(otherElementsParams);
+
+      field.off('change', this.updateTotalMaxScoreForStageScoreRestrictions);
+      field.on('change', this.updateTotalMaxScoreForStageScoreRestrictions);
+    });
+
     UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
       field.setOptions(otherElementsParams);
     });
 
-    const otherElementsParamsWithMaxScore = otherElementsParams.map((params) => {
-      const totalMaxScore = params.scoreScaling?.scoreScalingList?.reduce((total, scoreScalingItem) => {
-        if (!scoreScalingItem.isTask) {
-          return total;
-        }
+    window.requestAnimationFrame(() => {
+      this.updateTotalMaxScoreForStageScoreRestrictions();
+    });
+  }
 
-        return total + parseFloat(scoreScalingItem.weight) * parseFloat(scoreScalingItem.maxScore);
-      }, 0) || 0;
+  /**
+   * Update total max score for stage score restrictions. Inject behind score value field.
+   */
+  updateTotalMaxScoreForStageScoreRestrictions() {
+    if (!this.editContext?.mapElementBeingEdited) {
+      return;
+    }
 
-      if (totalMaxScore === 0) {
-        return params;
+    const mapElement = this.editContext.mapElementBeingEdited;
+
+    const selectedIds = UtilH5P.findAllFields('stageScoreId', mapElement.form).map((field) => field.getValue());
+
+    UtilH5P.findAllFields('stageScoreValue', mapElement.form).forEach((field, index) => {
+      this.updateMaxScoreHint(field, selectedIds[index]);
+    });
+  }
+
+  /**
+   * Update the max score hint for a score value field.
+   * @param {object} field Score value field to update.
+   * @param {string} selectedId Id of the selected stage.
+   */
+  updateMaxScoreHint(field, selectedId) {
+    const inputField = field.$input.get(0);
+    inputField.parentNode?.querySelector('.total-max-score')?.remove();
+
+    const maxScore = this.getMaxScoreForStage(selectedId);
+    if (maxScore === 0) {
+      return;
+    }
+
+    const totalMaxScoreDOM = document.createElement('span');
+    totalMaxScoreDOM.classList.add('total-max-score');
+    totalMaxScoreDOM.textContent = this.params.dictionary
+      .get('l10n.maxScoreTemplate')
+      .replace('@maxScore', maxScore);
+
+    inputField.parentNode.insertBefore(totalMaxScoreDOM, inputField.nextSibling);
+  }
+
+  /**
+   * Get the total max score for a stage by its id.
+   * @param {string} id Id of the stage.
+   * @returns {number} Total max score.
+   */
+  getMaxScoreForStage(id) {
+    const mapElement = this.mapElements.find(
+      (element) => element.params?.elementParams?.id === id
+    );
+
+    return mapElement?.params?.elementParams?.scoreScaling?.scoreScalingList?.reduce((total, item) => {
+      if (!item.isTask) {
+        return total;
       }
 
-      const maxScoreText = this.params.dictionary.get('l10n.maxScoreTemplate').replace('@maxScore', totalMaxScore);
-
-      return {
-        ...params,
-        label: `${params.label} (${maxScoreText})`,
-      };
-    });
-
-    UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
-      field.setOptions(otherElementsParamsWithMaxScore);
-    });
+      return total + parseFloat(item.weight) * parseFloat(item.maxScore);
+    }, 0) ?? 0;
   }
 
   /**
