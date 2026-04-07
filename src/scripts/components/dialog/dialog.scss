@@ -17,6 +17,12 @@
     .field-name-accessRestrictions {
       border-bottom: 2px solid var(--color-separator);
       padding-bottom: 1rem;
+
+      .field-name-restrictionSetGroup {
+        [id^="field-stagescorevalue-"] + .total-max-score {
+          margin-inline-start: 0.5rem;
+        }
+      }
     }
 
     .content {
