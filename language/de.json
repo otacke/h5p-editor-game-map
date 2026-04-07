@@ -16,6 +16,7 @@
     "l10n.confirmationDialogRemoveConfirm": "Ja, löschen!",
     "l10n.contentTitle": "Titel des Inhalts",
     "l10n.errorTotalWeightMustBe100": "Die Summe aller Gewichtungen muss 100 betragen. Momentan liegt sie bei @current.",
+    "l10n.maxScoreTemplate": "Höchstpunktzahl: @maxScore",
     "a11y.pathFromTo": "Pfad von Etappe @from nach Etappe @to",
     "a11y.weight": "Gewichtung",
     "a11y.maxScore": "Maximalpunktzahl",

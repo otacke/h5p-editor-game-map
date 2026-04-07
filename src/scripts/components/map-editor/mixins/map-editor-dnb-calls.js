@@ -447,12 +447,33 @@ export default class DnBCalls {
       ...this.params.elements.slice(mapElement.getIndex() + 1),
     ];
 
-    UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
+    UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
       field.setOptions(otherElementsParams);
     });
 
-    UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
-      field.setOptions(otherElementsParams);
+    const otherElementsParamsWithMaxScore = otherElementsParams.map((params) => {
+      const totalMaxScore = params.scoreScaling?.scoreScalingList?.reduce((total, scoreScalingItem) => {
+        if (!scoreScalingItem.isTask) {
+          return total;
+        }
+
+        return total + parseFloat(scoreScalingItem.weight) * parseFloat(scoreScalingItem.maxScore);
+      }, 0) || 0;
+
+      if (totalMaxScore === 0) {
+        return params;
+      }
+
+      const maxScoreText = this.params.dictionary.get('l10n.maxScoreTemplate').replace('@maxScore', totalMaxScore);
+
+      return {
+        ...params,
+        label: `${params.label} (${maxScoreText})`,
+      };
+    });
+
+    UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
+      field.setOptions(otherElementsParamsWithMaxScore);
     });
   }
 
