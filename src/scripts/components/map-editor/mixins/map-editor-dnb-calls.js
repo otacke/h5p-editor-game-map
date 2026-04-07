@@ -511,9 +511,7 @@ export default class DnBCalls {
    * @returns {number} Total max score.
    */
   getMaxScoreForStage(id) {
-    const mapElement = this.mapElements.find(
-      (element) => element.params?.elementParams?.id === id
-    );
+    const mapElement = this.mapElements.find((element) => element.params?.elementParams?.id === id);
 
     return mapElement?.params?.elementParams?.scoreScaling?.scoreScalingList?.reduce((total, item) => {
       if (!item.isTask) {
