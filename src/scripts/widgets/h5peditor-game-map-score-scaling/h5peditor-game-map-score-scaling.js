@@ -3,7 +3,7 @@ import Main from './components/main.js';
 import './h5peditor-game-map-score-scaling.scss';
 
 /** Class for "Score scaling" H5P widget */
-export default class GameMapScoreScaling {
+export default class GameMapScoreScaling extends H5P.EventDispatcher {
 
   /**
    * @class
@@ -13,6 +13,8 @@ export default class GameMapScoreScaling {
    * @param {function} setValue Callback to set parameters.
    */
   constructor(parent, field, params = {}, setValue) {
+    super();
+
     this.parent = parent;
     this.field = field;
     this.params = params;
@@ -89,7 +91,9 @@ export default class GameMapScoreScaling {
       Object.assign(listItem, currentValues.scoreScalingList[index]);
     });
 
-    this.setValue(this.params);
+    this.setValue(this.field, this.params);
+
+    this.trigger('change', this.params);
   }
 
   /**
@@ -140,7 +144,7 @@ export default class GameMapScoreScaling {
       return newObject;
     });
 
-    this.setValue(this.params);
+    this.setValue(this.field, this.params);
 
     this.main.updateValues(structuredClone(this.params));
   }

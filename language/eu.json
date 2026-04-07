@@ -16,6 +16,7 @@
     "l10n.confirmationDialogRemoveConfirm": "Bai, ezabatu!",
     "l10n.contentTitle": "Content title",
     "l10n.errorTotalWeightMustBe100": "The sum of all weights must be 100. Currently it is @current.",
+    "l10n.maxScoreTemplate": "Maximum score: @maxScore",
     "a11y.pathFromTo": "Path from stage @from to stage @to",
     "a11y.weight": "Weight",
     "a11y.maxScore": "Maximum score",
