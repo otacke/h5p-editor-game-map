@@ -1,5 +1,4 @@
 import Util from '@services/util.js';
-import UtilH5P from '@services/util-h5p.js';
 import './dialog.scss';
 
 export default class Dialog {
