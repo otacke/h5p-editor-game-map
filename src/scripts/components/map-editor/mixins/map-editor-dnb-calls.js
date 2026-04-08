@@ -456,6 +456,10 @@ export default class DnBCalls {
       field.on('change', this.updateTotalMaxScoreForStageScoreRestrictions);
     });
 
+    UtilH5P.findAllFields('stageScorePercentageId', mapElement.form).forEach((field) => {
+      field.setOptions(otherElementsParams);
+    });
+
     UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
       field.setOptions(otherElementsParams);
     });
