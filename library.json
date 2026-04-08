@@ -22,6 +22,11 @@
   ],
   "preloadedDependencies": [
     {
+      "machineName": "H5P.GameMap",
+      "majorVersion": 1,
+      "minorVersion": 6
+    },
+    {
       "machineName": "H5P.DragNBar",
       "majorVersion": 1,
       "minorVersion": 5

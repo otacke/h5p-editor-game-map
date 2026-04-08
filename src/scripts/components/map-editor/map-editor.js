@@ -2,7 +2,9 @@ import Paths from '@models/paths.js';
 import Util from '@services/util.js';
 import Dialog from '@components/dialog/dialog.js';
 import Map from '@components/map-editor/map/map.js';
-import Toolbar from '@components/toolbar/toolbar.js';
+import ToolbarGroup from '@components/toolbar/toolbar-group.js';
+import ToolbarMain from '@components/toolbar/toolbar-main.js';
+import DragNBarWrapper from '@models/drag-n-bar-wrapper.js';
 import DnBCalls from './mixins/map-editor-dnb-calls.js';
 import PathHandling from './mixins/map-editor-path-handling.js';
 import './map-editor.scss';
@@ -31,12 +33,15 @@ export default class MapEditor {
 
     this.callbacks = Util.extend({
       onChanged: () => {},
+      onTogglePreview: () => {},
     }, callbacks);
 
     this.mapElements = [];
 
+    this.id = H5P.createUUID();
     this.dom = document.createElement('div');
     this.dom.classList.add('h5p-editor-game-map-editor');
+    this.dom.setAttribute('id', this.id);
 
     this.map = new Map(
       {
@@ -65,20 +70,48 @@ export default class MapEditor {
       },
     );
 
-    this.toolbar = new Toolbar(
+    this.dialog = new Dialog({ dictionary: this.params.dictionary });
+
+    this.buildDragNBarWrapper();
+    this.buildToolbar(this.dnbWrapper.getParentDOM());
+    this.dom.append(this.toolbar.getDOM());
+
+    this.dom.appendChild(this.map.getDOM());
+    this.dom.appendChild(this.dialog.getDOM());
+
+    this.params.elements.forEach((elementParams) => {
+      let type = STAGE_TYPES.stage;
+      if (elementParams.specialStageType) {
+        type = STAGE_TYPES['special-stage'];
+      }
+
+      this.createElement(type, elementParams);
+    });
+
+    this.hide();
+  }
+
+  /**
+   * Build DragNBar wrapper.
+   */
+  buildDragNBarWrapper() {
+    const buttonOptions = [{
+      id: 'stage',
+      type: STAGE_TYPES.stage,
+    },
+    {
+      id: 'special-stage',
+      type: STAGE_TYPES['special-stage'],
+    }];
+
+    this.dnbWrapper = new DragNBarWrapper(
       {
-        buttons: [
-          this.createButton({
-            id: 'stage',
-            type: STAGE_TYPES.stage,
-          }),
-          this.createButton({
-            id: 'special-stage',
-            type: STAGE_TYPES['special-stage'],
-          }),
-        ],
-        mapContainer: this.map.getDOM(),
-        dialogContainer: this.dom,
+        dictionary: this.params.dictionary,
+        globals: this.params.globals,
+        subContentOptions: this.params.subContentOptions,
+        buttons: buttonOptions.map((option) => this.createButton(option)),
+        dialogContainer: this.getDOM(),
+        elementArea: this.map.getDOM(),
       },
       {
         onStoppedMoving: (index, x, y) => {
@@ -96,25 +129,70 @@ export default class MapEditor {
           );
           this.updatePaths({ limit: index });
         },
+        createElement: (params) => {
+          return this.createElement(params);
+        },
       },
     );
 
-    this.dialog = new Dialog({ dictionary: this.params.dictionary });
+    this.dnbWrapper.attach(document.createElement('div'));
+  }
 
-    this.dom.appendChild(this.toolbar.getDOM());
-    this.dom.appendChild(this.map.getDOM());
-    this.dom.appendChild(this.dialog.getDOM());
+  /**
+   * Build toolbar.
+   * @param {HTMLElement} dnbDOMElement DNB Wrapper DOM element.
+   */
+  buildToolbar(dnbDOMElement) {
+    // Toolbar components
+    const contentButtons = new ToolbarGroup(
+      {
+        dnbDOM: dnbDOMElement,
+        a11y: {
+          toolbarLabel: this.params.dictionary.get('a11y.toolbarLabelMapElements'),
+        },
+        ariaControlsId: this.id,
+      }, {
+        onKeydown: (createdElement) => {
+          const element = this.elements.find((element) => element.getDOM() === createdElement);
+          if (!element) {
+            return;
+          }
 
-    this.params.elements.forEach((elementParams) => {
-      let type = STAGE_TYPES.stage;
-      if (elementParams.specialStageType) {
-        type = STAGE_TYPES['special-stage'];
-      }
+          this.editElement(element);
+        },
+      },
+    );
 
-      this.createElement(type, elementParams);
-    });
+    const toolbarButtons = [
+      {
+        id: 'preview',
+        tooltip: this.params.dictionary.get('l10n.toolbarButtonPreview'),
+        type: 'pulse',
+        a11y: {
+          active: this.params.dictionary.get('a11y.buttonPreview'),
+        },
+        onClick: () => {
+          this.dnbWrapper.blurAll();
+          this.callbacks.onTogglePreview();
+        },
+      },
+    ];
 
-    this.hide();
+    this.actionButtons = new ToolbarGroup({
+      buttons: toolbarButtons,
+      className: 'h5p-editor-game-map-toolbar-action',
+      a11y: {
+        toolbarLabel: this.params.dictionary.get('a11y.toolbarLabelActions'),
+      },
+      ariaControlsId: this.id,
+    }, {});
+
+    this.toolbar = new ToolbarMain(
+      {
+        contentButtonsDOM: contentButtons.getDOM(),
+        actionButtonsDOM: this.actionButtons.getDOM(),
+      },
+    );
   }
 
   /**
@@ -248,7 +326,7 @@ export default class MapEditor {
    * Resize.
    */
   resize() {
-    this.toolbar.blurAll();
+    this.dnbWrapper.blurAll();
     this.updatePaths();
 
     clearTimeout(this.resizeTimeout);
@@ -280,5 +358,13 @@ export default class MapEditor {
    */
   validate() {
     return this.mapElements.every((element) => this.validateFormChildren(element));
+  }
+
+  /**
+   * Toggle visibility of map editor.
+   * @param {boolean} visible Whether the map editor should be visible.
+   */
+  toggleVisibility(visible) {
+    this.dom.classList.toggle('display-none', !visible);
   }
 }

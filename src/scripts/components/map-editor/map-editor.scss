@@ -1,7 +1,9 @@
 .h5p-editor-game-map-editor {
   box-sizing: border-box;
   padding: 1rem;
-  display: inline-block;
+  display: grid;
+  gap: 0.5rem;
+  grid-area: 1 / 1 / 1 / 1;
   position: relative;
   width: 100%;
 

@@ -6,10 +6,36 @@
 }
 
 .h5p-gamemap-editor {
-  --group-border-color: #d0d0d1; /* Copied from group .content */
-  --label-color: #454347; /* Copied from .h5peditor-label */
-  --description-color: #434446; /* Copied from .h5peditor-field-description */
-  --background-color: #ffffff;
+  --color-group-border: #d0d0d1; /* Copied from group .content */
+  --color-label: #454347; /* Copied from .h5peditor-label */
+  --color-description: #434446; /* Copied from .h5peditor-field-description */
+  --color-background: #ffffff;
+
+  /* Primary color with common gradients */
+  --color-primary-rgb: 26 115 217;
+  --color-primary: rgb(var(--color-primary-rgb) / 100%);
+  --color-primary-dark-rbg: 23 104 196;
+  --color-primary-dark: rgb(var(--color-primary-dark-rbg) / 100%);
+  --color-primary-dark-80: rgb(var(--color-primary-dark-rbg) / 80%);
+  --color-primary-5: rgb(var(--color-primary-rgb) / 5%);
+  --color-primary-10: rgb(var(--color-primary-rgb) / 10%);
+  --color-primary-15: rgb(var(--color-primary-rgb) / 15%);
+  --color-primary-20: rgb(var(--color-primary-rgb) / 20%);
+  --color-primary-25: rgb(var(--color-primary-rgb) / 15%);
+  --color-primary-30: rgb(var(--color-primary-rgb) / 30%);
+  --color-primary-50: rgb(var(--color-primary-rgb) / 50%);
+  --color-primary-70: rgb(var(--color-primary-rgb) / 70%);
+  --color-primary-90: rgb(var(--color-primary-rgb) / 90%);
+  --color-primary-95: rgb(var(--color-primary-rgb) / 95%);
+
+  --color-shadow-light: rgba(166, 166, 166, .2);
+  --color-tooltip-background: rgb(0 0 0 / 90%);
+  --color-text-light: #fff;
+
+  --icon-fontawesome-tv: "\f26c";
+
+  --font-size-normal: 1rem;
+  --font-size-small: 0.8rem;
 
   .field.wizard {
 
@@ -84,7 +110,7 @@
 }
 
 .h5peditor-game-map {
-  width: 100%;
+  display: grid;
 
   &> .group > .title {
     display: none;
