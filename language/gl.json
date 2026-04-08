@@ -17,9 +17,17 @@
     "l10n.contentTitle": "Content title",
     "l10n.errorTotalWeightMustBe100": "The sum of all weights must be 100. Currently it is @current.",
     "l10n.maxScoreTemplate": "Maximum score: @maxScore",
+    "l10n.toolbarButtonPreview": "Preview",
+    "l10n.preview": "Preview Mode",
+    "l10n.previewExplanation": "This is how the user will see your content",
     "a11y.pathFromTo": "Ruta desde a escena @from á escena @to",
     "a11y.weight": "Weight",
     "a11y.maxScore": "Maximum score",
-    "a11y.weightedMaxScore": "Weighted maximum score"
+    "a11y.weightedMaxScore": "Weighted maximum score",
+    "a11y.toolbarLabelMapElements": "Map Elements",
+    "a11y.toolbarLabelActions": "Actions",
+    "a11y.buttonPreview": "Preview map",
+    "a11y.previewOpened": "Preview was opened.",
+    "a11y.previewClosed": "Preview was closed."
   }
 }

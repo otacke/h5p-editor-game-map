@@ -25,6 +25,11 @@
     &.focused {
       outline: 1px solid #000000;
     }
+
+    &:hover, &:focus {
+      outline: 2px ridge #000000;
+      outline-offset: 2px;
+    }
   }
 
   .field-name-specialStageExtraLives.display-none {

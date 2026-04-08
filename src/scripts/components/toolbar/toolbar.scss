@@ -1,77 +1,82 @@
-.h5p-editor-game-map-editor-dnb.h5peditor-dragnbar {
+.h5p-editor-game-map-editor-toolbar {
   --toolbar-button-size: 2.75rem;
   --toolbar-button-padding: 0.125rem;
-
   background: #fff;
   box-shadow: 10px 10px 30px rgb(166 166 166 / 20%);
   height: calc(var(--toolbar-button-size) + 2 * var(--toolbar-button-padding));
-  margin-bottom: 0.5rem;
   padding: 0.5rem;
 
-  &.display-none {
-    display: none;
-  }
+  .h5p-editor-game-map-editor-dnb.h5peditor-dragnbar {
+    &.display-none {
+      display: none;
+    }
 
-  .h5p-dragnbar-ul {
-    float: left;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-
-    .h5p-dragnbar-li {
-      background: transparent;
-      border: none;
+    .h5p-dragnbar-ul {
       float: left;
+      list-style: none;
       margin: 0;
       padding: 0;
-      position: relative;
 
-      .h5p-dragnbar-a {
-        background-color: rgba(26,115,217,.05);
-        border: 2px solid #fff;
-        border-radius: 3px;
-        box-sizing: border-box;
-        color: #277bdb;
-        display: block;
-        margin: var(--toolbar-button-padding);
+      .h5p-dragnbar-li {
+        background: transparent;
+        border: none;
+        float: left;
+        margin: 0;
         padding: 0;
         position: relative;
-        text-align: center;
-        width: var(--toolbar-button-size);
-        height: var(--toolbar-button-size);
 
-        &:hover {
-          background-color: rgba(26,115,217,.1);
-        }
+        .h5p-dragnbar-a {
+          background-color: rgba(26,115,217,.05);
+          border: 2px solid #fff;
+          border-radius: 3px;
+          box-sizing: border-box;
+          color: #277bdb;
+          display: block;
+          margin: var(--toolbar-button-padding);
+          padding: 0;
+          position: relative;
+          text-align: center;
+          width: var(--toolbar-button-size);
+          height: var(--toolbar-button-size);
 
-        &:active {
-          background-color: rgba(26,115,217,.1);
-        }
+          &:focus-visible {
+            outline: 2px ridge #000000;
+            outline-offset: 0;
+          }
 
-        &.h5p-dragnbar-stage-button:before {
-          content: "\f10c";
-          font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
-          font-size: 1.15rem;
-          font-weight: bold;
-          height: 1.15rem;
-          left: 50%;
-          position: absolute;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 1.15rem;
-        }
+          &:hover {
+            background-color: rgba(26,115,217,.1);
+          }
 
-        &.h5p-dragnbar-special-stage-button:before {
-          content: "\f111";
-          font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
-          font-size: 1.15rem;
-          font-weight: bold;
-          height: 1.15rem;
-          left: 50%;
-          position: absolute;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 1.15rem;
+          &:active {
+            background-color: rgba(26,115,217,.1);
+          }
+
+          &.h5p-dragnbar-stage-button:before {
+            content: "\f10c";
+            font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            height: 1.15rem;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.15rem;
+          }
+
+          &.h5p-dragnbar-special-stage-button:before {
+            content: "\f111";
+            font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            height: 1.15rem;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.15rem;
+          }
         }
       }
     }

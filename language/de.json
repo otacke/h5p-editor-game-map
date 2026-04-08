@@ -17,9 +17,15 @@
     "l10n.contentTitle": "Titel des Inhalts",
     "l10n.errorTotalWeightMustBe100": "Die Summe aller Gewichtungen muss 100 betragen. Momentan liegt sie bei @current.",
     "l10n.maxScoreTemplate": "Höchstpunktzahl: @maxScore",
+    "l10n.toolbarButtonPreview": "Vorschau",
     "a11y.pathFromTo": "Pfad von Etappe @from nach Etappe @to",
     "a11y.weight": "Gewichtung",
     "a11y.maxScore": "Maximalpunktzahl",
-    "a11y.weightedMaxScore": "Gewichtete Maximalpunktzahl"
+    "a11y.weightedMaxScore": "Gewichtete Maximalpunktzahl",
+    "a11y.toolbarLabelMapElements": "Kartenelemente",
+    "a11y.toolbarLabelActions": "Aktionen",
+    "a11y.buttonPreview": "Karte als Vorschau begutachten",
+    "a11y.previewOpened": "Vorschau wurde geöffnet.",
+    "a11y.previewClosed": "Vorschau wurde geschlossen."
   }
 }
