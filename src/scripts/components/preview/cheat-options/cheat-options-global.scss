@@ -1,0 +1,12 @@
+.cheat-options-wrapper.global {
+  column-gap: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(auto, 12ch) auto;
+  row-gap: 1rem;
+}
+
+@container tab-panel (max-width: 320px) {
+  .cheat-options-wrapper.global {
+    grid-template-columns: 1fr;
+  }
+}

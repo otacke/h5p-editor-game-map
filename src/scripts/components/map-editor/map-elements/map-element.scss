@@ -1,5 +1,6 @@
 .h5p-gamemap-editor {
   .h5p-editor-game-map-element {
+    border-radius: 50%;
     cursor: move;
     position: absolute;
 
@@ -12,6 +13,11 @@
       height: 100%;
       position: relative;
       width: 100%;
+    }
+
+    &:hover, &:focus {
+      outline: 2px ridge #000000;
+      outline-offset: 2px;
     }
   }
 

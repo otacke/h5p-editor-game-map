@@ -1,0 +1,9 @@
+.h5p-editor-game-map-toolbar-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.h5peditor .h5p-editor-game-map-toolbar-group .h5peditor-dragnbar .h5p-dragnbar-li .h5p-dragnbar-tooltip {
+  font-size: var(--font-size-small);
+}
