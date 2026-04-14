@@ -1,3 +1,4 @@
+import CheatOptions from './cheat-options/cheat-options.js';
 import './preview-overlay.scss';
 import Preview from './preview.js';
 
@@ -18,6 +19,8 @@ export default class PreviewOverlay {
     this.dom = document.createElement('div');
     this.dom.classList.add('preview-overlay');
 
+    this.handleOutsideClick = this.handleOutsideClick.bind(this);
+
     this.hide();
 
     const previewContent = document.createElement('div');
@@ -34,6 +37,18 @@ export default class PreviewOverlay {
     previewExplanation.innerHTML = this.params.dictionary.get('l10n.previewExplanation');
     previewContent.appendChild(previewExplanation);
 
+    this.cheatOptions = new CheatOptions(
+      {
+        dictionary: this.params.dictionary,
+      },
+      {
+        onCheat: (params) => {
+          this.preview.cheat(params);
+        },
+      },
+    );
+    previewContent.appendChild(this.cheatOptions.getDOM());
+
     this.previewWrapper = document.createElement('div');
     this.previewWrapper.classList.add('preview-wrapper');
     previewContent.appendChild(this.previewWrapper);
@@ -42,10 +57,10 @@ export default class PreviewOverlay {
     this.previewWrapper.appendChild(this.preview.getDOM());
 
     const buttons = document.createElement('div');
-    buttons.classList.add('h5p-editor-animator-dialog-buttons');
+    buttons.classList.add('h5p-editor-gamemap-dialog-buttons');
 
     const buttonDone = document.createElement('button');
-    buttonDone.classList.add('h5p-editor-animator-dialog-button');
+    buttonDone.classList.add('h5p-editor-gamemap-dialog-button');
     buttonDone.classList.add('h5p-editor-done');
     buttonDone.innerText = this.params.dictionary.get('l10n.done');
     buttonDone.addEventListener('click', () => {
@@ -74,6 +89,7 @@ export default class PreviewOverlay {
 
     this.setTop(''); // Remove potentially previously set top value
     this.preview.attachInstance(instance);
+    this.cheatOptions.setInstance(instance);
   }
 
   /**
@@ -94,14 +110,19 @@ export default class PreviewOverlay {
   show() {
     this.dom.classList.remove('display-none');
     this.params.globals.get('resize')();
+    this.isVisible = true;
+    document.addEventListener('pointerdown', this.handleOutsideClick);
   }
 
   /**
    * Hide preview overlay.
    */
   hide() {
+    this.cheatOptions?.reset();
     this.dom.classList.add('display-none');
     this.params.globals.get('resize')();
+    this.isVisible = false;
+    document.removeEventListener('pointerdown', this.handleOutsideClick);
   }
 
   /**
@@ -116,5 +137,26 @@ export default class PreviewOverlay {
    */
   decloak() {
     this.dom.classList.remove('display-invisible');
+  }
+
+  /**
+   * Resize preview.
+   */
+  resize() {
+    if (!this.isVisible) {
+      return;
+    }
+
+    this.preview.resize();
+  }
+
+  /**
+   * Handle outside click.
+   * @param {PointerEvent} event Pointer event.
+   */
+  handleOutsideClick(event) {
+    if (!this.dom.contains(event.target)) {
+      this.callbacks.onDone();
+    }
   }
 }

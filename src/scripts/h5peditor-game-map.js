@@ -155,6 +155,7 @@ export default class GameMap extends H5P.EventDispatcher {
 
     window.addEventListener('resize', () => {
       this.mapEditor.resize();
+      this.previewOverlay.resize();
     });
 
     this.parent.ready(() => {
@@ -464,7 +465,7 @@ export default class GameMap extends H5P.EventDispatcher {
    */
   closePreview() {
     this.mapEditor.toggleVisibility(true);
-    this.previewInstance.resetTask();
+    this.previewInstance?.resetTask();
     this.previewInstance = null;
     this.previewOverlay.decloak();
     this.previewOverlay.hide();
@@ -506,6 +507,11 @@ export default class GameMap extends H5P.EventDispatcher {
       form = form.parent;
     }
 
-    return form.params;
+    const previewParams = {
+      ...form.params,
+      isPreview: true,
+    };
+
+    return previewParams;
   }
 }

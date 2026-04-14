@@ -1,0 +1,59 @@
+.h5p-editor-gamemap-cheat-options-tab-list-container {
+  .h5p-editor-gamemap-cheat-options-tab-list {
+    border-color: var(--color-group-border);
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
+    .h5p-editor-gamemap-cheat-options-tab {
+      background-color: transparent;
+      border: 0;
+      font-size: 1rem;
+      padding: 0;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+
+      &[aria-selected="true"] {
+        .h5p-editor-gamemap-cheat-options-tab-label {
+          border-color: var(--color-primary);
+        }
+      }
+
+      &:hover, &:focus {
+        .h5p-editor-gamemap-cheat-options-tab-label {
+          color: var(--color-primary);
+        }
+      }
+
+      &:focus-visible {
+        .h5p-editor-gamemap-cheat-options-tab-label {
+          border-color: transparent;
+          outline: 3px solid var(--color-primary);
+        }
+      }
+
+      .h5p-editor-gamemap-cheat-options-tab-label {
+        border-width: 0 0 3px 0;
+        border-style: solid;
+        border-color: transparent;
+        font-weight: bold;
+        padding-inline: 0.25rem;
+        padding-block: 0.5rem;
+      }
+    }
+  }
+
+  .h5p-editor-gamemap-cheat-options-tab-panel {
+    container-name: tab-panel;
+    container-type: inline-size;
+    padding: 0.5rem;
+
+    &.display-none {
+      display: none;
+    }
+  }
+}
