@@ -1,0 +1,34 @@
+.cheat-options-wrapper.stages {
+
+  .cheat-options-stage-detail {
+    .cheat-options-stage-summary {
+      background-color: var(--color-primary-5);
+      border: 1px solid var(--color-primary-20);
+      cursor: pointer;
+      padding-block: 0.5rem;
+      padding-inline: 1rem 0.5rem;
+    }
+
+    &:open .cheat-options-stage-contents {
+      background-color: var(--color-background);
+      border-color: var(--color-primary-20);
+      border-style: solid;
+      border-width: 0 1px 1px 1px;
+      column-gap: 0.5rem;
+      display: grid;
+      grid-template-columns: minmax(auto, 12ch) auto;
+      padding: 0.5rem;
+      row-gap: 1rem;
+    }
+
+    &:not(:first-child) .cheat-options-stage-summary {
+      border-top: 0;
+    }
+  }
+}
+
+@container tab-panel (max-width: 320px) {
+  .cheat-options-wrapper.stages .cheat-options-stage-detail:open .cheat-options-stage-contents {
+    grid-template-columns: 1fr;
+  }
+}

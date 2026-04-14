@@ -3,7 +3,7 @@
 
   background-color: var(--editor-fields-gamemapSteps-backgroundImageSettings-backgroundColor, #fff);
   box-sizing: border-box;
-  display: block;
+  display: grid;
   position: relative;
   z-index: 0;
 
@@ -13,6 +13,7 @@
 
   .h5p-editor-game-map-editor-map-background-image {
     display: block;
+    grid-area: 1 / 1 / 1 / 1;
     height: auto;
     width: 100%;
     pointer-events: none;
@@ -24,11 +25,13 @@
   }
 
   .h5p-editor-game-map-editor-map-path-wrapper {
+    grid-area: 1 / 1 / 1 / 1;
     height: 100%;
     width: 100%;
   }
 
   .h5p-editor-game-map-editor-map-stage-wrapper {
+    grid-area: 1 / 1 / 1 / 1;
     height: 100%;
     width: 100%;
   }
