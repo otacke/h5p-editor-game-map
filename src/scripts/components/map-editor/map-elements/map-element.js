@@ -237,6 +237,7 @@ export default class MapElement {
       'time',
       'contentslist',
       'scoreScaling',
+      'stageBehaviour',
     ];
 
     const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
