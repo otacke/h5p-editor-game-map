@@ -18,6 +18,9 @@ export default class Dialog {
       onRemoved: () => {},
     }, callbacks);
 
+    this.callbacks.onChange = this.callbacks.onChange.bind(this);
+    this.toggleScoreScalingVisibility = this.toggleScoreScalingVisibility.bind(this);
+
     this.dom = document.createElement('div');
     this.dom.classList.add('h5p-editor-game-map-fluid-dialog');
 
@@ -95,11 +98,17 @@ export default class Dialog {
     this.dialogInner.appendChild(this.formDOM);
 
     if (params.changeCallback) {
-      this.formDOM.addEventListener('focusout', this.callbacks.onChange.bind(this)); // Form fields
-      this.formDOM.addEventListener('mouseup', this.callbacks.onChange.bind(this)); // VerticalTabs
+      this.formDOM.addEventListener('focusout', this.callbacks.onChange); // Form fields
+      this.formDOM.addEventListener('mouseup', this.callbacks.onChange); // VerticalTabs
     }
 
     this.toggleLivesDetailsVisibility(this.showLivesDetailsState);
+
+    this.randomExerciseToggleDOM =
+      this.formDOM.querySelector('.field-name-randomExercises [id^="field-randomexercises-"]');
+
+    this.randomExerciseToggleDOM?.addEventListener('change', this.toggleScoreScalingVisibility);
+    this.toggleScoreScalingVisibility();
 
     this.show();
   }
@@ -108,8 +117,9 @@ export default class Dialog {
    * Hide dialog form.
    */
   hideForm() {
-    this.formDOM.removeEventListener('focusout', this.callbacks.onChange.bind(this));
-    this.formDOM.removeEventListener('mouseup', this.callbacks.onChange.bind(this));
+    this.formDOM.removeEventListener('focusout', this.callbacks.onChange);
+    this.formDOM.removeEventListener('mouseup', this.callbacks.onChange);
+    this.randomExerciseToggleDOM?.removeEventListener('change', this.toggleScoreScalingVisibility);
 
     this.dialogInner.innerHTML = '';
     this.hide();
@@ -145,5 +155,18 @@ export default class Dialog {
     this.dialogInner.querySelectorAll('.field.field-name-livesSettings')?.forEach((field) => {
       field.classList.toggle('display-none', !visible);
     });
+  }
+
+  /**
+   * Toggle visibility of score scaling.
+   * @param {boolean} [requestVisible] True to show, false to hide.
+   */
+  toggleScoreScalingVisibility(requestVisible) {
+    const visible = (typeof requestVisible === 'boolean') ?
+      requestVisible :
+      (!this.randomExerciseToggleDOM.checked ?? true);
+
+    const scoreScalingDOM = this.formDOM.querySelector('.h5peditor-game-map-score-scaling');
+    scoreScalingDOM?.classList.toggle('display-none', !visible);
   }
 }
