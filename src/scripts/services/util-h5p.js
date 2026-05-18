@@ -100,6 +100,10 @@ export default class UtilH5P {
     // Cloning, because the original may still be needed as a template
     const childrenClone = [...children];
 
+    // Sort ascending so splicing from the back removes the right items
+    // regardless of the order fieldNames were given in.
+    removeIndexes.sort((a, b) => a - b);
+
     for (let i = removeIndexes.length - 1; i >= 0; i--) {
       childrenClone.splice(removeIndexes[i], 1);
     }

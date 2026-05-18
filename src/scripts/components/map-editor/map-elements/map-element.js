@@ -3,7 +3,7 @@ import UtilDOM from '@services/util-dom.js';
 import UtilH5P from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
-import { STAGE_TYPES } from './stage.js';
+import { SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
 
 export default class MapElement {
 
@@ -222,27 +222,28 @@ export default class MapElement {
      * elements here.
      */
     const toBeRemoved = {};
-    toBeRemoved[STAGE_TYPES.stage] = [
+    toBeRemoved[STAGE_TYPES.STAGE] = [
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
       'specialStageLinkURL',
       'specialStageLinkTarget',
+      'specialStageTeleportTarget',
       'alwaysVisible',
       'overrideSymbol',
     ];
 
-    toBeRemoved[STAGE_TYPES['special-stage']] = [
+    toBeRemoved[STAGE_TYPES.SPECIAL_STAGE] = [
       'canBeStartStage',
       'time',
-      'contentslist',
+      'contentsList',
       'scoreScaling',
       'stageBehaviour',
     ];
 
     const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
 
-    if (elementType === STAGE_TYPES['special-stage']) {
+    if (elementType === STAGE_TYPES.SPECIAL_STAGE) {
       /*
       * The showWhen widget seems to have trouble with being attached to all
       * the different forms of the stages. Introducing custom conditional
@@ -285,16 +286,19 @@ export default class MapElement {
    */
   toggleSpecialStageFields(form, specialStageType) {
     form.querySelector('.field-name-specialStageExtraLives')?.classList
-      .toggle('display-none', specialStageType !== 'extra-life');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.EXTRA_LIFE);
 
     form.querySelector('.field-name-specialStageExtraTime')?.classList
-      .toggle('display-none', specialStageType !== 'extra-time');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.EXTRA_TIME);
 
     form.querySelector('.field-name-specialStageLinkURL')?.classList
-      .toggle('display-none', specialStageType !== 'link');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.LINK);
 
     form.querySelector('.field-name-specialStageLinkTarget')?.classList
-      .toggle('display-none', specialStageType !== 'link');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.LINK);
+
+    form.querySelector('.field-name-specialStageTeleportTarget')?.classList
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.TELEPORT);
   }
 
   /**
@@ -345,6 +349,23 @@ export default class MapElement {
    * @returns {boolean} True if special stage, false otherwise.
    */
   isSpecialStage() {
-    return this.params.type === STAGE_TYPES['special-stage'];
+    return this.params.type === STAGE_TYPES.SPECIAL_STAGE;
+  }
+
+  validate() {
+    let isValid = true;
+    if (!this.isSpecialStage()) {
+      isValid = this.params.elementParams.contentsList.some((content) => !!content.contentType.library);
+    }
+    else if (this.params.elementParams.specialStageType === SPECIAL_STAGE_TYPES.LINK) {
+      isValid = !!this.params.elementParams.specialStageLinkURL;
+    }
+    else if (this.params.elementParams.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT) {
+      isValid = !!this.params.elementParams.specialStageTeleportTarget;
+    }
+
+    this.dom.classList.toggle('error', !isValid);
+
+    return isValid;
   }
 }

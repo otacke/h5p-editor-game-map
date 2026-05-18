@@ -1,7 +1,7 @@
 .h5p-editor-game-map-editor-map {
   --map-aspect-ratio: 16 / 9;
 
-  background-color: var(--editor-fields-gamemapSteps-backgroundImageSettings-backgroundColor, #fff);
+  background-color: var(--editor-fields-backgroundSettings-backgroundColor, #fff);
   box-sizing: border-box;
   display: block;
   position: relative;

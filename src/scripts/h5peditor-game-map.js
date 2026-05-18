@@ -26,6 +26,11 @@ export default class GameMap {
     this.params = Util.extend({
       elements: [],
       paths: [],
+      mapOptions: {
+        backgroundSettings: {
+          backgroundColor: 'rgb(255, 255, 255)',
+        },
+      },
     }, params);
     this.setValue = setValue;
 
@@ -36,6 +41,9 @@ export default class GameMap {
     this.globals.set('mainInstance', this);
     this.globals.set('getStylePropertyValue', (key) => {
       return this.dom.style.getPropertyValue(key);
+    });
+    this.globals.set('getAllGamemapsParams', () => {
+      return this.gamemapsList?.getValue() ?? [];
     });
 
     // Callbacks to call when parameters change
@@ -80,7 +88,7 @@ export default class GameMap {
     // Map canvas
     this.mapEditor = new MapEditor(
       {
-        backgroundColor: this.params.backgroundColor,
+        backgroundColor: this.params.mapOptions.backgroundSettings.backgroundColor,
         dictionary: this.dictionary,
         globals: this.globals,
         elementsGroupTemplate: elementsGroupTemplate,
@@ -92,11 +100,31 @@ export default class GameMap {
       },
       {
         onChanged: (elements, paths) => {
+          this.mapEditor?.validateMapElements();
           this.setMapValues(elements, paths);
+        },
+        onFormOpened: () => {
+          this.disableOtherGameMapInstances();
+        },
+        onFormClosed: () => {
+          this.enableOtherGameMapInstances();
+        },
+        onUpdateOtherGamemaps: () => {
+          this.saveOtherGameMapValues();
         },
       },
     );
     this.dom.appendChild(this.mapEditor.getDOM());
+
+
+    const mapOptionsGroup = this.field.fields.find((field) => field.name === 'mapOptions');
+    this.mapOptionsInstance = new H5PEditor.widgets[mapOptionsGroup.type](
+      this,
+      mapOptionsGroup,
+      this.params.mapOptions,
+      (value) => {}, // TOOD: NEEDED?
+    );
+    this.mapOptionsInstance.appendTo(this.dom);
 
     window.addEventListener('resize', () => {
       this.mapEditor.resize();
@@ -123,13 +151,6 @@ export default class GameMap {
   }
 
   /**
-   * Set active (called by H5P.Wizard when changing tabs).
-   */
-  setActive() {
-    this.mapEditor.show();
-  }
-
-  /**
    * Set map values.
    * @param {object[]} elements Element parameters.
    * @param {object[]} paths Path parameters.
@@ -147,6 +168,13 @@ export default class GameMap {
       this.params.paths = paths;
     }
 
+    this.saveValues();
+  }
+
+  /*
+   * Save values for H5P editor.
+   */
+  saveValues() {
     this.setValue(this.field, this.params);
   }
 
@@ -167,6 +195,59 @@ export default class GameMap {
    */
   appendTo($wrapper) {
     this.$container.appendTo($wrapper);
+  }
+
+  /**
+   * Trigger other GameMap editor widget instances to save their values.
+   * @param {object} [params] Parameters.
+   * @param {number} [params.index] Index of map to save values for.
+   */
+  saveOtherGameMapValues(params = {}) {
+    this.gamemapsList?.forEachChild((child, index) => {
+      if (typeof params.index === 'number' && params.index !== index) {
+        return;
+      }
+
+      if (child !== this) {
+        child.saveValues();
+      }
+    });
+  }
+
+  /**
+   * Enable other GameMap widget instances that are in the same list field.
+   */
+  enableOtherGameMapInstances() {
+    this.gamemapsList?.forEachChild((child) => {
+      if (child !== this) {
+        child.enable();
+      }
+    });
+  }
+
+  /**
+   * Enable.
+   */
+  enable() {
+    this.dom.classList.remove('blocked');
+  }
+
+  /**
+   * Disable other GameMap widget instances that are in the same list field.
+   */
+  disableOtherGameMapInstances() {
+    this.gamemapsList?.forEachChild((child) => {
+      if (child !== this) {
+        child.disable();
+      }
+    });
+  }
+
+  /**
+   * Disable.
+   */
+  disable() {
+    this.dom.classList.add('blocked');
   }
 
   /**

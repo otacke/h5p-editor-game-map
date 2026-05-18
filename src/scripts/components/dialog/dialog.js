@@ -164,7 +164,7 @@ export default class Dialog {
   toggleScoreScalingVisibility(requestVisible) {
     const visible = (typeof requestVisible === 'boolean') ?
       requestVisible :
-      (!this.randomExerciseToggleDOM.checked ?? true);
+      (!this.randomExerciseToggleDOM?.checked ?? true);
 
     const scoreScalingDOM = this.formDOM.querySelector('.h5peditor-game-map-score-scaling');
     scoreScalingDOM?.classList.toggle('display-none', !visible);

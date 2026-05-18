@@ -6,7 +6,7 @@ import Toolbar from '@components/toolbar/toolbar.js';
 import DnBCalls from './mixins/map-editor-dnb-calls.js';
 import PathHandling from './mixins/map-editor-path-handling.js';
 import './map-editor.scss';
-import { STAGE_TYPES } from './map-elements/stage.js';
+import { STAGE_TYPES } from '@services/constants.js';
 
 export default class MapEditor {
 
@@ -31,6 +31,9 @@ export default class MapEditor {
 
     this.callbacks = Util.extend({
       onChanged: () => {},
+      onFormOpened: () => {},
+      onFormClosed: () => {},
+      onUpdateOtherGamemaps: () => {},
     }, callbacks);
 
     this.mapElements = [];
@@ -68,14 +71,8 @@ export default class MapEditor {
     this.toolbar = new Toolbar(
       {
         buttons: [
-          this.createButton({
-            id: 'stage',
-            type: STAGE_TYPES.stage,
-          }),
-          this.createButton({
-            id: 'special-stage',
-            type: STAGE_TYPES['special-stage'],
-          }),
+          this.createButton({ id: 'stage', type: STAGE_TYPES.STAGE }),
+          this.createButton({ id: 'special-stage', type: STAGE_TYPES.SPECIAL_STAGE }),
         ],
         mapContainer: this.map.getDOM(),
         dialogContainer: this.dom,
@@ -106,15 +103,13 @@ export default class MapEditor {
     this.dom.appendChild(this.dialog.getDOM());
 
     this.params.elements.forEach((elementParams) => {
-      let type = STAGE_TYPES.stage;
+      let type = STAGE_TYPES.STAGE;
       if (elementParams.specialStageType) {
-        type = STAGE_TYPES['special-stage'];
+        type = STAGE_TYPES.SPECIAL_STAGE;
       }
 
       this.createElement(type, elementParams);
     });
-
-    this.hide();
   }
 
   /**
@@ -129,6 +124,7 @@ export default class MapEditor {
    * Show.
    */
   show() {
+    this.validateMapElements();
     this.dom.classList.remove('display-none');
 
     window.requestAnimationFrame(() => {
@@ -150,6 +146,9 @@ export default class MapEditor {
    */
   setMapImage(url) {
     this.map.setImage(url);
+
+    this.updateMapElementsSize();
+    this.updatePaths();
   }
 
   /**
@@ -272,6 +271,18 @@ export default class MapEditor {
       height: image.naturalHeight,
       width: image.naturalWidth,
     };
+
+    this.sanitizeParams();
+    this.updatePaths();
+  }
+
+  /**
+   *
+   */
+  validateMapElements() {
+    this.mapElements.forEach((mapElement) => {
+      mapElement.validate();
+    });
   }
 
   /**
