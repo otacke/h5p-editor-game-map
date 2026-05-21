@@ -282,8 +282,6 @@ export default class MapEditor {
    *
    */
   validateMapElements() {
-    console.log('validate');
-
     this.mapElements.forEach((mapElement) => {
       mapElement.validate();
     });
