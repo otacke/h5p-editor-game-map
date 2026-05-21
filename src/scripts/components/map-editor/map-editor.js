@@ -110,8 +110,6 @@ export default class MapEditor {
 
       this.createElement(type, elementParams);
     });
-
-    this.validateMapElements();
   }
 
   /**

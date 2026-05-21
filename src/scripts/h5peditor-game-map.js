@@ -6,6 +6,9 @@ import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import './h5peditor-game-map.scss';
 
+let sharedObserver = null;
+const domInstanceMap = new Map();
+
 /** Class for Boilerplate H5P widget */
 export default class GameMap {
 
@@ -116,7 +119,6 @@ export default class GameMap {
     );
     this.dom.appendChild(this.mapEditor.getDOM());
 
-
     const mapOptionsGroup = this.field.fields.find((field) => field.name === 'mapOptions');
     this.mapOptionsInstance = new H5PEditor.widgets[mapOptionsGroup.type](
       this,
@@ -133,6 +135,8 @@ export default class GameMap {
     this.parent.ready(() => {
       this.handleParentReady();
     });
+
+    GameMap.observeDOM(this);
   }
 
   /**
@@ -278,7 +282,48 @@ export default class GameMap {
    * Remove self. Invoked by H5P core.
    */
   remove() {
+    GameMap.unobserveDOM(this);
     this.$container.remove();
+  }
+
+  /**
+   * Handle this.dom becoming visible.
+   */
+  handleDOMVisible() {
+    this.mapEditor.validateMapElements();
+    this.mapEditor.resize();
+  }
+
+  /**
+   * Register an instance with the shared IntersectionObserver.
+   * @param {GameMap} instance Instance to observe.
+   */
+  static observeDOM(instance) {
+    if (!sharedObserver) {
+      sharedObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            domInstanceMap.get(entry.target)?.handleDOMVisible();
+          }
+        }
+      });
+    }
+
+    domInstanceMap.set(instance.dom, instance);
+    sharedObserver.observe(instance.dom);
+  }
+
+  /**
+   * Unregister an instance from the shared IntersectionObserver.
+   * @param {GameMap} instance Instance to stop observing.
+   */
+  static unobserveDOM(instance) {
+    sharedObserver?.unobserve(instance.dom);
+    domInstanceMap.delete(instance.dom);
+    if (domInstanceMap.size === 0) {
+      sharedObserver?.disconnect();
+      sharedObserver = null;
+    }
   }
 
   /**

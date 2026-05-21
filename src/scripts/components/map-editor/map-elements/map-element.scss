@@ -21,6 +21,10 @@
         outline-offset: 1px;
       }
     }
+
+    &.focused {
+      outline: 1px solid #000000;
+    }
   }
 
   .field-name-specialStageExtraLives.display-none {
