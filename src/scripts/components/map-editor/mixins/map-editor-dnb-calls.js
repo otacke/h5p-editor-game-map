@@ -765,6 +765,7 @@ export default class DnBCalls {
       this.callbacks.onFormClosed();
       this.remove(mapElement);
       this.removeTeleportLinksWithoutTarget();
+      this.params.globals.get('mainInstance').validateAllMapsElements();
     });
     this.deleteDialog.on('canceled', () => {
       this.callbacks.onFormClosed();

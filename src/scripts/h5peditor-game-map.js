@@ -100,13 +100,13 @@ export default class GameMap {
       },
       {
         onChanged: (elements, paths) => {
-          this.mapEditor?.validateMapElements();
           this.setMapValues(elements, paths);
         },
         onFormOpened: () => {
           this.disableOtherGameMapInstances();
         },
         onFormClosed: () => {
+          this.validateAllMapsElements();
           this.enableOtherGameMapInstances();
         },
         onUpdateOtherGamemaps: () => {
@@ -218,11 +218,27 @@ export default class GameMap {
    * Enable other GameMap widget instances that are in the same list field.
    */
   enableOtherGameMapInstances() {
-    this.gamemapsList?.forEachChild((child) => {
-      if (child !== this) {
-        child.enable();
+    this.gamemapsList?.forEachChild((gamemap) => {
+      if (gamemap !== this) {
+        gamemap.enable();
       }
     });
+  }
+
+  /**
+   * Validate map elements of all game maps.
+   */
+  validateAllMapsElements() {
+    this.gamemapsList?.forEachChild((gamemap) => {
+      gamemap.validateMapElements();
+    });
+  }
+
+  /**
+   * Validate map elements.
+   */
+  validateMapElements() {
+    this.mapEditor?.validateMapElements();
   }
 
   /**
