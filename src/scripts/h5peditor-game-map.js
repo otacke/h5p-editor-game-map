@@ -9,6 +9,9 @@ import Readspeaker from '@services/readspeaker.js';
 
 import './h5peditor-game-map.scss';
 
+let sharedObserver = null;
+const domInstanceMap = new Map();
+
 /** Class for Boilerplate H5P widget */
 export default class GameMap extends H5P.EventDispatcher {
 
@@ -31,6 +34,11 @@ export default class GameMap extends H5P.EventDispatcher {
     this.params = Util.extend({
       elements: [],
       paths: [],
+      mapOptions: {
+        backgroundSettings: {
+          backgroundColor: 'rgb(255, 255, 255)',
+        },
+      },
     }, params);
     this.setValue = setValue;
 
@@ -44,6 +52,9 @@ export default class GameMap extends H5P.EventDispatcher {
     });
     this.globals.set('resize', () => {
       this.trigger('resize');
+    });
+    this.globals.set('getAllGamemapsParams', () => {
+      return this.gamemapsList?.getValue() ?? [];
     });
 
     // Callbacks to call when parameters change
@@ -88,7 +99,7 @@ export default class GameMap extends H5P.EventDispatcher {
     // Map canvas
     this.mapEditor = new MapEditor(
       {
-        backgroundColor: this.params.backgroundColor,
+        backgroundColor: this.params.mapOptions.backgroundSettings.backgroundColor,
         dictionary: this.dictionary,
         globals: this.globals,
         elementsGroupTemplate: elementsGroupTemplate,
@@ -104,6 +115,16 @@ export default class GameMap extends H5P.EventDispatcher {
         },
         onTogglePreview: () => {
           this.openPreview();
+        },
+        onFormOpened: () => {
+          this.disableOtherGameMapInstances();
+        },
+        onFormClosed: () => {
+          this.validateAllMapsElements();
+          this.enableOtherGameMapInstances();
+        },
+        onUpdateOtherGamemaps: () => {
+          this.saveOtherGameMapValues();
         },
       },
     );
@@ -123,6 +144,15 @@ export default class GameMap extends H5P.EventDispatcher {
     );
     this.dom.append(this.previewOverlay.getDOM());
 
+    const mapOptionsGroup = this.field.fields.find((field) => field.name === 'mapOptions');
+    this.mapOptionsInstance = new H5PEditor.widgets[mapOptionsGroup.type](
+      this,
+      mapOptionsGroup,
+      this.params.mapOptions,
+      (value) => {}, // TOOD: NEEDED?
+    );
+    this.mapOptionsInstance.appendTo(this.dom);
+
     window.addEventListener('resize', () => {
       this.mapEditor.resize();
       this.previewOverlay.resize();
@@ -131,6 +161,8 @@ export default class GameMap extends H5P.EventDispatcher {
     this.parent.ready(() => {
       this.handleParentReady();
     });
+
+    GameMap.observeDOM(this);
   }
 
   /**
@@ -146,13 +178,6 @@ export default class GameMap extends H5P.EventDispatcher {
         ready();
       });
     }
-  }
-
-  /**
-   * Set active (called by H5P.Wizard when changing tabs).
-   */
-  setActive() {
-    this.mapEditor.show();
   }
 
   /**
@@ -173,6 +198,13 @@ export default class GameMap extends H5P.EventDispatcher {
       this.params.paths = paths;
     }
 
+    this.saveValues();
+  }
+
+  /*
+   * Save values for H5P editor.
+   */
+  saveValues() {
     this.setValue(this.field, this.params);
   }
 
@@ -196,6 +228,75 @@ export default class GameMap extends H5P.EventDispatcher {
   }
 
   /**
+   * Trigger other GameMap editor widget instances to save their values.
+   * @param {object} [params] Parameters.
+   * @param {number} [params.index] Index of map to save values for.
+   */
+  saveOtherGameMapValues(params = {}) {
+    this.gamemapsList?.forEachChild((child, index) => {
+      if (typeof params.index === 'number' && params.index !== index) {
+        return;
+      }
+
+      if (child !== this) {
+        child.saveValues();
+      }
+    });
+  }
+
+  /**
+   * Enable other GameMap widget instances that are in the same list field.
+   */
+  enableOtherGameMapInstances() {
+    this.gamemapsList?.forEachChild((gamemap) => {
+      if (gamemap !== this) {
+        gamemap.enable();
+      }
+    });
+  }
+
+  /**
+   * Validate map elements of all game maps.
+   */
+  validateAllMapsElements() {
+    this.gamemapsList?.forEachChild((gamemap) => {
+      gamemap.validateMapElements();
+    });
+  }
+
+  /**
+   * Validate map elements.
+   */
+  validateMapElements() {
+    this.mapEditor?.validateMapElements();
+  }
+
+  /**
+   * Enable.
+   */
+  enable() {
+    this.dom.classList.remove('blocked');
+  }
+
+  /**
+   * Disable other GameMap widget instances that are in the same list field.
+   */
+  disableOtherGameMapInstances() {
+    this.gamemapsList?.forEachChild((child) => {
+      if (child !== this) {
+        child.disable();
+      }
+    });
+  }
+
+  /**
+   * Disable.
+   */
+  disable() {
+    this.dom.classList.add('blocked');
+  }
+
+  /**
    * Validate current values. Invoked by H5P core.
    * @returns {boolean} True, if current value is valid, else false.
    */
@@ -207,7 +308,48 @@ export default class GameMap extends H5P.EventDispatcher {
    * Remove self. Invoked by H5P core.
    */
   remove() {
+    GameMap.unobserveDOM(this);
     this.$container.remove();
+  }
+
+  /**
+   * Handle this.dom becoming visible.
+   */
+  handleDOMVisible() {
+    this.mapEditor.validateMapElements();
+    this.mapEditor.resize();
+  }
+
+  /**
+   * Register an instance with the shared IntersectionObserver.
+   * @param {GameMap} instance Instance to observe.
+   */
+  static observeDOM(instance) {
+    if (!sharedObserver) {
+      sharedObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            domInstanceMap.get(entry.target)?.handleDOMVisible();
+          }
+        }
+      });
+    }
+
+    domInstanceMap.set(instance.dom, instance);
+    sharedObserver.observe(instance.dom);
+  }
+
+  /**
+   * Unregister an instance from the shared IntersectionObserver.
+   * @param {GameMap} instance Instance to stop observing.
+   */
+  static unobserveDOM(instance) {
+    sharedObserver?.unobserve(instance.dom);
+    domInstanceMap.delete(instance.dom);
+    if (domInstanceMap.size === 0) {
+      sharedObserver?.disconnect();
+      sharedObserver = null;
+    }
   }
 
   /**

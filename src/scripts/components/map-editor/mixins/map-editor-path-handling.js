@@ -26,17 +26,17 @@ export default class PathHandling {
       return null;
     }
 
-     
+
     const fromXPx = parseFloat(params.from.x) / 100 * mapSize.width;
-     
+
     const fromYPx = parseFloat(params.from.y) / 100 * mapSize.height;
-     
+
     const toXPx = parseFloat(params.to.x) / 100 * mapSize.width;
-     
+
     const toYPx = parseFloat(params.to.y) / 100 * mapSize.height;
-     
+
     const widthPx = parseFloat(params.from.width) / 100 * mapSize.width;
-     
+
     const heightPx = parseFloat(params.from.height) / 100 * mapSize.height;
 
     const deltaXPx = fromXPx - toXPx;

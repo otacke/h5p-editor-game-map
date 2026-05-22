@@ -18,6 +18,16 @@
     &:hover, &:focus {
       outline: 2px ridge #000000;
       outline-offset: 2px;
+
+    &.error:not(:focus-visible) {
+      .h5p-editor-game-map-element-content {
+        outline: 3px dashed var(--h5p-theme-feedback-incorrect-main, #a13236);
+        outline-offset: 1px;
+      }
+    }
+
+    &.focused {
+      outline: 1px solid #000000;
     }
   }
 
@@ -34,6 +44,10 @@
   }
 
   .field-name-specialStageLinkTarget.display-none {
+    display: none;
+  }
+
+  .field-name-specialStageTeleportTarget.display-none {
     display: none;
   }
 }

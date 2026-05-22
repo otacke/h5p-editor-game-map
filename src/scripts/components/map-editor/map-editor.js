@@ -8,7 +8,7 @@ import DragNBarWrapper from '@models/drag-n-bar-wrapper.js';
 import DnBCalls from './mixins/map-editor-dnb-calls.js';
 import PathHandling from './mixins/map-editor-path-handling.js';
 import './map-editor.scss';
-import { STAGE_TYPES } from './map-elements/stage.js';
+import { STAGE_TYPES } from '@services/constants.js';
 
 export default class MapEditor {
 
@@ -34,6 +34,9 @@ export default class MapEditor {
     this.callbacks = Util.extend({
       onChanged: () => {},
       onTogglePreview: () => {},
+      onFormOpened: () => {},
+      onFormClosed: () => {},
+      onUpdateOtherGamemaps: () => {},
     }, callbacks);
 
     this.mapElements = [];
@@ -112,6 +115,12 @@ export default class MapEditor {
         buttons: buttonOptions.map((option) => this.createButton(option)),
         dialogContainer: this.getDOM(),
         elementArea: this.map.getDOM(),
+        buttons: [
+          this.createButton({ id: 'stage', type: STAGE_TYPES.STAGE }),
+          this.createButton({ id: 'special-stage', type: STAGE_TYPES.SPECIAL_STAGE }),
+        ],
+        mapContainer: this.map.getDOM(),
+        dialogContainer: this.dom,
       },
       {
         onStoppedMoving: (index, x, y) => {
@@ -193,6 +202,15 @@ export default class MapEditor {
         actionButtonsDOM: this.actionButtons.getDOM(),
       },
     );
+
+    this.params.elements.forEach((elementParams) => {
+      let type = STAGE_TYPES.STAGE;
+      if (elementParams.specialStageType) {
+        type = STAGE_TYPES.SPECIAL_STAGE;
+      }
+
+      this.createElement(type, elementParams);
+    });
   }
 
   /**
@@ -207,6 +225,7 @@ export default class MapEditor {
    * Show.
    */
   show() {
+    this.validateMapElements();
     this.dom.classList.remove('display-none');
 
     window.requestAnimationFrame(() => {
@@ -228,6 +247,9 @@ export default class MapEditor {
    */
   setMapImage(url) {
     this.map.setImage(url);
+
+    this.updateMapElementsSize();
+    this.updatePaths();
   }
 
   /**
@@ -350,6 +372,18 @@ export default class MapEditor {
       height: image.naturalHeight,
       width: image.naturalWidth,
     };
+
+    this.sanitizeParams();
+    this.updatePaths();
+  }
+
+  /**
+   *
+   */
+  validateMapElements() {
+    this.mapElements.forEach((mapElement) => {
+      mapElement.validate();
+    });
   }
 
   /**

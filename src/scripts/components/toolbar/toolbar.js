@@ -91,6 +91,14 @@ export default class Toolbar {
   }
 
   /**
+   * Blur all DnB elements. Workaround. Seems that H5P.DragNBar gets confused if multiple instances are running.
+   * Would cause a console error otherwise.
+   */
+  blurAllDnBElements() {
+    this.toolbar.blurAll();
+  }
+
+  /**
    * Relay `add` to DnB toolbar.
    * @param {H5P.jQuery} $element Element.
    * @param {string} [clipboardData] Clipboard data.

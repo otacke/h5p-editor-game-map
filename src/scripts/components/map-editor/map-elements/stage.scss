@@ -14,25 +14,31 @@
   }
 
   &.icon-finish::before {
-    content: "\f11e";
+    content: var(--icon-font-awesome-flag-checkered);
     left: 50%;
     top: calc(50% + 2px);
   }
 
   &.icon-extra-life::before {
-    content: "\f004";
+    content: var(--icon-font-awesome-heart);
     left: 50%;
     top: calc(50% + 2px);
   }
 
   &.icon-extra-time::before {
-    content: "\f017";
+    content: var(--icon-font-awesome-clock);
     left: 50%;
     top: 50%;
   }
 
   &.icon-link::before {
-    content: "\f0c1";
+    content: var(--icon-font-awesome-link);
+    left: 50%;
+    top: calc(50% + 1px);
+  }
+
+  &.icon-teleport::before {
+    content: var(--icon-font-awesome-bolt);
     left: 50%;
     top: calc(50% + 1px);
   }

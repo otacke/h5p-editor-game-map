@@ -1,8 +1,8 @@
 import MapElement from '@components/map-editor/map-elements/map-element.js';
-import Stage, { DEFAULT_SIZE_PERCENT } from '@components/map-editor/map-elements/stage.js';
+import Stage from '@components/map-editor/map-elements/stage.js';
 import Util from '@services/util.js';
 import UtilH5P from '@services/util-h5p.js';
-import { STAGE_TYPES } from '@components/map-editor/map-elements/stage.js';
+import { DEFAULT_SIZE_PERCENT, SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
 
 /** @constant {number} HORIZONTAL_CENTER Horizontal center. */
 const HORIZONTAL_CENTER = 50;
@@ -29,7 +29,7 @@ export default class DnBCalls {
      */
     const numberUnnamedStages =
       this.params.elements.filter((element) =>
-        element.label.startsWith(
+        element.label?.startsWith(
           `${this.params.dictionary.get('l10n.unnamedStage')} `,
         ),
       ).length + 1;
@@ -43,10 +43,7 @@ export default class DnBCalls {
 
     let elementParams = {};
 
-    if (
-      type === STAGE_TYPES.stage ||
-      type === STAGE_TYPES['special-stage']
-    ) {
+    if (type === STAGE_TYPES.STAGE || type === STAGE_TYPES.SPECIAL_STAGE) {
       elementParams = Util.extend({
         id: H5P.createUUID(),
         label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
@@ -116,6 +113,27 @@ export default class DnBCalls {
    */
   updateMapElement(index, x, y) {
     this.mapElements[index].updateParams({ telemetry: { x: x, y: y } });
+  }
+
+  /**
+   * Update map element size.
+   */
+  updateMapElementsSize() {
+    const mapSize = this.map.getSize();
+    if (!mapSize.height) {
+      return;
+    }
+
+    const mapRatio = mapSize.width / mapSize.height;
+
+    this.mapElements.forEach((mapElement) => {
+      mapElement.updateParams({
+        telemetry: {
+          width: `${DEFAULT_SIZE_PERCENT.width}`,
+          height: `${DEFAULT_SIZE_PERCENT.height * mapRatio}`,
+        },
+      });
+    });
   }
 
   /**
@@ -217,6 +235,7 @@ export default class DnBCalls {
         });
 
     const neighbors = H5PEditor.findField('neighbors', mapElement.form);
+
     if (neighbors) {
       neighbors.setDictionary(this.params.dictionary);
 
@@ -237,6 +256,9 @@ export default class DnBCalls {
       this.updateScoreScalingValues(mapElement, scoreInfos);
       this.updateIsTaskFlags(mapElement, scoreInfos);
     }
+    else {
+      this.updateTeleportTargetOptions(mapElement);
+    }
 
     const form = mapElement.getData().form;
 
@@ -246,12 +268,18 @@ export default class DnBCalls {
         this.handleFormChange(event);
       },
       doneCallback: () => {
-        return this.handleDialogDone();
+        const dialogWasDone = this.handleDialogDone();
+        if (dialogWasDone) {
+          this.callbacks.onFormClosed();
+        }
+        return dialogWasDone;
       },
       removeCallback: () => {
         this.handleDialogRemove();
       },
     });
+
+    this.callbacks.onFormOpened();
 
     setTimeout(() => {
       this.dnbWrapper.blurAll();
@@ -393,6 +421,11 @@ export default class DnBCalls {
     const isValid = this.validateFormChildren(mapElement);
 
     if (isValid) {
+      const mapElementParams = mapElement.getParams();
+      if (mapElementParams.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT) {
+        this.linkTeleportElements(mapElementParams.id, mapElementParams.specialStageTeleportTarget);
+      }
+
       this.toolbar.show();
       this.map.show();
       this.updatePaths();
@@ -403,6 +436,121 @@ export default class DnBCalls {
     }
 
     return isValid;
+  }
+
+  /**
+   * Iterate the live element params of every sibling gamemap widget and apply a mutation.
+   * Children whose `mutate` returns `true` get a saveValues() call.
+   * @param {function} mutate Mutator. Receives the live elements array; return true if anything changed.
+   * @param {object} [options] Options.
+   * @param {boolean} [options.skipCurrent] If true, do not save the current gamemap widget.
+   */
+  forEachLiveGamemap(mutate, options = {}) {
+    const mainInstance = this.params.globals.get('mainInstance');
+    if (!mainInstance?.gamemapsList) {
+      return;
+    }
+
+    mainInstance.gamemapsList.forEachChild((child) => {
+      const changed = mutate(child.params?.elements ?? []) === true;
+
+      if (changed && !(options.skipCurrent && child === mainInstance)) {
+        child.saveValues();
+      }
+    });
+  }
+
+  /**
+   * Links two teleport stages together across gamemap editor widgets.
+   * @param {string} sourceId Id of source stage.
+   * @param {string} targetId Id of target stage.
+   */
+  linkTeleportElements(sourceId, targetId) {
+    const allElements = (this.params.globals.get('getAllGamemapsParams')?.() ?? [])
+      .flatMap((gamemap) => gamemap.elements ?? []);
+
+    const sourceElementExists = allElements.some((element) => element.id === sourceId);
+    const targetElementExists = allElements.some((element) => element.id === targetId);
+
+    if (!sourceElementExists || !targetElementExists) {
+      return;
+    }
+
+    // Remove target from stages that used it before
+    this.removeTeleportLinksWithTarget(targetId, { excludeId: sourceId });
+
+    this.forEachLiveGamemap((elements) => {
+      const targetMapElementParams = elements.find((element) => {
+        return element.id === targetId && element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT;
+      });
+
+      if (!targetMapElementParams) {
+        return false;
+      }
+
+      targetMapElementParams.specialStageTeleportTarget = sourceId;
+      return true;
+    }, { skipCurrent: true });
+  }
+
+  /**
+   * Remove all links to a certain target.
+   * @param {string} targetId Target id.
+   * @param {object} [options] Options.
+   * @param {string} [options.excludeId] Id to exclude.
+   */
+  removeTeleportLinksWithTarget(targetId, options = {}) {
+    if (typeof targetId !== 'string') {
+      return;
+    }
+
+    this.forEachLiveGamemap((elements) => {
+      let changed = false;
+
+      elements.forEach((element) => {
+        if (typeof options.excludeId === 'string' && element.id === options.excludeId) {
+          return;
+        }
+
+        if (
+          element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT &&
+          element.specialStageTeleportTarget === targetId
+        ) {
+          delete element.specialStageTeleportTarget;
+          changed = true;
+        }
+      });
+
+      return changed;
+    });
+  }
+
+  /**
+   * Remove all teleport links that lack a target element.
+   */
+  removeTeleportLinksWithoutTarget() {
+    const allIds = new Set(
+      (this.params.globals.get('getAllGamemapsParams')?.() ?? [])
+        .flatMap((gamemap) => gamemap.elements ?? [])
+        .map((element) => element.id),
+    );
+
+    this.forEachLiveGamemap((elements) => {
+      let changed = false;
+
+      elements.forEach((element) => {
+        if (
+          element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT &&
+          element.specialStageTeleportTarget !== undefined &&
+          !allIds.has(element.specialStageTeleportTarget)
+        ) {
+          delete element.specialStageTeleportTarget;
+          changed = true;
+        }
+      });
+
+      return changed;
+    });
   }
 
   /**
@@ -423,7 +571,7 @@ export default class DnBCalls {
   }
 
   /**
-   * Update the stage score id options to list all possible stages.
+   * Update the stage score id options to list all possible stages of this map only (!).
    * @param {MapElement} mapElement Map element to be edited.
    */
   updateStageIdOptions(mapElement) {
@@ -450,14 +598,16 @@ export default class DnBCalls {
     ];
 
     UtilH5P.findAllFields('stageScoreId', mapElement.form).forEach((field) => {
-      field.setOptions(otherElementsParams);
+      const scoredElementsParams = otherElementsParams.filter((params) => !params.specialStageType);
+      field.setOptions(scoredElementsParams);
 
       field.off('change', this.updateTotalMaxScoreForStageScoreRestrictions);
       field.on('change', this.updateTotalMaxScoreForStageScoreRestrictions);
     });
 
     UtilH5P.findAllFields('stageScorePercentageId', mapElement.form).forEach((field) => {
-      field.setOptions(otherElementsParams);
+      const scoredElementsParams = otherElementsParams.filter((params) => !params.specialStageType);
+      field.setOptions(scoredElementsParams);
     });
 
     UtilH5P.findAllFields('stageProgressId', mapElement.form).forEach((field) => {
@@ -466,6 +616,24 @@ export default class DnBCalls {
 
     window.requestAnimationFrame(() => {
       this.updateTotalMaxScoreForStageScoreRestrictions();
+    });
+  }
+
+  /**
+   * Update teleport target options to all stages across all gamemaps excluding the stage currently being edited
+   * and special stages.
+   * @param {MapElement} mapElement Map element being edited.
+   */
+  updateTeleportTargetOptions(mapElement) {
+    const currentStageId = mapElement.getParams().id;
+    const allGamemapsParams = this.params.globals.get('getAllGamemapsParams')?.() ?? [];
+
+    const options = allGamemapsParams
+      .flatMap((gamemap) => gamemap.elements ?? [])
+      .filter((element) => element.id !== currentStageId && element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT);
+
+    UtilH5P.findAllFields('specialStageTeleportTarget', mapElement.form).forEach((field) => {
+      field.setOptions(options);
     });
   }
 
@@ -594,10 +762,16 @@ export default class DnBCalls {
       confirmText: this.params.dictionary.get('l10n.confirmationDialogRemoveConfirm'),
     });
     this.deleteDialog.on('confirmed', () => {
+      this.callbacks.onFormClosed();
       this.remove(mapElement);
+      this.removeTeleportLinksWithoutTarget();
+      this.params.globals.get('mainInstance').validateAllMapsElements();
+    });
+    this.deleteDialog.on('canceled', () => {
+      this.callbacks.onFormClosed();
     });
 
-    this.deleteDialog.appendTo(this.dom.closest('.field-name-gamemapSteps'));
+    this.deleteDialog.appendTo(this.dom.closest('.h5peditor-game-map'));
     this.deleteDialog.show();
   }
 
@@ -637,6 +811,7 @@ export default class DnBCalls {
     });
 
     this.updatePaths();
+    this.toolbar.blurAllDnBElements();
 
     this.params.paths = this.paths.getPathsParams();
     this.callbacks.onChanged(this.params.elements);
