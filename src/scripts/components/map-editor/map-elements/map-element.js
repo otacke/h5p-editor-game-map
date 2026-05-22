@@ -152,7 +152,7 @@ export default class MapElement {
    * Create DragNBar element.
    */
   createDNBElement() {
-    const dnbElement = this.params.toolbar.add(
+    const dnbElement = this.params.dnbWrapper.add(
       this.getData().$element,
       '',
       { disableResize: true, lock: true },

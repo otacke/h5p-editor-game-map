@@ -22,7 +22,10 @@ export default class Toolbar {
     }, callbacks);
 
     this.dom = document.createElement('div');
-    this.dom.classList.add('h5p-editor-game-map-editor-dnb');
+    this.dom.classList.add('h5p-editor-game-map-editor-toolbar');
+
+    this.dnbToolbar = document.createElement('div');
+    this.dnbToolbar.classList.add('h5p-editor-game-map-editor-dnb');
 
     this.toolbar = new H5P.DragNBar(
       this.params.buttons,
@@ -60,7 +63,9 @@ export default class Toolbar {
       );
     };
 
-    this.toolbar.attach(H5P.jQuery(this.dom));
+    this.toolbar.attach(H5P.jQuery(this.dnbToolbar));
+
+    this.dom.append(this.dnbToolbar);
   }
 
   /**

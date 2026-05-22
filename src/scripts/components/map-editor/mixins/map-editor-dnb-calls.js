@@ -69,7 +69,7 @@ export default class DnBCalls {
         elementsGroupTemplate: this.params.elementsGroupTemplate,
         elementParams: elementParams,
         elementFields: this.params.elementsFields,
-        toolbar: this.toolbar,
+        dnbWrapper: this.dnbWrapper,
       },
       {
         onEdited: (mapElement) => {
@@ -282,7 +282,7 @@ export default class DnBCalls {
     this.callbacks.onFormOpened();
 
     setTimeout(() => {
-      this.toolbar.blurAll();
+      this.dnbWrapper.blurAll();
     }, 0);
 
     this.editContext = {

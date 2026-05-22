@@ -15,6 +15,10 @@
       width: 100%;
     }
 
+    &:hover, &:focus {
+      outline: 2px ridge #000000;
+      outline-offset: 2px;
+
     &.error:not(:focus-visible) {
       .h5p-editor-game-map-element-content {
         outline: 3px dashed var(--h5p-theme-feedback-incorrect-main, #a13236);
