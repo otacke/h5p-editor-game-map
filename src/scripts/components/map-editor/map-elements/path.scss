@@ -11,7 +11,6 @@
 
   &:hover {
     filter: invert(0.2);
-    outline: 2px solid var(--color-strict-black);
-    outline-offset: 2px;
+    outline: 1px solid #0099ff; // Dnb blue
   }
 }
