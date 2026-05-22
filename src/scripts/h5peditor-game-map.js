@@ -4,13 +4,16 @@ import UtilCSS from '@services/util-css.js';
 import UtilH5P from '@services/util-h5p.js';
 import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
+import PreviewOverlay from '@components/preview/preview-overlay.js';
+import Readspeaker from '@services/readspeaker.js';
+
 import './h5peditor-game-map.scss';
 
 let sharedObserver = null;
 const domInstanceMap = new Map();
 
 /** Class for Boilerplate H5P widget */
-export default class GameMap {
+export default class GameMap extends H5P.EventDispatcher {
 
   /**
    * @class
@@ -20,6 +23,8 @@ export default class GameMap {
    * @param {function} setValue Callback to set parameters.
    */
   constructor(parent, field, params, setValue) {
+    super();
+
     Util.addMixins(
       GameMap, [ParentReadyInitialization],
     );
@@ -48,6 +53,9 @@ export default class GameMap {
     this.globals.set('getAllGamemapsParams', () => {
       return this.gamemapsList?.getValue() ?? [];
     });
+    this.globals.set('resize', () => {
+      this.trigger('resize');
+    });
 
     // Callbacks to call when parameters change
     this.changes = [];
@@ -58,6 +66,8 @@ export default class GameMap {
     // DOM
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
+
+    Readspeaker.attach(this.dom);
 
     // Create template for elements group field
     const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
@@ -115,6 +125,9 @@ export default class GameMap {
         onUpdateOtherGamemaps: () => {
           this.saveOtherGameMapValues();
         },
+        onTogglePreview: () => {
+          this.openPreview();
+        },
       },
     );
     this.dom.appendChild(this.mapEditor.getDOM());
@@ -128,9 +141,25 @@ export default class GameMap {
     );
     this.mapOptionsInstance.appendTo(this.dom);
 
-    window.addEventListener('resize', () => {
+    // Preview overlay
+    this.previewOverlay = new PreviewOverlay(
+      {
+        dictionary: this.dictionary,
+        globals: this.globals,
+      },
+      {
+        onDone: () => {
+          this.closePreview();
+        },
+      },
+    );
+    this.dom.append(this.previewOverlay.getDOM());
+
+    this.handleWindowResize = () => {
       this.mapEditor.resize();
-    });
+      this.previewOverlay.resize();
+    };
+    window.addEventListener('resize', this.handleWindowResize);
 
     this.parent.ready(() => {
       this.handleParentReady();
@@ -282,6 +311,10 @@ export default class GameMap {
    * Remove self. Invoked by H5P core.
    */
   remove() {
+    window.removeEventListener('resize', this.handleWindowResize);
+    if (this.previewInstance) {
+      this.closePreview();
+    }
     GameMap.unobserveDOM(this);
     this.$container.remove();
   }
@@ -416,5 +449,97 @@ export default class GameMap {
         this.addVisualsChangeListeners(listItem, `${path}/${listItem.field.name}`);
       });
     }
+  }
+
+  /**
+   * Open preview.
+   */
+  openPreview() {
+    // Snapshot known H5PIntegration content ids so we can drop the ones the
+    // preview instance creates without touching the ones the surrounding
+    // editor relies on.
+    this.previewKnownContentIds = new Set(
+      Object.keys(window.H5PIntegration?.contents ?? {}),
+    );
+
+    this.createPreviewInstance();
+    if (!this.previewInstance) {
+      return;
+    }
+
+    this.disableOtherGameMapInstances();
+    this.previewOverlay.show();
+    this.previewOverlay.attachInstance(this.previewInstance);
+    this.mapEditor.toggleVisibility(false);
+
+    Readspeaker.read(this.dictionary.get('a11y.previewOpened'));
+  }
+
+  /**
+   * Close preview.
+   */
+  closePreview() {
+    this.mapEditor.toggleVisibility(true);
+    this.previewInstance?.resetTask();
+    this.previewOverlay.detachInstance();
+    this.previewInstance = null;
+
+    const contents = window.H5PIntegration?.contents;
+    if (contents && this.previewKnownContentIds) {
+      for (const cid of Object.keys(contents)) {
+        if (!this.previewKnownContentIds.has(cid)) {
+          delete contents[cid];
+        }
+      }
+    }
+    this.previewKnownContentIds = null;
+
+    this.previewOverlay.decloak();
+    this.previewOverlay.hide();
+    this.enableOtherGameMapInstances();
+
+    Readspeaker.read(this.dictionary.get('a11y.previewClosed'));
+  }
+
+  /**
+   * Create preview instance.
+   */
+  createPreviewInstance() {
+    const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
+      .find((library) => library.split(' ')[0] === 'H5P.GameMap');
+
+    const contentId = H5PEditor.contentId;
+    this.previewInstance = H5P.newRunnable(
+      {
+        library: libraryUberName,
+        params: this.buildPreviewParams(),
+      },
+      contentId,
+      undefined,
+      undefined,
+      { metadata: { title: this.contentTitle } },
+    );
+
+    if (!this.previewInstance) {
+      return;
+    }
+  }
+
+  /**
+   * Build parameters for preview instance based on current parameters.
+   * @returns {object} Parameters for preview instance.
+   */
+  buildPreviewParams() {
+    let form = this.parent;
+    while (form?.parent) {
+      form = form.parent;
+    }
+
+    const previewParams = {
+      ...JSON.parse(JSON.stringify(form.params)),
+      isPreview: true,
+    };
+
+    return previewParams;
   }
 }

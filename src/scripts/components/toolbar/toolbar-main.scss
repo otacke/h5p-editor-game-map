@@ -1,0 +1,143 @@
+.h5p-editor-game-map-toolbar-main {
+  --toolbar-button-size: 2.75rem;
+  --toolbar-button-padding: 0.125rem;
+
+  background: var(--color-background);
+  box-shadow: 10px 10px 30px var(--color-shadow-light);
+  column-gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  row-gap: 1rem;
+
+  &.display-none {
+    display: none;
+  }
+
+  .h5p-editor-game-map-toolbar-action {
+    flex-grow: 1;
+    justify-content: flex-end;
+
+    .toolbar-button {
+
+      &.toolbar-button-active {
+        color: var(--color-text-light);
+      }
+
+      &::before {
+        font-family: "H5PFontAwesome4", sans-serif;
+        font-size: var(--font-size-large);
+        font-weight: bold;
+        height: 1.15rem;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.15rem;
+      }
+
+      &.toolbar-button-preview::before {
+        content: var(--icon-fontawesome-tv);
+      }
+    }
+  }
+
+  .h5peditor-dragnbar {
+    .h5p-dragnbar-ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      .h5p-dragnbar-li {
+        background: transparent;
+        border: none;
+        float: left;
+        margin: 0;
+        padding: 0;
+        position: relative;
+
+        &.disabled {
+          .h5p-dragnbar-a {
+            &.h5p-dragnbar-paste-button {
+              background-color: var(--color-disabled);
+              color: var(--color-text-light);
+              cursor: initial;
+            }
+          }
+        }
+
+        .h5p-dragnbar-a {
+          background-color: var(--color-primary-5);
+          background-image: none;
+          border: 2px solid var(--color-background);
+          border-radius: 3px;
+          box-sizing: border-box;
+          color: var(--color-primary);
+          display: block;
+          padding: 0;
+          position: relative;
+          outline: revert;
+          text-align: center;
+          width: var(--toolbar-button-size);
+          height: var(--toolbar-button-size);
+
+          &:hover {
+            background-color: var(--color-primary-10);
+          }
+
+          &:active {
+            background-color: var(--color-primary-10);
+          }
+
+          &:focus {
+            z-index: 1;
+          }
+
+          &::before {
+            font-family: "H5PFontAwesome4", sans-serif;
+            font-size: var(--font-size-large);
+            font-weight: bold;
+            height: 1.15rem;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.15rem;
+          }
+
+          &.h5p-dragnbar-stage-button:before {
+            content: "\f10c";
+            font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            height: 1.15rem;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.15rem;
+          }
+
+          &.h5p-dragnbar-special-stage-button:before {
+            content: "\f111";
+            font-family: "H5PGameMap", "H5PFontAwesome4", sans-serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            height: 1.15rem;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.15rem;
+          }
+        }
+      }
+    }
+  }
+
+  .toolbar-button {
+    color: var(--color-primary);
+  }
+}
