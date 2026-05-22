@@ -18,6 +18,8 @@
     "l10n.errorTotalWeightMustBe100": "Die Summe aller Gewichtungen muss 100 betragen. Momentan liegt sie bei @current.",
     "l10n.maxScoreTemplate": "Höchstpunktzahl: @maxScore",
     "l10n.toolbarButtonPreview": "Vorschau",
+    "l10n.preview": "Vorschaumodus",
+    "l10n.previewExplanation": "So sehen die Benutzenden deinen Inhalt",
     "l10n.cheatOptions": "Schummeloptionen",
     "l10n.cheat": "Schummle!",
     "l10n.global": "Global",
