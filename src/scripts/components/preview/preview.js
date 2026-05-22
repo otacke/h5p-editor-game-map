@@ -28,10 +28,24 @@ export default class Preview {
       return;
     }
 
-    this.dom.innerHTML = ''; // Clear previous instance
+    this.detach();
     this.instance = instance;
 
     instance.attach(H5P.jQuery(this.dom));
+  }
+
+  /**
+   * Detach current instance and let H5P / jQuery teardown run.
+   */
+  detach() {
+    if (!this.instance) {
+      return;
+    }
+
+    // jQuery .empty() fires the 'remove' event that H5P / sub-content
+    // teardown handlers listen for, unlike innerHTML = ''.
+    H5P.jQuery(this.dom).empty();
+    this.instance = null;
   }
 
   /**

@@ -26,9 +26,8 @@
       outline: 1px solid #000000;
     }
 
-    &:hover, &:focus {
-      outline: 2px ridge #000000;
-      outline-offset: 2px;
+    &:hover {
+      outline: 1px ridge #000000;
     }
   }
 

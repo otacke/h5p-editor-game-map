@@ -19,7 +19,7 @@ export default class TabList {
     this.tabList = document.createElement('div');
     this.tabList.classList.add('h5p-editor-gamemap-cheat-options-tab-list');
     this.tabList.setAttribute('role', 'tablist');
-    this.tabList.setAttribute('aria-label', this.params.dictionary.get('l10n.cheatOptionTypes'));
+    this.tabList.setAttribute('aria-label', this.params.dictionary.get('a11y.cheatOptionTypes'));
     this.tabList.addEventListener('keydown', this.handleTabListKeyDown);
     this.tabList.addEventListener('click', this.handleTabListClick);
 

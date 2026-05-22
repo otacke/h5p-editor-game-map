@@ -48,6 +48,7 @@
     "a11y.toolbarLabelActions": "Actions",
     "a11y.buttonPreview": "Preview map",
     "a11y.previewOpened": "Preview was opened.",
-    "a11y.previewClosed": "Preview was closed."
+    "a11y.previewClosed": "Preview was closed.",
+    "a11y.cheatOptionTypes": "Cheat option types"
   }
 }

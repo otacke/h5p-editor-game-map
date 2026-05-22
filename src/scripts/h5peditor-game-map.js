@@ -67,6 +67,8 @@ export default class GameMap extends H5P.EventDispatcher {
     this.dom = this.buildDOM();
     this.$container = H5P.jQuery(this.dom);
 
+    Readspeaker.attach(this.dom);
+
     // Create template for elements group field
     const elementsGroup = this.field.fields.find((field) => field.name === 'elements').field;
     const elementsGroupTemplate = {
@@ -153,10 +155,11 @@ export default class GameMap extends H5P.EventDispatcher {
     );
     this.dom.append(this.previewOverlay.getDOM());
 
-    window.addEventListener('resize', () => {
+    this.handleWindowResize = () => {
       this.mapEditor.resize();
       this.previewOverlay.resize();
-    });
+    };
+    window.addEventListener('resize', this.handleWindowResize);
 
     this.parent.ready(() => {
       this.handleParentReady();
@@ -308,6 +311,10 @@ export default class GameMap extends H5P.EventDispatcher {
    * Remove self. Invoked by H5P core.
    */
   remove() {
+    window.removeEventListener('resize', this.handleWindowResize);
+    if (this.previewInstance) {
+      this.closePreview();
+    }
     GameMap.unobserveDOM(this);
     this.$container.remove();
   }
@@ -448,11 +455,19 @@ export default class GameMap extends H5P.EventDispatcher {
    * Open preview.
    */
   openPreview() {
+    // Snapshot known H5PIntegration content ids so we can drop the ones the
+    // preview instance creates without touching the ones the surrounding
+    // editor relies on.
+    this.previewKnownContentIds = new Set(
+      Object.keys(window.H5PIntegration?.contents ?? {}),
+    );
+
     this.createPreviewInstance();
     if (!this.previewInstance) {
       return;
     }
 
+    this.disableOtherGameMapInstances();
     this.previewOverlay.show();
     this.previewOverlay.attachInstance(this.previewInstance);
     this.mapEditor.toggleVisibility(false);
@@ -466,9 +481,22 @@ export default class GameMap extends H5P.EventDispatcher {
   closePreview() {
     this.mapEditor.toggleVisibility(true);
     this.previewInstance?.resetTask();
+    this.previewOverlay.detachInstance();
     this.previewInstance = null;
+
+    const contents = window.H5PIntegration?.contents;
+    if (contents && this.previewKnownContentIds) {
+      for (const cid of Object.keys(contents)) {
+        if (!this.previewKnownContentIds.has(cid)) {
+          delete contents[cid];
+        }
+      }
+    }
+    this.previewKnownContentIds = null;
+
     this.previewOverlay.decloak();
     this.previewOverlay.hide();
+    this.enableOtherGameMapInstances();
 
     Readspeaker.read(this.dictionary.get('a11y.previewClosed'));
   }
@@ -508,7 +536,7 @@ export default class GameMap extends H5P.EventDispatcher {
     }
 
     const previewParams = {
-      ...form.params,
+      ...JSON.parse(JSON.stringify(form.params)),
       isPreview: true,
     };
 

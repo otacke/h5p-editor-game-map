@@ -93,6 +93,13 @@ export default class PreviewOverlay {
   }
 
   /**
+   * Detach the currently attached instance and let it tear down.
+   */
+  detachInstance() {
+    this.preview.detach();
+  }
+
+  /**
    * Set DOM top value.
    * @param {string} value Top value.
    */

@@ -1,11 +1,11 @@
 .preview-overlay {
   align-items: center;
-  background-color: var(--color-disabled-dark);
+  background-color: rgba(44, 44, 44, 0.9);
   box-sizing: border-box;
   grid-area: 1 / 1 / 1 / 1;
   height: 100%;
   left: 0;
-  padding: 1rem;
+  padding: var(--h5p-theme-spacing-s, 1rem);
   position: relative;
   top: 0;
   width: 100%;
@@ -24,7 +24,7 @@
 
   .preview-content {
     background-color: var(--color-background);
-    padding: 1rem;
+    padding: var(--h5p-theme-spacing-s, 1rem);
 
     .preview-label {
       color: var(--color-text);
@@ -34,7 +34,7 @@
     .preview-explanation {
       color: var(--color-text);
       font-size: var(--font-size-small);
-      margin-bottom: 1rem;
+      margin-bottom: var(--h5p-theme-spacing-s, 1rem);
     }
 
     .preview-wrapper {

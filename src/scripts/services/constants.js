@@ -22,6 +22,17 @@ export const STAGE_TYPES = Object.freeze({
   SPECIAL_STAGE: 1,
 });
 
+/** @constant {object} STAGE_STATES States lookup for stages. */
+export const STAGE_STATES = Object.freeze({
+  UNSTARTED: 0, // Exercise
+  LOCKED: 1,
+  OPEN: 3,
+  OPENED: 4, // Rename to tried or similar
+  COMPLETED: 5,
+  CLEARED: 6, // Exercise, Stage, Path,
+  SEALED: 7, // Stage
+});
+
 /** @constant {object} SPECIAL_STAGE_TYPES Types lookup for special stages. */
 export const SPECIAL_STAGE_TYPES = Object.freeze({
   EXTRA_LIFE: 'extra-life',

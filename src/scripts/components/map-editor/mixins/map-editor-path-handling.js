@@ -116,7 +116,7 @@ export default class PathHandling {
     });
 
     setTimeout(() => {
-      this.toolbar.blurAll();
+      this.dnbWrapper.blurAll();
     }, 0);
   };
 }

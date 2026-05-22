@@ -90,8 +90,6 @@ export default class MapEditor {
 
       this.createElement(type, elementParams);
     });
-
-    this.hide();
   }
 
   /**
@@ -204,26 +202,6 @@ export default class MapEditor {
    */
   getDOM() {
     return this.dom;
-  }
-
-  /**
-   * Show.
-   */
-  show() {
-    this.validateMapElements();
-    this.dom.classList.remove('display-none');
-
-    window.requestAnimationFrame(() => {
-      this.sanitizeParams();
-      this.updatePaths();
-    });
-  }
-
-  /**
-   * Hide.
-   */
-  hide() {
-    this.dom.classList.add('display-none');
   }
 
   /**

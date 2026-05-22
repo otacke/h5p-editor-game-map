@@ -811,7 +811,7 @@ export default class DnBCalls {
     });
 
     this.updatePaths();
-    this.toolbar.blurAllDnBElements();
+    this.dnbWrapper.blurAll();
 
     this.params.paths = this.paths.getPathsParams();
     this.callbacks.onChanged(this.params.elements);

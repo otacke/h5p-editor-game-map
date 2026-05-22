@@ -46,6 +46,7 @@
     "a11y.toolbarLabelActions": "Aktionen",
     "a11y.buttonPreview": "Karte als Vorschau begutachten",
     "a11y.previewOpened": "Vorschau wurde geöffnet.",
-    "a11y.previewClosed": "Vorschau wurde geschlossen."
+    "a11y.previewClosed": "Vorschau wurde geschlossen.",
+    "a11y.cheatOptionTypes": "Schummeloptionentypen"
   }
 }

@@ -1,20 +1,5 @@
+import { STAGE_STATES, STAGE_TYPES } from '@services/constants.js';
 import './cheat-options-stages.scss';
-
-/** @constant {object} STATES States lookup. */
-export const STATES = {
-  locked: 1,
-  open: 3,
-  opened: 4, // Rename to tried or similar
-  completed: 5,
-  cleared: 6, // Exercise, Stage, Path,
-  sealed: 7, // Stage
-};
-
-/** @constant {object} STAGE_TYPES types lookup. */
-export const STAGE_TYPES = {
-  'stage': 0,
-  'special-stage': 1,
-};
 
 export default class CheatOptionsStages {
   /**
@@ -124,7 +109,7 @@ export default class CheatOptionsStages {
     contents.append(tmp.option);
     this.stageFields[params.id].stateSelect = tmp.field;
 
-    if ((params.type) === STAGE_TYPES.stage) {
+    if ((params.type) === STAGE_TYPES.STAGE) {
       tmp = this.buildScoreInput({ id: params.id, dictionary: params.dictionary });
       contents.append(tmp.label);
       contents.append(tmp.option);
@@ -165,10 +150,14 @@ export default class CheatOptionsStages {
     defaultOption.innerText = params.dictionary.get('l10n.stateDefault');
     field.append(defaultOption);
 
-    Object.keys(STATES).forEach((state) => {
+    Object.keys(STAGE_STATES).forEach((state) => {
+      if (state === 'UNSTARTED') {
+        return; // Not a user-selectable cheat state; no dictionary entry.
+      }
       const selectOption = document.createElement('option');
-      selectOption.value = STATES[state];
-      selectOption.innerText = params.dictionary.get(`l10n.state${state.charAt(0).toUpperCase() + state.slice(1)}`);
+      selectOption.value = STAGE_STATES[state];
+      const label = state.charAt(0) + state.slice(1).toLowerCase();
+      selectOption.innerText = params.dictionary.get(`l10n.state${label}`);
       field.append(selectOption);
     });
 
