@@ -1,7 +1,7 @@
 {
   "title": "H5PEditor.GameMap",
   "majorVersion": 1,
-  "minorVersion": 3,
+  "minorVersion": 4,
   "patchVersion": 0,
   "runnable": 0,
   "machineName": "H5PEditor.GameMap",
@@ -24,7 +24,7 @@
     {
       "machineName": "H5P.GameMap",
       "majorVersion": 1,
-      "minorVersion": 6
+      "minorVersion": 8
     },
     {
       "machineName": "H5P.DragNBar",
