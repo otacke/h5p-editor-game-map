@@ -296,6 +296,13 @@ export default class DnBCalls {
    * @param {Event} event Change event.
    */
   handleFormChange(event) {
+    /*
+     * Workaround for IV editor which stops videos if validate is called.
+     */
+    if (event.target.closest('.field-name-interactiveVideo')) {
+      return;
+    }
+
     const mapElement = this.editContext.mapElementBeingEdited;
     if (!mapElement || mapElement.isSpecialStage()) {
       return;
