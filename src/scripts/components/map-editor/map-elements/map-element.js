@@ -3,7 +3,7 @@ import UtilDOM from '@services/util-dom.js';
 import UtilH5P from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
-import { SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
+import { MISSING_TELEPORT_TARGET_ID, SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
 
 export default class MapElement {
 
@@ -35,9 +35,9 @@ export default class MapElement {
       });
     });
 
-    const content = this.params.content.getDOM();
-    content.classList.add('h5p-editor-game-map-element-content');
-    this.dom.appendChild(content);
+    const contentDOM = this.params.content.getDOM();
+    contentDOM.classList.add('h5p-editor-game-map-element-content');
+    this.dom.appendChild(contentDOM);
 
     this.updateParams(this.params.elementParams);
 
@@ -105,6 +105,8 @@ export default class MapElement {
    * @returns {object} Element parameters.
    */
   getParams() {
+    // TODO: This should be cleaned up. We should not hold a copy of the params.
+    // The main instance already knows the params ...
     return this.params.elementParams;
   }
 
@@ -361,7 +363,8 @@ export default class MapElement {
       isValid = !!this.params.elementParams.specialStageLinkURL;
     }
     else if (this.params.elementParams.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT) {
-      isValid = !!this.params.elementParams.specialStageTeleportTarget;
+      isValid = typeof this.params.elementParams.specialStageTeleportTarget === 'string' &&
+        this.params.elementParams.specialStageTeleportTarget !== MISSING_TELEPORT_TARGET_ID;
     }
 
     this.dom.classList.toggle('error', !isValid);

@@ -38,10 +38,11 @@ export default class GameMapStageSelect extends H5P.EventDispatcher {
   /**
    * Set dynamic options.
    * @param {object} options Options to set.
+   * @param {string} [selectedValue] Id of the option to select after rebuild. Falls back to current value.
    */
-  setOptions(options) {
+  setOptions(options, selectedValue) {
     const select = this.fieldInstance.$select.get(0);
-    const previouslySelectedValue = (select.value === '-') ? this.fieldInstance.value : select.value;
+    const targetValue = (selectedValue !== undefined) ? selectedValue : this.fieldInstance.value;
 
     select.innerHTML = '';
 
@@ -52,7 +53,7 @@ export default class GameMapStageSelect extends H5P.EventDispatcher {
       optionElement.value = option.id;
       optionElement.textContent = option.label;
 
-      if (previouslySelectedValue === option.id) {
+      if (targetValue === option.id) {
         optionElement.selected = true;
       }
       select.appendChild(optionElement);

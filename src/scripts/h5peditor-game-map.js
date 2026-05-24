@@ -202,6 +202,7 @@ export default class GameMap extends H5P.EventDispatcher {
     }
 
     this.saveValues();
+    this.saveOtherGameMapValues();
   }
 
   /*

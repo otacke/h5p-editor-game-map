@@ -2,7 +2,12 @@ import MapElement from '@components/map-editor/map-elements/map-element.js';
 import Stage from '@components/map-editor/map-elements/stage.js';
 import Util from '@services/util.js';
 import UtilH5P from '@services/util-h5p.js';
-import { DEFAULT_SIZE_PERCENT, SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
+import {
+  DEFAULT_SIZE_PERCENT,
+  MISSING_TELEPORT_TARGET_ID,
+  SPECIAL_STAGE_TYPES,
+  STAGE_TYPES,
+} from '@services/constants.js';
 
 /** @constant {number} HORIZONTAL_CENTER Horizontal center. */
 const HORIZONTAL_CENTER = 50;
@@ -47,7 +52,6 @@ export default class DnBCalls {
       elementParams = Util.extend({
         id: H5P.createUUID(),
         label: `${this.params.dictionary.get('l10n.unnamedStage')} ${numberUnnamedStages}`,
-        content: newContent,
         telemetry: {
           // eslint-disable-next-line no-magic-numbers
           x: `${HORIZONTAL_CENTER - DEFAULT_SIZE_PERCENT.width / 2}`,
@@ -432,6 +436,7 @@ export default class DnBCalls {
       if (mapElementParams.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT) {
         this.linkTeleportElements(mapElementParams.id, mapElementParams.specialStageTeleportTarget);
       }
+      this.removeTeleportLinksWithoutTarget();
 
       this.toolbar.show();
       this.map.show();
@@ -523,7 +528,7 @@ export default class DnBCalls {
           element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT &&
           element.specialStageTeleportTarget === targetId
         ) {
-          delete element.specialStageTeleportTarget;
+          element.specialStageTeleportTarget = MISSING_TELEPORT_TARGET_ID;
           changed = true;
         }
       });
@@ -536,9 +541,14 @@ export default class DnBCalls {
    * Remove all teleport links that lack a target element.
    */
   removeTeleportLinksWithoutTarget() {
-    const allIds = new Set(
+    const teleportStagesWithTargetIds = new Set(
       (this.params.globals.get('getAllGamemapsParams')?.() ?? [])
         .flatMap((gamemap) => gamemap.elements ?? [])
+        .filter((element) => {
+          return element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT &&
+            typeof element.specialStageTeleportTarget === 'string' &&
+            element.specialStageTeleportTarget !== MISSING_TELEPORT_TARGET_ID;
+        })
         .map((element) => element.id),
     );
 
@@ -548,10 +558,11 @@ export default class DnBCalls {
       elements.forEach((element) => {
         if (
           element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT &&
-          element.specialStageTeleportTarget !== undefined &&
-          !allIds.has(element.specialStageTeleportTarget)
+          typeof element.specialStageTeleportTarget === 'string' &&
+          element.specialStageTeleportTarget !== MISSING_TELEPORT_TARGET_ID &&
+          !teleportStagesWithTargetIds.has(element.specialStageTeleportTarget)
         ) {
-          delete element.specialStageTeleportTarget;
+          element.specialStageTeleportTarget = MISSING_TELEPORT_TARGET_ID;
           changed = true;
         }
       });
@@ -627,20 +638,30 @@ export default class DnBCalls {
   }
 
   /**
-   * Update teleport target options to all stages across all gamemaps excluding the stage currently being edited
-   * and special stages.
+   * Update teleport target options to all teleport stages except current stage and teleport stages with a link.
    * @param {MapElement} mapElement Map element being edited.
    */
   updateTeleportTargetOptions(mapElement) {
-    const currentStageId = mapElement.getParams().id;
+    const currentStageParams = mapElement.getParams();
     const allGamemapsParams = this.params.globals.get('getAllGamemapsParams')?.() ?? [];
 
-    const options = allGamemapsParams
-      .flatMap((gamemap) => gamemap.elements ?? [])
-      .filter((element) => element.id !== currentStageId && element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT);
+    const options = [
+      { id: MISSING_TELEPORT_TARGET_ID, label: this.params.dictionary.get('l10n.noTargetStage') },
+      ...allGamemapsParams
+        .flatMap((gamemap) => gamemap.elements ?? [])
+        .filter((element) => {
+          const isNotCurrentStage = element.id !== currentStageParams.id;
+          const isTeleportStage = element.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT;
+          const hasNoTeleportTarget = typeof element.specialStageTeleportTarget !== 'string' ||
+            element.specialStageTeleportTarget === MISSING_TELEPORT_TARGET_ID;
+          const teleportTargetIsCurrentStagesTarget = currentStageParams.specialStageTeleportTarget === element.id;
+
+          return isNotCurrentStage && isTeleportStage && (hasNoTeleportTarget || teleportTargetIsCurrentStagesTarget);
+        }),
+    ];
 
     UtilH5P.findAllFields('specialStageTeleportTarget', mapElement.form).forEach((field) => {
-      field.setOptions(options);
+      field.setOptions(options, currentStageParams.specialStageTeleportTarget);
     });
   }
 

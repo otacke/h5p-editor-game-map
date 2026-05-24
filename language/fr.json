@@ -40,6 +40,7 @@
     "l10n.stateCompleted": "Completed",
     "l10n.stateCleared": "Cleared",
     "l10n.stateSealed": "Sealed",
+    "l10n.noTargetStage": "No target stage",
     "a11y.pathFromTo": "Chemin de la scène @from à la scène @to",
     "a11y.weight": "Weight",
     "a11y.maxScore": "Maximum score",

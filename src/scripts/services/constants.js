@@ -9,6 +9,9 @@ export const DEFAULT_SIZE_PERCENT = Object.freeze({
   width: 4.375,
 });
 
+/** @constant {string} MISSING_TELEPORT_TARGET_ID Fixed target id for teleport stage to indicate no target. */
+export const MISSING_TELEPORT_TARGET_ID = '-';
+
 /** @constant {object} ROAMING_TYPES Roaming types settable in semantics. */
 export const ROAMING_TYPES = Object.freeze({
   FREE: 'free',
