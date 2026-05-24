@@ -12,6 +12,9 @@ import './h5peditor-game-map.scss';
 let sharedObserver = null;
 const domInstanceMap = new Map();
 
+/** @constant {number} CONTENTS_GROUP_COLLAPSE_THRESHOLD_PX Width below which vertical tabs collapse. */
+const CONTENTS_GROUP_COLLAPSE_THRESHOLD_PX = 480;
+
 /** Class for Boilerplate H5P widget */
 export default class GameMap extends H5P.EventDispatcher {
 
@@ -116,9 +119,11 @@ export default class GameMap extends H5P.EventDispatcher {
           this.setMapValues(elements, paths);
         },
         onFormOpened: () => {
+          this.ensureFormHasRealEstate();
           this.disableOtherGameMapInstances();
         },
         onFormClosed: () => {
+          this.stopObservingFormWidth();
           this.validateAllMapsElements();
           this.enableOtherGameMapInstances();
         },
@@ -210,6 +215,59 @@ export default class GameMap extends H5P.EventDispatcher {
    */
   saveValues() {
     this.setValue(this.field, this.params);
+  }
+
+  /**
+   * Ensure the dialog form has enough horizontal real estate.
+   * Using VerticalTabs widgets uses lots of space, but they make sense here.
+   */
+  ensureFormHasRealEstate() {
+    this.stopObservingFormWidth();
+
+    const contentsGroup = this.dom.querySelector('.field-name-contentsGroup');
+    if (!contentsGroup) {
+      return;
+    }
+
+    // Collect ancestor VerticalTabs widget DOMs — the widget itself does not expose methods to interact with :-/
+    const ancestorVtabs = [];
+    let wrapper = contentsGroup.parentNode?.closest('.h5p-vtab-wrapper');
+    while (wrapper) {
+      const vtabs = wrapper.querySelector('.h5p-vtabs');
+      if (vtabs) {
+        ancestorVtabs.push(vtabs);
+      }
+
+      wrapper = wrapper.parentNode?.closest('.h5p-vtab-wrapper');
+    }
+
+    if (!ancestorVtabs.length) {
+      return; // No VerticalTabs
+    }
+
+    const collapseVtabsIfFormNarrow = () => {
+      for (const vtabs of ancestorVtabs) {
+        const width = contentsGroup.getBoundingClientRect().width;
+        if (width >= CONTENTS_GROUP_COLLAPSE_THRESHOLD_PX) {
+          return; // Form has "enough" space.
+        }
+
+        if (!vtabs.classList.contains('is-collapsed')) {
+          vtabs.querySelector('.h5p-vtabs-expand-collapse')?.click();
+        }
+      }
+    };
+
+    this.contentsGroupObserver = new ResizeObserver(collapseVtabsIfFormNarrow);
+    this.contentsGroupObserver.observe(contentsGroup);
+  }
+
+  /**
+   * Stop observing the form's contentsGroup.
+   */
+  stopObservingFormWidth() {
+    this.contentsGroupObserver?.disconnect();
+    this.contentsGroupObserver = null;
   }
 
   /**
