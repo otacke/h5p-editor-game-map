@@ -190,3 +190,21 @@ export default class UtilH5P {
     return false;
   }
 }
+
+/**
+ * Try to load an H5P library by name.
+ * @param {string} libraryName Library ubername, e.g. "H5P.Video 1.6".
+ * @returns {Promise} Resolves when the library is loaded, rejects on error.
+ */
+export const tryToLoadLibrary = async (libraryName) => {
+  return new Promise((resolve, reject) => {
+    try {
+      H5PEditor.loadLibrary(libraryName, () => {
+        resolve();
+      });
+    }
+    catch (error) {
+      reject(error);
+    }
+  });
+};

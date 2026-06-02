@@ -1,7 +1,7 @@
 import Dictionary from '@services/dictionary.js';
 import Util from '@services/util.js';
 import UtilCSS from '@services/util-css.js';
-import UtilH5P from '@services/util-h5p.js';
+import UtilH5P, { tryToLoadLibrary } from '@services/util-h5p.js';
 import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import PreviewOverlay from '@components/preview/preview-overlay.js';
@@ -512,8 +512,9 @@ export default class GameMap extends H5P.EventDispatcher {
 
   /**
    * Open preview.
+   * @returns {Promise<void>} Resolves once the preview is open.
    */
-  openPreview() {
+  async openPreview() {
     // Snapshot known H5PIntegration content ids so we can drop the ones the
     // preview instance creates without touching the ones the surrounding
     // editor relies on.
@@ -521,7 +522,7 @@ export default class GameMap extends H5P.EventDispatcher {
       Object.keys(window.H5PIntegration?.contents ?? {}),
     );
 
-    this.createPreviewInstance();
+    await this.createPreviewInstance();
     if (!this.previewInstance) {
       return;
     }
@@ -562,8 +563,9 @@ export default class GameMap extends H5P.EventDispatcher {
 
   /**
    * Create preview instance.
+   * @returns {Promise<void>} Resolves once all soft dependencies have loaded.
    */
-  createPreviewInstance() {
+  async createPreviewInstance() {
     const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
       .find((library) => library.split(' ')[0] === 'H5P.GameMap');
 
@@ -582,6 +584,13 @@ export default class GameMap extends H5P.EventDispatcher {
     if (!this.previewInstance) {
       return;
     }
+
+    const softDependencies = this.previewInstance.getSoftDependencies();
+    await Promise.all(softDependencies.map((library) => {
+      return tryToLoadLibrary(library).catch((error) => {
+        console.error(`Failed to load soft dependency ${library} for preview instance:`, error);
+      });
+    }));
   }
 
   /**
