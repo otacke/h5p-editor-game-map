@@ -20,6 +20,7 @@
     "l10n.toolbarButtonPreview": "Preview",
     "l10n.preview": "Preview Mode",
     "l10n.previewExplanation": "This is how the user will see your content",
+    "l10n.previewLoading": "Preparing preview, please wait",
     "l10n.cheatOptions": "Cheat options",
     "l10n.cheat": "Cheat!",
     "l10n.global": "Global",

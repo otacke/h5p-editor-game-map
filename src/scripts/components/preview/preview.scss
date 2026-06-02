@@ -39,6 +39,13 @@
 
     .preview-wrapper {
       border: 1px solid var(--color-editor-field-border);
+
+      .preview-loading {
+        color: var(--color-text);
+        font-style: italic;
+        padding: var(--h5p-theme-spacing-s, 1rem);
+        text-align: center;
+      }
     }
   }
 }

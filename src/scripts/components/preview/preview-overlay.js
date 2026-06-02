@@ -79,6 +79,14 @@ export default class PreviewOverlay {
   }
 
   /**
+   * Show a loading message until the instance is ready to be attached.
+   */
+  showLoading() {
+    this.setTop(''); // Remove potentially previously set top value
+    this.preview.showLoading(this.params.dictionary.get('l10n.previewLoading'));
+  }
+
+  /**
    * Attach instance to preview.
    * @param {H5P.ContentType} instance Instance to attach.
    */

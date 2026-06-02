@@ -522,17 +522,25 @@ export default class GameMap extends H5P.EventDispatcher {
       Object.keys(window.H5PIntegration?.contents ?? {}),
     );
 
-    await this.createPreviewInstance();
-    if (!this.previewInstance) {
-      return;
-    }
-
-    this.disableOtherGameMapInstances();
+    // Loading message as placeholder for when libraries still need loading.
     this.previewOverlay.show();
-    this.previewOverlay.attachInstance(this.previewInstance);
+    this.previewOverlay.showLoading();
     this.mapEditor.toggleVisibility(false);
 
     Readspeaker.read(this.dictionary.get('a11y.previewOpened'));
+
+    await this.createPreviewInstance();
+
+    if (!this.previewOverlay.isVisible) {
+      return; // Preview may have been closed again while instance was loading.
+    }
+
+    if (!this.previewInstance) {
+      this.closePreview();
+      return;
+    }
+
+    this.previewOverlay.attachInstance(this.previewInstance);
   }
 
   /**
@@ -585,6 +593,11 @@ export default class GameMap extends H5P.EventDispatcher {
       return;
     }
 
+    /*
+     * Workaround. We could add all the soft dependencies from the view to library.json of the editor, so all the
+     * libraries are loaded upfront for the preview. But then this would cause trouble for libraries that H5P Group
+     * has not yet released on their H5P Hub. So, we take care of loading ourselves.
+     */
     const softDependencies = this.previewInstance.getSoftDependencies();
     await Promise.all(softDependencies.map((library) => {
       return tryToLoadLibrary(library).catch((error) => {

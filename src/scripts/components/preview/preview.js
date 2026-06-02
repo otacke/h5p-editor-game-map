@@ -20,6 +20,27 @@ export default class Preview {
   }
 
   /**
+   * Show a loading message until an instance is attached.
+   * @param {string} message Loading message.
+   */
+  showLoading(message) {
+    this.detach();
+
+    this.loadingMessage = document.createElement('div');
+    this.loadingMessage.classList.add('preview-loading');
+    this.loadingMessage.innerText = message ?? '';
+    this.dom.appendChild(this.loadingMessage);
+  }
+
+  /**
+   * Remove the loading message if present.
+   */
+  hideLoading() {
+    this.loadingMessage?.remove();
+    this.loadingMessage = null;
+  }
+
+  /**
    * Attach instance to preview.
    * @param {H5P.ContentType} instance Instance to attach.
    */
@@ -38,6 +59,8 @@ export default class Preview {
    * Detach current instance and let H5P / jQuery teardown run.
    */
   detach() {
+    this.hideLoading();
+
     if (!this.instance) {
       return;
     }
