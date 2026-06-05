@@ -224,10 +224,13 @@ export const loadH5PLibrary = async (libraryName, options = {}) => {
       return null; // Known to be unloadable; do not retry.
     }
 
-    const data = await fetchJSON(url);
+    const { data, blocked } = await fetchJSON(url);
     if (!data) {
       unloadable.add(url);
-      console.warn(`Could not load ${url}. ${missingHint}`);
+      // A blocked request is most likely cross-origin (CORS); an HTTP miss is usually just absent.
+      console.warn(blocked
+        ? `Could not load ${url}. The request was blocked, possibly by a cross-origin (CORS) policy.`
+        : `Could not load ${url}. ${missingHint}`);
     }
 
     return data;
@@ -360,21 +363,30 @@ const getConstructor = (machineName, targetWindow = window) => {
 };
 
 /**
- * Fetch and parse a JSON file.
+ * Fetch and parse a JSON file, distinguishing a blocked request from a plain miss.
  * @param {string} url URL to fetch.
- * @returns {Promise<object|null>} Parsed JSON, or null on problem.
+ * @returns {Promise<{data: object|null, blocked: boolean}>} Parsed JSON in `data` (null on failure);
+ *   `blocked` is true when fetch() threw, which on a different origin most likely means a CORS block.
  */
 const fetchJSON = async (url) => {
+  let response;
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      return null; // e.g. 404 because the library is not installed.
-    }
-
-    return await response.json();
+    response = await fetch(url);
   }
   catch {
-    return null; // Network failure or invalid JSON.
+    // fetch() itself threw: network failure or, on a different origin, a cross-origin (CORS) block.
+    return { data: null, blocked: true };
+  }
+
+  if (!response.ok) {
+    return { data: null, blocked: false }; // HTTP error, e.g. 404 because the file is not present.
+  }
+
+  try {
+    return { data: await response.json() };
+  }
+  catch {
+    return { data: null, blocked: false }; // Invalid JSON; treat as a plain miss.
   }
 };
 
