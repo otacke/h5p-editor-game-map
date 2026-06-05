@@ -1,3 +1,9 @@
+/** @constant {number} NUMBER_OF_VERSION_SEGMENTS_DOWN_TO_PATCH_VERSION major (1) + (minor) 1 + (patch) 1 = 3. */
+const NUMBER_OF_VERSION_SEGMENTS_DOWN_TO_PATCH_VERSION = 3;
+
+/** @constant {string} H5P_CLI_INDICATOR_URL Heuristic to identify H5P CLI via H5PIntegration.url */
+const H5P_CLI_INDICATOR_URL = 'http://localhost:8080';
+
 /** Class for H5P utility functions */
 export default class UtilH5P {
   /**
@@ -192,19 +198,223 @@ export default class UtilH5P {
 }
 
 /**
- * Try to load an H5P library by name.
+ * Load H5P library (and dependency tree) at runtime.
  * @param {string} libraryName Library ubername, e.g. "H5P.Video 1.6".
- * @returns {Promise} Resolves when the library is loaded, rejects on error.
+ * @param {object} [options] Options.
+ * @param {boolean} [options.preloadedDependencies] If true, also load preloadedDependencies from library.json.
+ * @param {boolean} [options.optionalDependencies] If true, also load libraries referenced in semantics.json.
+ * @param {boolean} [options.recursive] If true, also load the dependencies of dependencies.
+ * @param {string[]} [options.ignore] URLs of files known to be unloadable; skipped without retrying.
+ * @returns {Promise<string[]>} URLs that could not be loaded - pass back as options.ignore next time.
  */
-export const tryToLoadLibrary = async (libraryName) => {
-  return new Promise((resolve, reject) => {
-    try {
-      H5PEditor.loadLibrary(libraryName, () => {
-        resolve();
+export const loadH5PLibrary = async (libraryName, options = {}) => {
+  const loadPreloadedDependencies = options.preloadedDependencies ?? true;
+  const loadOptionalDependencies = options.optionalDependencies ?? false;
+  const loadRecursively = options.recursive ?? true;
+
+  // Files can potentially not be loaded, we keep track
+  const unloadable = new Set(options.ignore ?? []);
+
+  const queued = new Set(); // Folders already scheduled, to dedupe shared dependencies.
+  const scripts = [];
+  const styles = [];
+
+  const loadJSON = async (url, missingHint) => {
+    if (unloadable.has(url)) {
+      return null; // Known to be unloadable; do not retry.
+    }
+
+    const data = await fetchJSON(url);
+    if (!data) {
+      unloadable.add(url);
+      console.warn(`Could not load ${url}. ${missingHint}`);
+    }
+
+    return data;
+  };
+
+  /*
+   * `descend` controls whether this library's own dependencies are resolved; it is true for the
+   * requested library and, for its dependencies, only when loading recursively.
+   */
+  const resolve = async (uberName, descend) => {
+    const machineName = uberName.split(' ')[0];
+    const folderName = uberName.replace(' ', '-');
+
+    if (queued.has(folderName)) {
+      return; // already scheduled in this run
+    }
+    queued.add(folderName);
+
+    const base = resolveLibraryBasePath(folderName);
+
+    const library = await loadJSON(
+      `${base}/library.json`,
+      `That is fine if the content type ${uberName} is not installed.`,
+    );
+    if (!library) {
+      return; // Library not installed / unreadable - nothing to load.
+    }
+
+    const versionCacheBuster = `?ver=${library.majorVersion}.${library.minorVersion}.${library.patchVersion}`;
+
+    if (descend && loadPreloadedDependencies) {
+      await runSequentially(library.preloadedDependencies ?? [], (dependency) => {
+        const dependencyUberName = `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`;
+        return resolve(dependencyUberName, loadRecursively);
       });
     }
-    catch (error) {
-      reject(error);
+
+    if (descend && loadOptionalDependencies) {
+      const optionalDependencies = await extractOptionalDependencies(base, uberName, loadJSON);
+      await runSequentially(optionalDependencies, (optionalDependency) => resolve(optionalDependency, loadRecursively));
     }
+
+    if (typeof getConstructor(machineName) === 'function') {
+      return; // library already loaded; only its dependencies (above) needed resolving
+    }
+
+    (library.preloadedCss ?? []).forEach((css) => styles.push(`${base}/${css.path}${versionCacheBuster}`));
+    (library.preloadedJs ?? []).forEach((js) => scripts.push(`${base}/${js.path}${versionCacheBuster}`));
+  };
+
+  await resolve(libraryName, true);
+
+  styles.forEach((href) => {
+    appendStyleSheet(href);
   });
+
+  await runSequentially(scripts, loadScript); // Loading in order guarantees dependencies come first.
+
+  return Array.from(unloadable);
+};
+
+/**
+ * Run async tasks one after another, preserving order.
+ * @param {string[]} items Items to process, usually a URL or uberName.
+ * @param {function} task Async task run for each item.
+ * @returns {Promise} Resolves once every item has been processed in order.
+ */
+const runSequentially = (items, task) => {
+  return items.reduce((chain, item) => chain.then(() => task(item)), Promise.resolve());
+};
+
+/**
+ * Resolve a library's base path, working around HFP-4240 (H5P CLI builds an incorrect path).
+ * @param {string} folder Library folder, e.g. "H5P.Video-1.6".
+ * @returns {string} Library base path.
+ */
+const resolveLibraryBasePath = (folder) => {
+  let base = H5P.getLibraryPath(folder);
+
+  if (H5PIntegration.url === H5P_CLI_INDICATOR_URL) {
+    const splits = base.split('-');
+    const version = splits[splits.length - 1];
+    const versionParts = version.split('.');
+    if (versionParts.length === NUMBER_OF_VERSION_SEGMENTS_DOWN_TO_PATCH_VERSION) {
+      base = base.split('.').slice(0, -1).join('.');
+    }
+  }
+
+  return base;
+};
+
+/**
+ * Add a stylesheet to the document.
+ * @param {string} href Stylesheet URL.
+ */
+const appendStyleSheet = (href) => {
+  if (H5P.cssLoaded(href)) {
+    return; // Already loaded.
+  }
+
+  H5PIntegration.loadedCss.push(href);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = href;
+  document.head.appendChild(link);
+};
+
+/**
+ * Load script via H5P core (dedupes via H5P.jsLoaded).
+ * @param {string} src Script URL.
+ * @returns {Promise} Resolves once the script has loaded.
+ */
+const loadScript = (src) => {
+  return new Promise((resolve, reject) => {
+    H5PEditor.loadJs(src, (error) => error ? reject(error) : resolve());
+  });
+};
+
+/**
+ * Get constructor for an H5P library (if defined).
+ * @param {string} machineName Content type's machine name, e.g. "H5P.Video".
+ * @param {Window} [targetWindow] Target window if context is relevant.
+ * @returns {function|undefined} Constructor function or undefined if not found in targetWindow.
+ */
+const getConstructor = (machineName, targetWindow = window) => {
+  const constructor = machineName.split('.').reduce((namespace, part) => namespace?.[part], targetWindow);
+
+  return typeof constructor === 'function' ? constructor : undefined;
+};
+
+/**
+ * Fetch and parse a JSON file.
+ * @param {string} url URL to fetch.
+ * @returns {Promise<object|null>} Parsed JSON, or null on problem.
+ */
+const fetchJSON = async (url) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return null; // e.g. 404 because the library is not installed.
+    }
+
+    return await response.json();
+  }
+  catch {
+    return null; // Network failure or invalid JSON.
+  }
+};
+
+/**
+ * Extract optional dependencies from semantics.json for a library.
+ * @param {string} base Library base path from H5P.getLibraryPath().
+ * @param {string} uberName Library ubername, e.g. "H5P.Video 1.6". Used for logging.
+ * @param {function} loadJSON Loader returning parsed JSON or null, used to fetch semantics.json.
+ * @returns {Promise<string[]>} Optional dependency ubernames, e.g. ["H5P.Image 1.1"].
+ */
+const extractOptionalDependencies = async (base, uberName, loadJSON) => {
+  const semantics = await loadJSON(`${base}/semantics.json`, `That is fine if ${uberName} has no semantics.`);
+  if (!semantics) {
+    return [];
+  }
+
+  const optionalDependencies = new Set();
+
+  const traverse = (fields) => {
+    if (!Array.isArray(fields)) {
+      return;
+    }
+
+    fields.forEach((field) => {
+      if (field.type === 'library' && Array.isArray(field.options)) {
+        field.options.forEach((option) => {
+          if (typeof option === 'string') {
+            optionalDependencies.add(option);
+          }
+        });
+      }
+      else if (field.type === 'group' && Array.isArray(field.fields)) {
+        traverse(field.fields);
+      }
+      else if (field.type === 'list' && field.field) {
+        traverse([field.field]);
+      }
+    });
+  };
+
+  traverse(semantics);
+  return Array.from(optionalDependencies);
 };

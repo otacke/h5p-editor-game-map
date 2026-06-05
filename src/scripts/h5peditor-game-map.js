@@ -1,7 +1,7 @@
 import Dictionary from '@services/dictionary.js';
 import Util from '@services/util.js';
 import UtilCSS from '@services/util-css.js';
-import UtilH5P, { tryToLoadLibrary } from '@services/util-h5p.js';
+import UtilH5P, { loadH5PLibrary } from '@services/util-h5p.js';
 import MapEditor from '@components/map-editor/map-editor.js';
 import ParentReadyInitialization from '@mixins/parent-ready-initialization.js';
 import PreviewOverlay from '@components/preview/preview-overlay.js';
@@ -574,6 +574,29 @@ export default class GameMap extends H5P.EventDispatcher {
    * @returns {Promise<void>} Resolves once all soft dependencies have loaded.
    */
   async createPreviewInstance() {
+    const previewParams = this.buildPreviewParams();
+    /*
+     * The GameMap view needs libraries to be installed in order to work.
+     * You would normally add required dependencies to subcontent libraries in library.json. However, that would make
+     * installing them mandatory to use GameMap. That's not an option (on H5P.com), where some of the optional
+     * dependencies are not available. Hence, we're here using our own dynamic H5P library loading mechanism.
+     */
+    const subcontentUberNames = GameMap.extractSubcontentUberNames(previewParams);
+
+    /*
+     * Client-side, we can't determine if file exists (e.g. semantics.json in H5P.Components) and don't want to try
+     * loading them each time we create the preview.
+     */
+    const unloadableH5PFiles = new Set(this.unloadableH5PFiles);
+    const ignore = [...unloadableH5PFiles];
+    const results = await Promise.all(subcontentUberNames.map((library) => {
+      return loadH5PLibrary(library, { optionalDependencies: true, ignore });
+    }));
+    results.flat().forEach((file) => {
+      unloadableH5PFiles.add(file);
+    });
+    this.unloadableH5PFiles = [...unloadableH5PFiles];
+
     const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
       .find((library) => library.split(' ')[0] === 'H5P.GameMap');
 
@@ -581,29 +604,13 @@ export default class GameMap extends H5P.EventDispatcher {
     this.previewInstance = H5P.newRunnable(
       {
         library: libraryUberName,
-        params: this.buildPreviewParams(),
+        params: previewParams,
       },
       contentId,
       undefined,
       undefined,
       { metadata: { title: this.contentTitle } },
     );
-
-    if (!this.previewInstance) {
-      return;
-    }
-
-    /*
-     * Workaround. We could add all the soft dependencies from the view to library.json of the editor, so all the
-     * libraries are loaded upfront for the preview. But then this would cause trouble for libraries that H5P Group
-     * has not yet released on their H5P Hub. So, we take care of loading ourselves.
-     */
-    const softDependencies = this.previewInstance.getSoftDependencies();
-    await Promise.all(softDependencies.map((library) => {
-      return tryToLoadLibrary(library).catch((error) => {
-        console.error(`Failed to load soft dependency ${library} for preview instance:`, error);
-      });
-    }));
   }
 
   /**
@@ -622,5 +629,25 @@ export default class GameMap extends H5P.EventDispatcher {
     };
 
     return previewParams;
+  }
+
+  /**
+   * Collect the unique ubernames of all content types embedded in the maps, e.g. "H5P.AdvancedText 1.1".
+   * @param {object} previewParams Preview parameters as built by buildPreviewParams().
+   * @returns {string[]} Unique subcontent library ubernames.
+   */
+  static extractSubcontentUberNames(previewParams) {
+    return [...(previewParams.gamemaps ?? []).reduce((libraries, gamemap) => {
+      (gamemap.elements ?? []).forEach((element) => {
+        (element.contentsList ?? []).forEach((content) => {
+          const library = content.contentType?.library;
+          if (library) {
+            libraries.add(library);
+          }
+        });
+      });
+
+      return libraries;
+    }, new Set())];
   }
 }
