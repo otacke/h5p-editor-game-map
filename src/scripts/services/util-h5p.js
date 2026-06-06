@@ -268,7 +268,7 @@ export const loadH5PLibrary = async (libraryName, options = {}) => {
       });
     }
 
-    if (descend && loadOptionalDependencies) {
+    if (library.runnable === 1 && descend && loadOptionalDependencies) {
       const optionalDependencies = await extractOptionalDependencies(base, uberName, loadJSON);
       await runSequentially(optionalDependencies, (optionalDependency) => resolve(optionalDependency, loadRecursively));
     }
