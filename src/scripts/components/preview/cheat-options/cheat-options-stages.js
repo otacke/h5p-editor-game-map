@@ -151,8 +151,8 @@ export default class CheatOptionsStages {
     field.append(defaultOption);
 
     Object.keys(STAGE_STATES).forEach((state) => {
-      if (state === 'UNSTARTED') {
-        return; // Not a user-selectable cheat state; no dictionary entry.
+      if (state === 'UNSTARTED' || state === 'SEALED') {
+        return; // Not user-selectable cheat states; no dictionary entry.
       }
       const selectOption = document.createElement('option');
       selectOption.value = STAGE_STATES[state];
