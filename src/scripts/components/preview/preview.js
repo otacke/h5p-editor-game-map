@@ -68,6 +68,7 @@ export default class Preview {
     // jQuery .empty() fires the 'remove' event that H5P / sub-content
     // teardown handlers listen for, unlike innerHTML = ''.
     H5P.jQuery(this.dom).empty();
+    this.instance.destroy();
     this.instance = null;
   }
 
