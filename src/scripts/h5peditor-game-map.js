@@ -548,7 +548,6 @@ export default class GameMap extends H5P.EventDispatcher {
    */
   closePreview() {
     this.mapEditor.toggleVisibility(true);
-    this.previewInstance?.resetTask();
     this.previewOverlay.detachInstance();
     this.previewInstance = null;
 
