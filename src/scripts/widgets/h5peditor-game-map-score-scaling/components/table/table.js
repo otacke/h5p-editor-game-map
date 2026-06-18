@@ -501,6 +501,7 @@ export default class Table {
    */
   checkSumOfWeights() {
     if (this.params.scalingMode !== 'weightedExercises' || !this.params.weightIsPercentage) {
+      this.clearError();
       return;
     }
 
@@ -539,7 +540,7 @@ export default class Table {
    * Clear error message.
    */
   clearError() {
-    this.setError('');
+    this.errorsDOM.innerHTML = '';
     this.errorsDOM.classList.add('display-none');
   }
 
