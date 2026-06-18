@@ -22,7 +22,6 @@ export default class Row {
 
     this.callbacks = callbacks;
     this.callbacks.onChange = callbacks.onChange || (() => {});
-    this.callbacks.onInput = callbacks.onInput || (() => {});
 
     const doms = this.buildDOMs(params);
     this.nameDOM = doms.nameDOM;
