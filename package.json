@@ -1,6 +1,6 @@
 {
   "name": "h5peditor-game-map",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Editor widget for H5P.GameMap",
   "private": true,
   "scripts": {
@@ -27,9 +27,9 @@
     "eslint-config-snordian-h5p": "github:otacke/eslint-config-snordian-h5p",
     "mini-css-extract-plugin": "^2.10.2",
     "regenerator-runtime": "^0.14.1",
-    "sass": "^1.100.0",
+    "sass": "^1.101.0",
     "sass-loader": "^17.0.0",
-    "stylelint": "^17.12.0",
+    "stylelint": "^17.13.0",
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-config-recommended-scss": "^17.0.1",
     "webpack": "^5.107.2",
