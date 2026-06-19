@@ -1,4 +1,6 @@
 .h5p-editor-game-map-fluid-dialog {
+  --color-separator: #eee;
+
   background: #fff;
   border: 1px solid #ccc;
   -webkit-box-shadow: 0 0 4px #a7a7a7;
@@ -13,12 +15,41 @@
     padding: 1rem;
 
     .field-name-accessRestrictions {
-      border-bottom: 2px solid #eee;
+      border-bottom: 2px solid var(--color-separator);
       padding-bottom: 1rem;
+
+      .field-name-restrictionSetGroup {
+        [id^="field-stagescorevalue-"] + .total-max-score {
+          margin-inline-start: 0.5rem;
+        }
+      }
+    }
+
+    .content {
+      .field-name-livesSettings {
+        border-top: 2px solid var(--color-separator);
+        padding-top: 1rem;
+
+        &.display-none {
+          display: none;
+        }
+      }
+
+      &:not(.is-task) {
+        .field-name-livesSettings {
+          display: none;
+        }
+      }
+
+      &:is(:not(.is-task), :has(.field-name-livesSettings.display-none)) {
+        > .field.library {
+          margin-bottom: 0;
+        }
+      }
     }
 
     .field-name-neighbors {
-      border-top: 2px solid #eee;
+      border-top: 2px solid var(--color-separator);
       padding-top: 1rem;
     }
 
@@ -38,17 +69,18 @@
     background: #f5f5f5;
 
     .h5p-editor-game-map-fluid-dialog-button {
-      font-size: 0.75rem;
-      float: right;
-      padding: 0.625rem 2rem;
-      margin: 0.5rem;
-      border-radius: 0.25em;
-      border: 1px solid #20588F;
-      color: #fff;
       background: #3673B5;
       background: -webkit-linear-gradient(top,#5A94D3 0,#3673B5 100%);
       background: -moz-linear-gradient(top,#5A94D3 0,#3673B5 100%);
       background: -o-linear-gradient(top,#5A94D3 0,#3673B5 100%);
+      border: 1px solid #20588F;
+      border-radius: 0.25em;
+      color: var(--color-text-light);
+      float: right;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin: 0.5rem;
+      padding: 0.625rem 2rem;
 
       &:hover {
         background: #3275bc;

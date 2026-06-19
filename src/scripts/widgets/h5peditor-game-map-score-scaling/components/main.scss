@@ -1,0 +1,28 @@
+.h5peditor-game-map-score-scaling-main {
+  border: 1px solid var(--color-group-border);
+  border-top: none;
+  background: var(--color-background);
+  margin: 0;
+  padding: 20px;
+
+  .h5peditor-game-map-score-scaling-main-title {
+    color: var(--color-label);
+    font-weight: 600;
+  }
+
+  &:not(:has(.h5peditor-game-map-score-scaling-main-description)) .h5peditor-game-map-score-scaling-main-title {
+    margin-bottom: 1rem;
+  }
+
+  &:has(.h5peditor-game-map-score-scaling-main-description) .h5peditor-game-map-score-scaling-main-title {
+    margin-bottom: 0.375rem;
+  }
+
+  .h5peditor-game-map-score-scaling-main-description {
+    color: var(--color-description);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: .5px;
+    margin-bottom: 1rem;
+  }
+}

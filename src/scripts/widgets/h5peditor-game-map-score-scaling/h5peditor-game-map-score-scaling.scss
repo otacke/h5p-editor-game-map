@@ -1,0 +1,9 @@
+.h5peditor-game-map-score-scaling {
+  --icon-fontawesome-scale-balanced: '\f24e';
+  --icon-fontawesome-star: '\f005';
+  --icon-fontawesome-times: '\f00d';
+
+  .field-name-scoreScaling:not(.expanded) .h5peditor-game-map-score-scaling-main {
+    display: none;
+  }
+}

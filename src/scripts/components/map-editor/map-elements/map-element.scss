@@ -1,5 +1,6 @@
 .h5p-gamemap-editor {
   .h5p-editor-game-map-element {
+    border-radius: 50%;
     cursor: move;
     position: absolute;
 
@@ -12,6 +13,21 @@
       height: 100%;
       position: relative;
       width: 100%;
+    }
+
+    &.error:not(:focus-visible) {
+      .h5p-editor-game-map-element-content {
+        outline: 3px dashed var(--h5p-theme-feedback-incorrect-main, #a13236);
+        outline-offset: 1px;
+      }
+    }
+
+    &.focused {
+      outline: 1px solid #000000;
+    }
+
+    &:hover {
+      outline: 1px ridge #000000;
     }
   }
 
@@ -28,6 +44,10 @@
   }
 
   .field-name-specialStageLinkTarget.display-none {
+    display: none;
+  }
+
+  .field-name-specialStageTeleportTarget.display-none {
     display: none;
   }
 }

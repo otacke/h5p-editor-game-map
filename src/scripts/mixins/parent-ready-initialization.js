@@ -1,4 +1,5 @@
 import UtilH5P from '@services/util-h5p.js';
+import { ROAMING_TYPES } from '@services/constants.js';
 
 /**
  * Mixin containing methods parent ready initialization.
@@ -10,10 +11,20 @@ export default class ParentReadyInitialization {
   handleParentReady() {
     this.passReadies = false;
 
+    this.initializeGamemapsList();
     this.initializeColors();
     this.initializeBackgroundImage();
     this.initializeHidePathColorOnFreeRoaming();
     this.initializeHidePathOptions();
+    this.initializeLifeChangeListener();
+  }
+
+  initializeGamemapsList() {
+    this.gamemapsList = H5PEditor.findField('gamemaps', this.parent.parent);
+
+    if (!this.gamemapsList) {
+      throw H5PEditor.t('core', 'unknownFieldPath', { ':path': 'gamemaps' });
+    }
   }
 
   /**
@@ -31,14 +42,14 @@ export default class ParentReadyInitialization {
     document.head.appendChild(style);
 
     this.addVisualsChangeListeners(UtilH5P.getRootField(this));
+    this.addVisualsChangeListeners(this.mapOptionsInstance);
   }
 
   /**
    * Initialize background image.
    */
   initializeBackgroundImage() {
-    this.backgroundImageField = H5PEditor.findField('backgroundImageSettings/backgroundImage', this.parent);
-
+    this.backgroundImageField = H5PEditor.findField('backgroundSettings/backgroundImage', this.mapOptionsInstance);
     if (!this.backgroundImageField) {
       throw H5PEditor.t('core', 'unknownFieldPath', { ':path': this.backgroundImageField });
     }
@@ -68,7 +79,7 @@ export default class ParentReadyInitialization {
     }
 
     const toggleColorPathField = (roamingMode) => {
-      colorPathClearedField.$item?.get(0).classList.toggle('display-none', roamingMode === 'free');
+      colorPathClearedField.$item?.get(0).classList.toggle('display-none', roamingMode === ROAMING_TYPES.FREE);
     };
 
     roamingSelectField.changes.push(() => {
@@ -97,5 +108,31 @@ export default class ParentReadyInitialization {
       togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
     });
     togglePathOptionsField(!pathVisibilityField.$input.get(0)?.checked);
+  }
+
+  /**
+   * Initialize life change listener to hide lives details when not required.
+   * Can't use showWhen as it breaks the editor for nested fields.
+   */
+  initializeLifeChangeListener() {
+    const livesNumberField = H5PEditor.findField('behaviour/lives', this.parent.parent);
+    const livesDetailsField = H5PEditor.findField('behaviour/livesDetails', this.parent.parent);
+
+    if (!livesNumberField || !livesDetailsField) {
+      return; // Could not find fields
+    }
+
+    const toggleLivesDetailsField = (livesNumber) => {
+      const parsedLivesNumber = parseInt(livesNumber);
+      const hideDetails = Number.isNaN(parsedLivesNumber) || parsedLivesNumber <= 0;
+      livesDetailsField.$group?.get(0).classList.toggle('display-none', hideDetails);
+
+      this.mapEditor.toggleLivesDetailsVisibility(!hideDetails);
+    };
+
+    livesNumberField.$input?.get(0).addEventListener('input', () => {
+      toggleLivesDetailsField(livesNumberField.$input?.get(0).value);
+    });
+    toggleLivesDetailsField(livesNumberField.$input?.get(0).value);
   }
 }

@@ -1,4 +1,4 @@
-export default class GameMapStageSelect {
+export default class GameMapStageSelect extends H5P.EventDispatcher {
 
   /**
    * @class
@@ -8,6 +8,8 @@ export default class GameMapStageSelect {
    * @param {function} setValue Callback to set parameters.
    */
   constructor(parent, field, params, setValue) {
+    super();
+
     this.parent = parent;
     this.field = field;
     this.params = params;
@@ -25,6 +27,10 @@ export default class GameMapStageSelect {
     this.fieldInstance = new H5PEditor.widgets[this.field.type](this.parent, this.field, this.params, this.setValue);
     this.fieldInstance.appendTo(this.$container);
 
+    this.fieldInstance.changes.push((data) => {
+      this.trigger('change', data);
+    });
+
     // Errors (or add your own)
     this.$errors = this.$container.find('.h5p-errors');
   }
@@ -32,10 +38,11 @@ export default class GameMapStageSelect {
   /**
    * Set dynamic options.
    * @param {object} options Options to set.
+   * @param {string} [selectedValue] Id of the option to select after rebuild. Falls back to current value.
    */
-  setOptions(options) {
+  setOptions(options, selectedValue) {
     const select = this.fieldInstance.$select.get(0);
-    const previouslySelectedValue = (select.value === '-') ? this.fieldInstance.value : select.value;
+    const targetValue = (selectedValue !== undefined) ? selectedValue : this.fieldInstance.value;
 
     select.innerHTML = '';
 
@@ -46,7 +53,7 @@ export default class GameMapStageSelect {
       optionElement.value = option.id;
       optionElement.textContent = option.label;
 
-      if (previouslySelectedValue === option.id) {
+      if (targetValue === option.id) {
         optionElement.selected = true;
       }
       select.appendChild(optionElement);
@@ -62,6 +69,24 @@ export default class GameMapStageSelect {
    */
   appendTo($wrapper) {
     $wrapper.get(0).append(this.$container.get(0));
+  }
+
+  /**
+   * Get current value.
+   * @returns {string|undefined} Current value.
+   */
+  getValue() {
+    const value = this.fieldInstance.value;
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    const firstOptionValue = this.fieldInstance.$select.get(0).options[0]?.value;
+    if (typeof firstOptionValue === 'string' && firstOptionValue !== '-') {
+      return firstOptionValue;
+    }
+
+    return;
   }
 
   /**

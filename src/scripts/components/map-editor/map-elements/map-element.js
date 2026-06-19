@@ -3,7 +3,7 @@ import UtilDOM from '@services/util-dom.js';
 import UtilH5P from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
-import { STAGE_TYPES } from './stage.js';
+import { MISSING_TELEPORT_TARGET_ID, SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
 
 export default class MapElement {
 
@@ -35,9 +35,9 @@ export default class MapElement {
       });
     });
 
-    const content = this.params.content.getDOM();
-    content.classList.add('h5p-editor-game-map-element-content');
-    this.dom.appendChild(content);
+    const contentDOM = this.params.content.getDOM();
+    contentDOM.classList.add('h5p-editor-game-map-element-content');
+    this.dom.appendChild(contentDOM);
 
     this.updateParams(this.params.elementParams);
 
@@ -105,6 +105,8 @@ export default class MapElement {
    * @returns {object} Element parameters.
    */
   getParams() {
+    // TODO: This should be cleaned up. We should not hold a copy of the params.
+    // The main instance already knows the params ...
     return this.params.elementParams;
   }
 
@@ -152,7 +154,7 @@ export default class MapElement {
    * Create DragNBar element.
    */
   createDNBElement() {
-    const dnbElement = this.params.toolbar.add(
+    const dnbElement = this.params.dnbWrapper.add(
       this.getData().$element,
       '',
       { disableResize: true, lock: true },
@@ -222,25 +224,28 @@ export default class MapElement {
      * elements here.
      */
     const toBeRemoved = {};
-    toBeRemoved[STAGE_TYPES.stage] = [
+    toBeRemoved[STAGE_TYPES.STAGE] = [
       'specialStageType',
       'specialStageExtraLives',
       'specialStageExtraTime',
       'specialStageLinkURL',
       'specialStageLinkTarget',
+      'specialStageTeleportTarget',
       'alwaysVisible',
       'overrideSymbol',
     ];
 
-    toBeRemoved[STAGE_TYPES['special-stage']] = [
+    toBeRemoved[STAGE_TYPES.SPECIAL_STAGE] = [
       'canBeStartStage',
       'time',
-      'contentslist',
+      'contentsList',
+      'scoreScaling',
+      'stageBehaviour',
     ];
 
     const children = UtilH5P.removeFromForm(toBeRemoved[elementType], semantics, form, this.formParent.children);
 
-    if (elementType === STAGE_TYPES['special-stage']) {
+    if (elementType === STAGE_TYPES.SPECIAL_STAGE) {
       /*
       * The showWhen widget seems to have trouble with being attached to all
       * the different forms of the stages. Introducing custom conditional
@@ -283,16 +288,19 @@ export default class MapElement {
    */
   toggleSpecialStageFields(form, specialStageType) {
     form.querySelector('.field-name-specialStageExtraLives')?.classList
-      .toggle('display-none', specialStageType !== 'extra-life');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.EXTRA_LIFE);
 
     form.querySelector('.field-name-specialStageExtraTime')?.classList
-      .toggle('display-none', specialStageType !== 'extra-time');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.EXTRA_TIME);
 
     form.querySelector('.field-name-specialStageLinkURL')?.classList
-      .toggle('display-none', specialStageType !== 'link');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.LINK);
 
     form.querySelector('.field-name-specialStageLinkTarget')?.classList
-      .toggle('display-none', specialStageType !== 'link');
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.LINK);
+
+    form.querySelector('.field-name-specialStageTeleportTarget')?.classList
+      .toggle('display-none', specialStageType !== SPECIAL_STAGE_TYPES.TELEPORT);
   }
 
   /**
@@ -336,5 +344,31 @@ export default class MapElement {
     }
 
     this.label.hide();
+  }
+
+  /**
+   * Determine whether map element is a special stage.
+   * @returns {boolean} True if special stage, false otherwise.
+   */
+  isSpecialStage() {
+    return this.params.type === STAGE_TYPES.SPECIAL_STAGE;
+  }
+
+  validate() {
+    let isValid = true;
+    if (!this.isSpecialStage()) {
+      isValid = this.params.elementParams.contentsList.some((content) => !!content.contentType.library);
+    }
+    else if (this.params.elementParams.specialStageType === SPECIAL_STAGE_TYPES.LINK) {
+      isValid = !!this.params.elementParams.specialStageLinkURL;
+    }
+    else if (this.params.elementParams.specialStageType === SPECIAL_STAGE_TYPES.TELEPORT) {
+      isValid = typeof this.params.elementParams.specialStageTeleportTarget === 'string' &&
+        this.params.elementParams.specialStageTeleportTarget !== MISSING_TELEPORT_TARGET_ID;
+    }
+
+    this.dom.classList.toggle('error', !isValid);
+
+    return isValid;
   }
 }
