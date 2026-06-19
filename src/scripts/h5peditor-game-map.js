@@ -48,6 +48,8 @@ export default class GameMap extends H5P.EventDispatcher {
     this.dictionary = new Dictionary();
     this.fillDictionary();
 
+    this.unloadableH5PFiles = [];
+
     this.globals = new Map();
     this.globals.set('mainInstance', this);
     this.globals.set('getStylePropertyValue', (key) => {
@@ -58,6 +60,12 @@ export default class GameMap extends H5P.EventDispatcher {
     });
     this.globals.set('resize', () => {
       this.trigger('resize');
+    });
+    this.globals.set('getUnloadableH5PFiles', () => [...this.unloadableH5PFiles]);
+    this.globals.set('addUnloadableH5PFiles', (files) => {
+      const set = new Set(this.unloadableH5PFiles);
+      files.forEach((file) => set.add(file));
+      this.unloadableH5PFiles = [...set];
     });
 
     // Callbacks to call when parameters change

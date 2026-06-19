@@ -1,6 +1,6 @@
 import Util from '@services/util.js';
 import UtilDOM from '@services/util-dom.js';
-import UtilH5P from '@services/util-h5p.js';
+import UtilH5P, { loadH5PLibrary } from '@services/util-h5p.js';
 import Label from './label.js';
 import './map-element.scss';
 import { MISSING_TELEPORT_TARGET_ID, SPECIAL_STAGE_TYPES, STAGE_TYPES } from '@services/constants.js';
@@ -200,6 +200,8 @@ export default class MapElement {
       this.formParent,
     );
 
+    this.wireContentLibraryLoaders();
+
     // H5PEditor.library widget does not feature an error field. Inject one.
     const library = form.querySelector('.field.library');
     if (library) {
@@ -258,6 +260,38 @@ export default class MapElement {
       form: form,
       children: children,
     };
+  }
+
+  /**
+   * Wire up library selector listeners, so all libraries are loaded if selected.
+   */
+  wireContentLibraryLoaders() {
+    const loadLibrary = (uberName) => {
+      const ignore = this.params.globals.get('getUnloadableH5PFiles')?.() ?? [];
+      loadH5PLibrary(uberName, { optionalDependencies: true, ignore })
+        .then((unloadable) => {
+          this.params.globals.get('addUnloadableH5PFiles')?.(unloadable);
+        })
+        .catch(() => {});
+    };
+
+    const wireLibraryLoader = (child) => {
+      const librarySelectorInstance = H5PEditor.findField('contentType', child);
+      librarySelectorInstance.changes.push((library) => {
+        loadLibrary(library.uberName);
+      });
+
+      const currentlySelectedLibrary = librarySelectorInstance.params?.library;
+      if (currentlySelectedLibrary) {
+        loadLibrary(currentlySelectedLibrary);
+      }
+    };
+
+    const contentsListInstance = H5PEditor.findField('contentsList', this.formParent);
+    contentsListInstance.forEachChild(wireLibraryLoader);
+    contentsListInstance.on('addedItem', (event) => {
+      wireLibraryLoader(event.data);
+    });
   }
 
   /**
