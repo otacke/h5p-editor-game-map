@@ -188,6 +188,9 @@ export default class MapElement {
   generateForm(semantics, params, elementType) {
     const form = document.createElement('div');
 
+    // Workaround for H5PEditor.Wizard not initializing `this.readies` causing a crash (sometimes?)
+    UtilH5P.patchWizardReady();
+
     const template = this.params.elementsGroupTemplate;
     this.formParent = new H5PEditor.widgets[template.type](
       template.parent, template.field, template.params, template.setValue,

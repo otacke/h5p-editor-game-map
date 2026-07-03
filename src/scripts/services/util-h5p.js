@@ -4,6 +4,9 @@ const NUMBER_OF_VERSION_SEGMENTS_DOWN_TO_PATCH_VERSION = 3;
 /** @constant {string} H5P_CLI_INDICATOR_URL Heuristic to identify H5P CLI via H5PIntegration.url */
 const H5P_CLI_INDICATOR_URL = 'http://localhost:8080';
 
+/** @type {boolean} Whether the H5PEditor.Wizard.ready() patch has already been applied. */
+let wizardReadyPatched = false;
+
 /** Class for H5P utility functions */
 export default class UtilH5P {
   /**
@@ -147,6 +150,32 @@ export default class UtilH5P {
     if (domElement) {
       domElement.remove();
     }
+  }
+
+  /**
+   * Workaround for H5PEditor.Wizard not initializing `this.readies`.
+   */
+  static patchWizardReady() {
+    if (wizardReadyPatched) {
+      return;
+    }
+
+    const Wizard = H5PEditor?.Wizard;
+    if (!Wizard) {
+      return; // Wizard not loaded (yet); nothing to patch.
+    }
+
+    Wizard.prototype.ready = function (ready) {
+      if (this.passReadies) {
+        this.parent.ready(ready);
+      }
+      else {
+        // Deferred like H5PEditor.GameMap's own ready() so callers still get a fully settled DOM tree.
+        window.requestAnimationFrame(() => ready());
+      }
+    };
+
+    wizardReadyPatched = true;
   }
 
   /**
