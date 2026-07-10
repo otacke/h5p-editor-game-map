@@ -1,6 +1,5 @@
 {
   "name": "h5peditor-game-map",
-  "version": "1.5.0",
   "description": "Editor widget for H5P.GameMap",
   "private": true,
   "scripts": {
